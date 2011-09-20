@@ -93,7 +93,7 @@ This is equivalent to::
     addr_id = partner.address[0].id
     oerp.write(addr_osv_name, [addr_id], {'name': "Caporal Johns"})
 
-You can also update a `Many2One` relation, with either an ID or a browsable object::
+You can also update a ``many2one`` field, with either an ID or a browsable object::
 
     # with an ID
     addr.partner_id = 42
@@ -104,6 +104,18 @@ You can also update a `Many2One` relation, with either an ID or a browsable obje
     oerp.write(addr)
 
 You can't put any ID or browsable object, a check is made on the relationship to ensure data integrity.
+
+``date`` and ``datetime`` fields accept either string values or ``datetime.date/datetime.datetime`` objects::
+
+    # with datetime.date and datetime.datetime objects
+    order = oerp.browse('purchase.order', 42)
+    order.date_order = datetime.date(2011, 9, 20)
+    order.minimum_planned_date = datetime.datetime(2011, 9, 20, 12, 31, 24)
+    oerp.write(order)
+    # with formated strings
+    order.date_order = "2011-09-20"                     # %Y-%m-%d
+    order.minimum_planned_date = "2011-09-20 12:31:24"  # %Y-%m-%d %H:%M:%S
+    oerp.write(order)
 
 **Note:** nowadays, update operation through browsable objects supports only ``char``, ``float``, ``integer``, ``boolean``, ``text``, ``binary``, ``date``, ``datetime`` and ``many2one`` fields.
 
