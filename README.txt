@@ -41,5 +41,5 @@ How it works? See below::
     order.name = "NEW ORDER REF"
     oerp.write(order)
 
-See the ``examples`` directory and the documentation for more details.
+See the documentation for more details.
 

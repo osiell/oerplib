@@ -12,8 +12,6 @@ DATABASE = 'database-dev'
 # Use OpenERP Document Management System module
 # (this one must be installed on the server side)
 USE_DMS = True
-# PDF viewer application (supply a absolute path if the executable is not in the system path)
-PDF_VIEWER = 'evince'
 
 USER = 'admin'
 PASSWORD = 'password'
@@ -38,21 +36,20 @@ try:
     user_data = oerp.execute('res.users', 'read', user_ids[0])
 
     # Execute - write
-    oerp.execute('res.users', 'write', user_ids[0], {'name': u"Administrateur"})
+    oerp.execute('res.users', 'write', user_ids[0], {'name': u"Administrator"})
 
     # Execute - create
     #FIXME
 
-    # Get a report and open this one
+    # Get a report
     pdf_path = oerp.exec_report('sale.order', 'sale.order', 1)
-    oerplib.open_pdf(pdf_path, pdf_viewer=PDF_VIEWER)
 
     # --------------------------- #
     # -- Search IDs of objects -- #
     # --------------------------- #
 
     # Search IDs of a model that match criteria
-    assert oerp.user.id in oerp.search('res.users', [('name', 'ilike', u"Administrateur"),])
+    assert oerp.user.id in oerp.search('res.users', [('name', 'ilike', u"Administrator"),])
 
     # ---------------------------- #
     # -- Read data of an object -- #
@@ -125,7 +122,6 @@ try:
 
         dms.cwd('All Sales Order/SO001')
         pdf_path = dms.get('SO001_print.pdf')
-        oerplib.open_pdf(pdf_path, pdf_viewer=PDF_VIEWER)
 
 except oerplib.error.Error as e:
     print(e)

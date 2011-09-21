@@ -19,7 +19,7 @@ Retrieve reports and execute workflow queries are also possible.
 Quick start
 -----------
 
-How it works? See below::
+How does it work? See below::
 
     #!/usr/bin/env python
     import oerplib

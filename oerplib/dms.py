@@ -6,11 +6,9 @@ import tempfile
 from oerplib.oerp import error
 
 class DMS(FTP, object):
-    """Represent the Document Management System of an OpenERP server.
-        Attributes:
-            -login(user, pwd)
-            -get(file_name)
-            + All methods from the FTP class (DMS inherits from FTP)
+    """ EXPERIMENTAL, NOT TESTED OR DOCUMENTED!
+    Represents the Document Management System of an OpenERP server.
+    Inherits from FTP class.
     """
     def __init__(self, server, port):
         super(DMS, self).__init__()
@@ -21,8 +19,8 @@ class DMS(FTP, object):
         try:
             super(DMS, self).connect(self.server, self.port)
         except Exception as exc:
-            raise error.DMSConnectionError(u"FTP connection failed." + \
-                                u"Check the DMS service of OpenERP server" + \
+            raise error.DMSConnectionError(u"FTP connection failed. " + \
+                                u"Check the DMS service of OpenERP server " + \
                                 u"or connection settings")
         try:
             super(DMS, self).login(user, pwd, acct)
@@ -35,7 +33,7 @@ class DMS(FTP, object):
 
         """
         try:
-            (ft_no, ft_name) = tempfile.mkstemp(prefix='oerp_')
+            (ft_no, ft_name) = tempfile.mkstemp(prefix='oerplib_')
             ft_obj = file(ft_name, 'wb+')
             super(DMS, self).retrbinary('RETR {0}'.format(file_name),
                                         ft_obj.write)

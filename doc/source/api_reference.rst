@@ -48,11 +48,3 @@ fields.one2many   list of ``OSV`` objects
 fields.many2many  list of ``OSV`` objects
 ================  =======================
 
-
-..
-    DMS Class
-    ---------
-    
-    .. autoclass:: DMS
-        :members:
-
