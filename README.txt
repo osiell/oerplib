@@ -10,7 +10,7 @@ somewhat similar to OSV server-side objects and manipulate them while hiding
 XML-RPC queries.
 Retrieve reports and execute workflow queries are also possible.
 
-How it works? See below::
+How does it work? See below::
 
     #!/usr/bin/env python
     import oerplib
