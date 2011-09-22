@@ -5,7 +5,7 @@ from distutils.core import setup
 
 name = 'OERPLib'
 version = '0.1'
-release = '0.1.0'
+release = '0.1.1'
 description = 'Python library which allows to easily interact with an OpenERP server.'
 author = u"ABF Osiell - Sébastien Alix"
 author_email = 'sebastien.alix@osiell.com'
@@ -14,7 +14,7 @@ url = 'http://www.osiell.com/'
 license = 'LGPL v3'
 
 setup(name=name,
-      version=version,
+      version=release,
       description=description,
       long_description=open('README.txt').read(),
       author=author,

@@ -87,7 +87,7 @@ try:
 
     # Changes can be canceled
     oerp['res.users'][oerp.user.id].name = u"Thierry la Fronde"
-    oerp['res.users'][oerp.user.id].reset()
+    oerp.reset(oerp['res.users'][oerp.user.id])
     print(oerp['res.users'][oerp.user.id].name) # Display "James Bond"
 
     # And they can be updated from Open ERP server
