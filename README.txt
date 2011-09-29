@@ -43,3 +43,16 @@ How does it work? See below::
 
 See the documentation for more details.
 
+Generate the documentation
+--------------------------
+
+To generate the documentation, you have to install Sphinx documentation generator::
+
+    easy_install -U sphinx
+
+Now, you can use the ``build_sphinx`` option of the ``setup.py``::
+
+    python setup.py build_sphinx
+
+The generated documentation will be in the ``./doc/html`` directory.
+
