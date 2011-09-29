@@ -1,1 +1,2 @@
+v0.1.1, 2011-09-29 -- Update documentation and README.txt, fix setup.py script about Sphinx and download URL.
 v0.1.0, 2011-09-16 -- Initial release.
