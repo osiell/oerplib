@@ -26,7 +26,7 @@ try:
             'release': ('setup.py', release),
             'source_dir': ('setup.py', 'doc/source'),
             'build_dir': ('setup.py', 'doc/'),
-         }},
+         }}
 except Exception:
     print("No Sphinx module found. You have to install Sphinx to be able to generate the documentation.")
 
