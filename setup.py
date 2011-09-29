@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-from sphinx.setup_command import BuildDoc
 from distutils.core import setup
 
 name = 'OERPLib'
@@ -11,7 +10,25 @@ author = u"ABF Osiell - Sébastien Alix"
 author_email = 'sebastien.alix@osiell.com'
 url = 'http://www.osiell.com/'
 #download_url = 'http://pypi.python.org/packages/source/o/oerplib/oerplib-%s.tar.gz' % version,
+download_url = 'https://bitbucket.org/SebAlix/python-oerplib/downloads'
 license = 'LGPL v3'
+
+cmdclass = {}
+command_options = {}
+# 'build_sphinx' option
+try:
+    from sphinx.setup_command import BuildDoc
+    cmdclass = {'build_sphinx': BuildDoc}
+    command_options={
+        'build_sphinx': {
+            #'project': ('setup.py', name),
+            'version': ('setup.py', version),
+            'release': ('setup.py', release),
+            'source_dir': ('setup.py', 'doc/source'),
+            'build_dir': ('setup.py', 'doc/'),
+         }},
+except Exception:
+    print("No Sphinx module found. You have to install Sphinx to be able to generate the documentation.")
 
 setup(name=name,
       version=release,
@@ -23,15 +40,7 @@ setup(name=name,
       #download_url=download_url,
       packages=['oerplib', 'oerplib.test'],
       license=license,
-      # 'build_sphinx' option
-      cmdclass={'build_sphinx': BuildDoc},
-      command_options={
-            'build_sphinx': {
-                #'project': ('setup.py', name),
-                'version': ('setup.py', version),
-                'release': ('setup.py', release),
-                'source_dir': ('setup.py', 'doc/source'),
-                'build_dir': ('setup.py', 'doc/'),
-            }},
+      cmdclass=cmdclass,
+      command_options=command_options,
       )
 
