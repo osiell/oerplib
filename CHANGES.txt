@@ -1,2 +1,4 @@
+v0.2.0, 2011-09-30 -- Updated tutorials in the documentation + Fix some exceptions raised then update data through browsable objects
+v0.1.2, 2011-09-29 -- Fix setup.py
 v0.1.1, 2011-09-29 -- Update documentation and README.txt, fix setup.py script about Sphinx and download URL.
 v0.1.0, 2011-09-16 -- Initial release.
