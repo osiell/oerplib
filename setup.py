@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 name = 'OERPLib'
-version = '0.1'
+version = '0.2'
 release = '0.2.0'
 description = 'Python library which allows to easily interact with a remote OpenERP server via XML-RPC.'
 author = u"ABF Osiell - Sébastien Alix"
