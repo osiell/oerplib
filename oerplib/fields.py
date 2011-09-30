@@ -33,12 +33,12 @@ class BaseField(object):
                 u"'{field_name}' field is readonly".format(
                     field_name=self.name))
         if self.size and len(value) > self.size:
-            raise error.NotAllowedError(
+            raise ValueError(
                 u"Lenght of the '{field_name}' is limited to {size}".format(
                     field_name=self.name,
                     size=self.size))
         if not value and self.required:
-            raise error.NotAllowedError(
+            raise ValueError(
                 u"'{field_name}' field require a value".format(
                     field_name=self.name))
         return value
@@ -65,7 +65,7 @@ class SelectionField(BaseField):
         super(SelectionField, self).check_value(value)
         selection = [val[0] for val in self.selection]
         if value not in selection:
-            raise error.NotAllowedError(
+            raise ValueError(
                 u"The value '{value}' supplied doesn't match with the possible \
 values '{selection}' for the '{field_name}' field".format(
                     value=value,
@@ -136,7 +136,7 @@ class Many2OneField(BaseField):
         oerp = self.factory.oerp
         value_factory = oerp.pool.get_by_class(value.__class__)
         if value_factory.osv['name'] != self.relation:
-            raise error.NotAllowedError(
+            raise ValueError(
                 (u"Instance of '{osv_name}' supplied doesn't match with the " +\
                 u"relation '{relation}' of the '{field_name}' field.").format(
                     osv_name=value_factory.osv['name'],
@@ -199,7 +199,7 @@ class DateField(BaseField):
                 datetime.datetime.strptime(value, self.pattern)
             except:
                 raise ValueError(
-                    "Value not well formatted, expecting '{0}' format".format(
+                    "String not well formatted, expecting '{0}' format".format(
                         self.pattern))
         else:
             raise ValueError("Expecting a datetime.date object or basestring")
