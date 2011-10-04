@@ -9,8 +9,12 @@ from oerplib import error, fields
 class OSV(object):
     """Base class that all OSV classes inherit from."""
     def __init__(self, factory, o_id):
-        self.id = o_id
+        self._id = o_id
         factory.refresh(self)
+
+    @property
+    def id(self):
+        return self._id
 
 fields.OSV_CLASS = OSV
 
