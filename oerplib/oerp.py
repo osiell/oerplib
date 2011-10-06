@@ -198,7 +198,8 @@ class OERP(collections.MutableMapping):
             return [self.browse(osv_name, o_id, join, refresh)
                     for o_id in ids]
         else:
-            return self.pool.get(osv_name).generate_browse(ids, join, refresh)
+            return self.pool.get(osv_name).generate_browse_record(ids, join,
+                                                                  refresh)
 
     def search(self, osv_name, args):
         """Return a list of IDs of records matching the given criteria in

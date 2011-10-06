@@ -7,10 +7,25 @@ from oerplib import error, fields
 
 
 class OSV(object):
-    """Base class that all OSV classes inherit from."""
+    """Base class that all OSV classes inherit from.
+    No attributes should be defined in this class (except _id/id and
+    Python magic methods) in order to not be conflicted with the fields
+    defined in the OSV-base class on OpenERP server.
+
+    """
     def __init__(self, factory, o_id):
         self._id = o_id
         factory.refresh(self)
+
+        # Define __str__ and __repr__ methods
+        #NOTE: this is made in this way because the 'factory' variable
+        # can't be accessed through another way
+        def __str__(self):
+            return "browse_record({osv_name}, {obj_id})".format(
+                    osv_name=factory.osv['name'], obj_id=self._id)
+        self.__class__.__str__ = __str__
+        self.__class__.__repr__ = __str__
+
 
     @property
     def id(self):
