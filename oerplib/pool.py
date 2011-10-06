@@ -46,6 +46,9 @@ class ModelPool(collections.MutableMapping):
             res[osv_name] = facto.keys()
         return str(res)
 
+    def __repr__(self):
+        return str(self)
+
     # ---------------------------- #
     # -- MutableMapping methods -- #
     # ---------------------------- #

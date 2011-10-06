@@ -19,6 +19,16 @@ class OSV(object):
 fields.OSV_CLASS = OSV
 
 
+def check_obj(func):
+    """Decorator to check the availability of the object."""
+    def wrapper(self, obj):
+        if obj.id not in self.objects:
+            raise ValueError("This object is no longer referenced,"
+                                          "operation canceled.")
+        return func(self, obj)
+    return wrapper
+
+
 class Factory(collections.MutableMapping):
     """Manage the objects corresponding to a OSV class."""
 
@@ -34,7 +44,7 @@ class Factory(collections.MutableMapping):
         self.osv['class'] = self.generate_osv(osv_name)
         self.objects = {}
 
-    def generate_browse(self, obj_id, join=False, refresh=False):
+    def generate_browse_record(self, obj_id, join=False, refresh=False):
         """Generate an instance of the OSV class."""
         # TODO be able to refresh all joined relations
         if obj_id not in self.objects or refresh:
@@ -45,7 +55,8 @@ class Factory(collections.MutableMapping):
                 'join': join,
             }
             try:
-                self.objects[obj_id]['instance'] = self.osv['class'](self, obj_id)
+                self.objects[obj_id]['instance'] = self.osv['class'](self,
+                                                                     obj_id)
             except error.ExecuteQueryError as exc:
                 del self.objects[obj_id]
                 raise error.ExecuteQueryError(
@@ -75,6 +86,7 @@ class Factory(collections.MutableMapping):
         cls._oerp = self.oerp
         return cls
 
+    @check_obj
     def write(self, obj):
         """Send values of fields updated to the OpenERP server."""
         obj_info = self.objects[obj.id]
@@ -104,6 +116,7 @@ class Factory(collections.MutableMapping):
             self.refresh(obj)
             return res
 
+    @check_obj
     def refresh(self, obj):
         """Retrieve field values from OpenERP server.
         May be used to restore the original values
@@ -114,6 +127,7 @@ class Factory(collections.MutableMapping):
         obj_info['raw_data'] = self.oerp.read(self.osv['name'], obj.id)
         self.reset(obj)
 
+    @check_obj
     def reset(self, obj):
         """Cancel all changes by restoring field values with original values
         obtained during the last refresh (object instanciation or
@@ -133,6 +147,7 @@ class Factory(collections.MutableMapping):
                 if obj_info['join']:
                     getattr(obj, field.name)
 
+    @check_obj
     def unlink(self, obj):
         """Delete the object locally and from the server."""
         del self.objects[obj.id]
@@ -151,7 +166,7 @@ class Factory(collections.MutableMapping):
         #raise error.NotAllowedError(u"Operation not supported")
 
     def __getitem__(self, obj_id):
-        return self.generate_browse(obj_id)
+        return self.generate_browse_record(obj_id)
 
     def __iter__(self):
         for obj_id in self.objects:
