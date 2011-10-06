@@ -241,7 +241,7 @@ class OERP(collections.MutableMapping):
             return self.pool.get_by_class(osv.__class__).write(osv)
         return self.execute(osv, 'write', ids, vals)
 
-    def unlink(self, osv, ids):
+    def unlink(self, osv, ids=[]):
         """Delete records with the given IDs (e.g. ``[1, 42, ...]``).
         ``osv`` parameter may be the OSV server class name
         (e.g. ``'sale.order'``) or an OSV instance (browsable object).

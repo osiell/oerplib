@@ -135,7 +135,7 @@ class Factory(collections.MutableMapping):
 
     def unlink(self, obj):
         """Delete the object locally and from the server."""
-        #TODO delete locally
+        del self.objects[obj.id]
         return self.oerp.unlink(self.osv['name'], [obj.id])
 
     def __str__(self):
@@ -156,6 +156,7 @@ class Factory(collections.MutableMapping):
     def __iter__(self):
         for obj_id in self.objects:
             yield obj_id
+            #yield self.objects[obj_id]
 
     def __len__(self):
         return len(self.objects)
