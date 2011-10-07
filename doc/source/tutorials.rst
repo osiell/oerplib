@@ -84,7 +84,7 @@ This is equivalent to::
     >>> addr_id = partner.address[0].id
     >>> oerp.write(addr_osv_name, [addr_id], {'name': "Caporal Jones"})
 
-Nowadays, update operation through browsable objects supports only ``char``, ``float``, ``integer``, ``boolean``, ``text``, ``binary``, ``selection``, ``date``, ``datetime`` and ``many2one`` fields.
+Nowadays, update operation through browsable objects doesn't support ``one2many`` and ``many2many`` fields.
 
 Char, Float, Integer, Boolean, Text and Binary
 ''''''''''''''''''''''''''''''''''''''''''''''
