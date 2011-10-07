@@ -46,7 +46,8 @@ See the documentation for more details.
 Generate the documentation
 --------------------------
 
-To generate the documentation, you have to install Sphinx documentation generator::
+To generate the documentation, you have to install Sphinx documentation
+generator::
 
     easy_install -U sphinx
 
@@ -55,4 +56,10 @@ Now, you can use the ``build_sphinx`` option of the ``setup.py``::
     python setup.py build_sphinx
 
 The generated documentation will be in the ``./doc/html`` directory.
+
+Problems or suggestions?
+------------------------
+
+Please, feel free to report bugs or any suggestions in the `Bug Tracker
+<https://bitbucket.org/SebAlix/python-oerplib/issues?status=new&status=open>`_!
 

@@ -137,7 +137,6 @@ class Factory(collections.MutableMapping):
 
         """
         obj_info = self.objects[obj.id]
-        obj_info['fields_updated'] = {}
         obj_info['raw_data'] = self.oerp.read(self.osv['name'], obj.id)
         # Special field 'name' have to be filled with the value returned
         # by the 'name_get' method
