@@ -53,3 +53,4 @@ class DMS(FTP, object):
 #        #FIXME e.g. path = 'Documents/Production/
 #        self.cwd('/{0}/{1}'.format(oerp.config.DATABASE, path))
 
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -68,3 +68,4 @@ class OSVPool(collections.MutableMapping):
     def __setitem__(self, osv_name, value):
         raise error.NotAllowedError(u"Operation not supported")
 
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

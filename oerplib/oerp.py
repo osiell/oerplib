@@ -20,30 +20,11 @@ class OERP(collections.MutableMapping):
     is used.
 
     """
-
-#    Represent an OpenERP server.
-#    Manage the server connection, requests, objects generation,
-#    download of reports and some other client-side functionalities.
-#
 #    Attributes:
 #    user        -- object which contains User's informations
 #    server      -- domain name or IP of the server
 #    port        -- port used to connect to the server
 #    database    -- database name
-#
-#    Methods:
-#    login       -- login an user to OpenERP Server
-#    execute     -- executes a XMLRPC request on a model
-#    exec_workflow   -- executes a XMLRPC workflow request on a model
-#    exec_report -- retrieve a report according to the model supplied
-#    browse      -- browse an 'osv' object
-#    search      -- search ids of objects that match the supplied criteria
-#    read        -- return a data dictionary of the supplied model
-#
-#    Special notes:
-#    May be use as a dictionary to retrieve objects
-#    classified by model, then by id, e.g.:
-#        order = oerp_instance['sale.order'][42]
 
 
     def __init__(self, server, database=None, port=8069):
@@ -295,3 +276,4 @@ class OERP(collections.MutableMapping):
     def __setitem__(self, osv_name, value):
         raise error.NotAllowedError(u"Operation not supported")
 
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

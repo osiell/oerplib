@@ -75,14 +75,14 @@ Update data through browsable objects
 
 Update data of a browsable object is workable with the ``write`` method of an :class:`OERP <oerplib.OERP>` instance. Let's update the first contact's name of a partner::
 
-    >>> partner.address[0].name = "Caporal Johns"
+    >>> partner.address[0].name = "Caporal Jones"
     >>> oerp.write(partner.address[0])
 
 This is equivalent to::
 
     >>> addr_osv_name = oerp.get_osv_name(partner.address[0]) # 'res.partner.address'
     >>> addr_id = partner.address[0].id
-    >>> oerp.write(addr_osv_name, [addr_id], {'name': "Caporal Johns"})
+    >>> oerp.write(addr_osv_name, [addr_id], {'name': "Caporal Jones"})
 
 Nowadays, update operation through browsable objects supports only ``char``, ``float``, ``integer``, ``boolean``, ``text``, ``binary``, ``selection``, ``date``, ``datetime`` and ``many2one`` fields.
 

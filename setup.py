@@ -3,8 +3,8 @@
 from distutils.core import setup
 
 name = 'OERPLib'
-version = '0.2'
-release = '0.2.0'
+version = '0.3'
+release = '0.3.0'
 description = 'Python library which allows to easily interact with a remote OpenERP server via XML-RPC.'
 author = u"ABF Osiell - Sébastien Alix"
 author_email = 'sebastien.alix@osiell.com'
@@ -44,3 +44,4 @@ setup(name=name,
       command_options=command_options,
       )
 
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

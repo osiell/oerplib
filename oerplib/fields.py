@@ -86,7 +86,7 @@ class Many2ManyField(BaseField):
     def get_property(self):
         def getter(obj):
             return [self.factory.oerp.browse(self.relation, o_id) 
-                    for o_id in self.factory.objects[obj.id]['raw_data'][self.name]]
+                for o_id in self.factory.objects[obj.id]['raw_data'][self.name]]
 
         def setter(obj, value):
             raise error.NotAllowedError(u"Not implemented yet")
@@ -155,7 +155,7 @@ class One2ManyField(BaseField):
     def get_property(self):
         def getter(obj):
             return [self.factory.oerp.browse(self.relation, o_id) 
-                    for o_id in self.factory.objects[obj.id]['raw_data'][self.name]]
+                for o_id in self.factory.objects[obj.id]['raw_data'][self.name]]
 
         def setter(obj, value):
             #TODO: setter of One2Many field
@@ -297,3 +297,4 @@ def generate_field(factory, name, data):
                 field_name=name))
     return field
 
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -201,3 +201,4 @@ class Factory(collections.MutableMapping):
     def __setitem__(self, key, value):
         raise error.NotAllowedError(u"Operation not supported")
 
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
