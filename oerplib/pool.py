@@ -6,14 +6,14 @@ import collections
 from oerplib import factory, error
 
 
-class ModelPool(collections.MutableMapping):
+class OSVPool(collections.MutableMapping):
     """Manage OSV classes. Each OSV class has an object pool (Factory)
     which manage the corresponding objects.
 
     """
 
     def __init__(self, oerp):
-        super(ModelPool, self).__init__()
+        super(OSVPool, self).__init__()
         self.oerp = oerp
         self._factories_by_osv_name = {}
         self._factories_by_osv_class = {}

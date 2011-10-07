@@ -50,7 +50,7 @@ class OERP(collections.MutableMapping):
         self.server = server
         self.port = port
         self.database = self.database_default = database
-        self.pool = pool.ModelPool(self)
+        self.pool = pool.OSVPool(self)
         self.user = False
         self.xmlrpc_url = 'http://{server}:{port}/xmlrpc'.format(
                 server=self.server,

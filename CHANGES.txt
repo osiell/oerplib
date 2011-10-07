@@ -1,4 +1,21 @@
-v0.2.0, 2011-09-30 -- Updated tutorials in the documentation + Fix some exceptions raised then update data through browsable objects
-v0.1.2, 2011-09-29 -- Fix setup.py
-v0.1.1, 2011-09-29 -- Update documentation and README.txt, fix setup.py script about Sphinx and download URL.
-v0.1.0, 2011-09-16 -- Initial release.
+v0.3.0, 2011-10-XX:
+    - Change ID field of browsable objects to readonly
+    - Unable to perform refresh/reset/write and unlink operations on locally
+      deprecated browsable objects
+    - String representation of browsable objects is of the form
+      "browse_record('sale.order', 42)" (like OpenERP Server)
+    - Implicit management of the 'name_get' method for browsable objects
+
+v0.2.0, 2011-09-30:
+    - Updated tutorials in the documentation
+    - Fix some exceptions raised then update data through browsable objects
+
+v0.1.2, 2011-09-29:
+    - Fix setup.py
+
+v0.1.1, 2011-09-29:
+    - Update documentation and README.txt
+    - Fix setup.py script about Sphinx and download URL.
+
+v0.1.0, 2011-09-16:
+    - Initial release.
