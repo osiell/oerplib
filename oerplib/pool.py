@@ -18,7 +18,7 @@ class OSVPool(collections.MutableMapping):
         self._factories_by_osv_name = {}
         self._factories_by_osv_class = {}
 
-    def get(self, osv_name, refresh=False):
+    def get(self, osv_name):
         """Return a factory which is able to create browsable objects
         corresponding to the OSV name supplied.
 
@@ -27,9 +27,6 @@ class OSVPool(collections.MutableMapping):
             facto = factory.Factory(self.oerp, osv_name)
             self._factories_by_osv_name[osv_name] = facto
             self._factories_by_osv_class[facto.osv['class']] = facto
-        elif refresh:
-            self._factories_by_osv_name[osv_name] = factory.Factory(self.oerp,
-                                                                    osv_name)
         return self._factories_by_osv_name[osv_name]
 
     def get_by_class(self, osv):

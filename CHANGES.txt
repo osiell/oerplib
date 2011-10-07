@@ -5,6 +5,8 @@ v0.3.0, 2011-10-XX:
     - String representation of browsable objects is of the form
       "browse_record('sale.order', 42)" (like OpenERP Server)
     - Implicit management of the 'name_get' method for browsable objects
+    - 'join' parameter of the 'OERP.browse' method has been deleted
+    - 'refresh' option of the 'OERP.browse' method is set to True by default
 
 v0.2.0, 2011-09-30:
     - Updated tutorials in the documentation

@@ -17,7 +17,6 @@ class OSV(object):
     """
     def __init__(self, factory, o_id):
         self._id = o_id
-        factory.refresh(self)
 
         # Define __str__ and __repr__ methods
         #NOTE: this is made in this way because the 'factory' variable
@@ -56,14 +55,10 @@ class Factory(collections.MutableMapping):
         self.osv['class'], self.osv['fields'] = self.generate_osv(osv_name)
         self.objects = {}
 
-    def generate_browse_record(self, obj_id, refresh=False):
+    def generate_browse_record(self, obj_id, refresh=True):
         """Generate an instance of the OSV class."""
-        if obj_id not in self.objects or refresh:
-            self.objects[obj_id] = {
-                'raw_data': None,
-                'fields_updated': [],
-                'instance': None,
-            }
+        if obj_id not in self.objects:
+            self.objects[obj_id] = {}
             try:
                 self.objects[obj_id]['instance'] = self.osv['class'](self,
                                                                      obj_id)
@@ -72,7 +67,8 @@ class Factory(collections.MutableMapping):
                 raise error.ExecuteQueryError(
                     u"There is no '{0}' record with ID {1}.".format(
                         self.osv['name'], obj_id))
-
+        if refresh:
+            self.refresh(self.objects[obj_id]['instance'])
         return self.objects[obj_id]['instance']
 
     def generate_osv(self, osv_name):
@@ -141,6 +137,7 @@ class Factory(collections.MutableMapping):
 
         """
         obj_info = self.objects[obj.id]
+        obj_info['fields_updated'] = {}
         obj_info['raw_data'] = self.oerp.read(self.osv['name'], obj.id)
         # Special field 'name' have to be filled with the value returned
         # by the 'name_get' method

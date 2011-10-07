@@ -185,11 +185,12 @@ class OERP(collections.MutableMapping):
     # -- High Level methods  -- #
     # ------------------------- #
 
-    def browse(self, osv_name, ids, refresh=False):
+    def browse(self, osv_name, ids, refresh=True):
         """Return a browsable object (or a list of objects)
         according to the OSV name and ID (or IDs) supplied.
-        ``refresh`` option will reinitialize the object if this one has already
-        been loaded previously.
+        ``refresh`` option will reinitialize the object if this one has
+        already been loaded previously (this is the default behaviour, set to
+        False to change that).
 
         """
         if isinstance(ids, list):
