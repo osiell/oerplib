@@ -20,7 +20,7 @@ class OERP(collections.MutableMapping):
     is used.
 
     """
-    
+
 #    Represent an OpenERP server.
 #    Manage the server connection, requests, objects generation,
 #    download of reports and some other client-side functionalities.

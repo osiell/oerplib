@@ -3,6 +3,8 @@
 and some functions to manipulate its instances.
 """
 import collections
+import ast
+
 from oerplib import error, fields
 
 
@@ -26,7 +28,6 @@ class OSV(object):
         self.__class__.__str__ = __str__
         self.__class__.__repr__ = __str__
 
-
     @property
     def id(self):
         return self._id
@@ -45,18 +46,14 @@ def check_obj(func):
 
 
 class Factory(collections.MutableMapping):
-    """Manage the objects corresponding to a OSV class."""
+    """Manage the objects corresponding to an OSV class."""
 
     fields_reserved = ['id', 'oerp']
     def __init__(self, oerp, osv_name):
         super(Factory, self).__init__()
         self.oerp = oerp
-        self.osv = {
-            'name': osv_name,
-            'class': None,
-            'fields': {},
-        }
-        self.osv['class'] = self.generate_osv(osv_name)
+        self.osv = {'name': osv_name}
+        self.osv['class'], self.osv['fields'] = self.generate_osv(osv_name)
         self.objects = {}
 
     def generate_browse_record(self, obj_id, join=False, refresh=False):
@@ -81,25 +78,32 @@ class Factory(collections.MutableMapping):
         return self.objects[obj_id]['instance']
 
     def generate_osv(self, osv_name):
-        """Generate a class (with all its fields)
-        corresponding to the OSV name supplied.
+        """Generate a class with all its fields corresponding to
+        the OSV name supplied and return them.
 
         """
+        # Retrieve server fields info and generate corresponding local fields
         try:
             fields_get = self.oerp.execute(osv_name, 'fields_get')
         except error.ExecuteQueryError as exc:
             raise error.ExecuteQueryError(
                 u"There is no OSV class named '{0}'.".format(self.osv['name']))
         cls_name = osv_name.replace('.', '_')
+        cls_fields = {}
         for field_name, field_data in fields_get.items():
-            if field_name not in self.fields_reserved:
-                self.osv['fields'][field_name] = fields.generate_field(
-                                                            self,
-                                                            field_name,
-                                                            field_data)
+            if field_name not in Factory.fields_reserved:
+               cls_fields[field_name] = fields.generate_field(self,
+                                                              field_name,
+                                                              field_data)
+        # Case where no field 'name' exists, we generate one (which will be
+        # in readonly mode) in purpose to be filled with the 'name_get' method
+        if 'name' not in cls_fields:
+            field_data = {'type': 'text', 'string': 'Name', 'readonly': True}
+            cls_fields['name'] = fields.generate_field(self, 'name', field_data)
+
         cls = type(cls_name, (OSV,), {})
         cls._oerp = self.oerp
-        return cls
+        return cls, cls_fields
 
     @check_obj
     def write(self, obj):
@@ -140,6 +144,18 @@ class Factory(collections.MutableMapping):
         """
         obj_info = self.objects[obj.id]
         obj_info['raw_data'] = self.oerp.read(self.osv['name'], obj.id)
+        # Special field 'name' have to be filled with the value returned
+        # by the 'name_get' method
+        try:
+            name = self.oerp.execute(self.osv['name'], 'name_get', obj.id)
+        except Exception as exc:
+            pass
+        else:
+            if name:
+                try:
+                    obj_info['raw_data']['name'] = ast.literal_eval(name[0][1])
+                except:
+                    obj_info['raw_data']['name'] = name[0][1]
         self.reset(obj)
 
     @check_obj
@@ -151,7 +167,7 @@ class Factory(collections.MutableMapping):
         """
         obj_info = self.objects[obj.id]
         obj_info['fields_updated'] = []
-        # Load fields
+        # Load fields and their values
         for field in self.osv['fields'].values():
             if field.name in obj_info['raw_data']:
                 setattr(obj, "_{0}".format(field.name),

@@ -3,6 +3,7 @@
 """
 #import traceback, sys
 
+
 class Error(Exception):
     def __init__(self, message, oerp_traceback=False):
         super(Error, self).__init__()
