@@ -56,15 +56,13 @@ class Factory(collections.MutableMapping):
         self.osv['class'], self.osv['fields'] = self.generate_osv(osv_name)
         self.objects = {}
 
-    def generate_browse_record(self, obj_id, join=False, refresh=False):
+    def generate_browse_record(self, obj_id, refresh=False):
         """Generate an instance of the OSV class."""
-        # TODO be able to refresh all joined relations
         if obj_id not in self.objects or refresh:
             self.objects[obj_id] = {
                 'raw_data': None,
                 'fields_updated': [],
                 'instance': None,
-                'join': join,
             }
             try:
                 self.objects[obj_id]['instance'] = self.osv['class'](self,
@@ -174,9 +172,6 @@ class Factory(collections.MutableMapping):
                         obj_info['raw_data'][field.name])
                 setattr(obj.__class__, field.name,
                         field.get_property())
-                # Preload value (for relation fields as One2Many, Many2One...)
-                if obj_info['join']:
-                    getattr(obj, field.name)
 
     @check_obj
     def unlink(self, obj):

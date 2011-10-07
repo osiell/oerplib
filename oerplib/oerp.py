@@ -185,21 +185,18 @@ class OERP(collections.MutableMapping):
     # -- High Level methods  -- #
     # ------------------------- #
 
-    def browse(self, osv_name, ids, join=False, refresh=False):
+    def browse(self, osv_name, ids, refresh=False):
         """Return a browsable object (or a list of objects)
         according to the OSV name and ID (or IDs) supplied.
-        The ``join`` parameter allow to get at the same time the first level
-        of relations (Many2One, One2Many and Many2Many).
         ``refresh`` option will reinitialize the object if this one has already
         been loaded previously.
 
         """
         if isinstance(ids, list):
-            return [self.browse(osv_name, o_id, join, refresh)
+            return [self.browse(osv_name, o_id, refresh)
                     for o_id in ids]
         else:
-            return self.pool.get(osv_name).generate_browse_record(ids, join,
-                                                                  refresh)
+            return self.pool.get(osv_name).generate_browse_record(ids, refresh)
 
     def search(self, osv_name, args):
         """Return a list of IDs of records matching the given criteria in

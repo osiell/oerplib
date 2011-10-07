@@ -61,11 +61,9 @@ try:
     # -------------------- #
 
     # Browse an object 
-    user = oerp.browse('res.users', oerp.user.id, join=True)
+    user = oerp.browse('res.users', oerp.user.id)
     print(user.name)
     print(user.company_id.name)
-    # Note: 'join' parameter allow to fetch related objects at the same time
-    # which avoids another XML-RPC request when these ones are accessed
 
     # .. or many objects
     for order in oerp.browse('sale.order', [68, 69]):
