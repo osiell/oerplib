@@ -6,6 +6,13 @@ import datetime
 from oerplib import error
 OSV_CLASS = None
 
+def is_int(value):
+    try:
+        int(value)
+        return True
+    except Exception as exc:
+        return False
+
 
 class BaseField(object):
     """Field which all other fields inherit.
@@ -97,6 +104,7 @@ class Many2ManyField(BaseField):
         #TODO Many2Many.check_value()
         super(Many2ManyField, self).check_value(value)
 
+
 class Many2OneField(BaseField):
     """Represent the OpenObject 'fields.many2one'"""
     def __init__(self, factory, name, data):
@@ -106,13 +114,6 @@ class Many2OneField(BaseField):
         self.domain = 'domain' in data and data['domain'] or False
 
     def get_property(self):
-        def is_int(value):
-            try:
-                int(value)
-                return True
-            except Exception as exc:
-                return False
-
         def getter(obj):
             if getattr(obj, "_{0}".format(self.name)):
                 return obj.__class__._oerp.browse(
@@ -123,8 +124,11 @@ class Many2OneField(BaseField):
         def setter(obj, value):
             if isinstance(value, OSV_CLASS):
                 o_rel = value
-            if is_int(value):
+            elif is_int(value):
                 o_rel = obj.__class__._oerp.browse(self.relation, value)
+            else:
+                raise ValueError(u"Value supplied has to be an integer or"
+                                 " a browse_record object.")
             o_rel = self.check_value(o_rel)
             setattr(obj, "_{0}".format(self.name), [o_rel.id, o_rel.name])
             self.factory.objects[obj.id]['fields_updated'].append(self.name)
@@ -144,6 +148,7 @@ class Many2OneField(BaseField):
                     field_name=self.name))
         return value
 
+
 class One2ManyField(BaseField):
     """Represent the OpenObject 'fields.one2many'"""
     def __init__(self, factory, name, data):
@@ -157,15 +162,45 @@ class One2ManyField(BaseField):
             return [self.factory.oerp.browse(self.relation, o_id) 
                 for o_id in self.factory.objects[obj.id]['raw_data'][self.name]]
 
-        def setter(obj, value):
-            #TODO: setter of One2Many field
-            raise error.NotAllowedError(u"Not implemented yet")
+        #def setter(obj, value):
+        #    # Value have to be iterable
+        #    try:
+        #        iter(value)
+        #    except:
+        #        raise ValueError(u"The value '{value}' supplied is not iterable"
+        #                         .format(value=value,
+        #                                 selection=selection,
+        #                                 field_name=self.name,
+        #                        ))
+        #    # Check integrity
+        #    rel_ids = []
+        #    for v in value:
+        #        if isinstance(v, OSV_CLASS):
+        #            o_rel = v
+        #        elif is_int(v):
+        #            o_rel = obj.__class__._oerp.browse(self.relation, v)
+        #        else:
+        #            raise ValueError(u"Value supplied have to be an integer or"
+        #                             " a browse_record object.")
+        #        o_rel = self.check_value(o_rel)
+        #        rel_ids.append(o_rel.id)
+        #    setattr(obj, "_{0}".format(self.name), rel_ids)
+        #    self.factory.objects[obj.id]['fields_updated'].append(self.name)
 
-        return property(getter, setter)
+        return property(getter)
 
-    def check_value(self, value):
-        #TODO One2Many.check_value()
-        super(One2ManyField, self).check_value(value)
+    #def check_value(self, value):
+    #    super(One2ManyField, self).check_value(value)
+    #    oerp = self.factory.oerp
+    #    value_factory = oerp.pool.get_by_class(value.__class__)
+    #    if value_factory.osv['name'] != self.relation:
+    #        raise ValueError(
+    #            (u"Instance of '{osv_name}' supplied doesn't match with the "+\
+    #            u"relation '{relation}' of the '{field_name}' field.").format(
+    #                osv_name=value_factory.osv['name'],
+    #                relation=self.relation,
+    #                field_name=self.name))
+    #    return value
 
 
 class DateField(BaseField):

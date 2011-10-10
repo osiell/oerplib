@@ -52,7 +52,7 @@ class Factory(collections.MutableMapping):
         super(Factory, self).__init__()
         self.oerp = oerp
         self.osv = {'name': osv_name}
-        self.osv['class'], self.osv['fields'] = self.generate_osv(osv_name)
+        self.osv['class'], self.osv['fields'] = self._generate_osv_class()
         self.objects = {}
 
     def generate_browse_record(self, obj_id, refresh=True):
@@ -71,18 +71,18 @@ class Factory(collections.MutableMapping):
             self.refresh(self.objects[obj_id]['instance'])
         return self.objects[obj_id]['instance']
 
-    def generate_osv(self, osv_name):
+    def _generate_osv_class(self):
         """Generate a class with all its fields corresponding to
         the OSV name supplied and return them.
 
         """
         # Retrieve server fields info and generate corresponding local fields
         try:
-            fields_get = self.oerp.execute(osv_name, 'fields_get')
+            fields_get = self.oerp.execute(self.osv['name'], 'fields_get')
         except error.ExecuteQueryError as exc:
             raise error.ExecuteQueryError(
                 u"There is no OSV class named '{0}'.".format(self.osv['name']))
-        cls_name = osv_name.replace('.', '_')
+        cls_name = self.osv['name'].replace('.', '_')
         cls_fields = {}
         for field_name, field_data in fields_get.items():
             if field_name not in Factory.fields_reserved:
@@ -112,14 +112,19 @@ class Factory(collections.MutableMapping):
                     vals[field_name] = getattr(obj,
                                                "_{0}".format(field_name))[0]
                 # One2Many fields
-                elif isinstance(field, fields.One2ManyField):
-                    pass #TODO write One2Many value
+                #elif isinstance(field, fields.One2ManyField):
+                #    print field.relation
+                #    for rel_id in getattr(obj, "_{0}".format(field_name)):
+                #        self.oerp.write(field.relation, rel_id,
+                #                        {'??FIELD??': obj.id})
+                #    #vals[field_name] = getattr(obj, "_{0}".format(field_name))
                 # Many2Many fields
                 elif isinstance(field, fields.Many2ManyField):
                     pass #TODO write Many2Many value
                 # All other fields
                 else:
                     vals[field_name] = getattr(obj, "_{0}".format(field_name))
+        print vals
         try:
             res = self.oerp.write(self.osv['name'], [obj.id], vals)
         except error.Error as exc:
@@ -156,7 +161,7 @@ class Factory(collections.MutableMapping):
     def reset(self, obj):
         """Cancel all changes by restoring field values with original values
         obtained during the last refresh (object instanciation or
-        last call to refresh() method).
+        last call to refresh(obj) method).
 
         """
         obj_info = self.objects[obj.id]
