@@ -6,7 +6,8 @@ Download and install instructions
 Python Package Index (PyPI)
 ---------------------------
 
-You can download the package from the `Python Package Index <http://TODO>`_ or install the latest release this way::
+You can download the package from the `Python Package Index <http://TODO>`_ or
+install the latest release this way::
 
    $ easy_install oerplib
 

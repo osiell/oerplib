@@ -53,6 +53,9 @@ class OERP(collections.MutableMapping):
             raise error.LoginError(u"No database specified")
         try:
             user_id = self.sock_common.login(self.database, user, passwd)
+        except xmlrpclib.Fault as exc:
+            #NOTE: exc.faultCode is in unicode
+            raise error.LoginError(u"{0}".format(repr(exc.faultCode)))
         except socket.error as exc:
             raise error.LoginError(u"{0}".format(exc.strerror))
         else:
