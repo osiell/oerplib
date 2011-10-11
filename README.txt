@@ -3,10 +3,12 @@
 OERPLib
 =======
 
-`OERPLib` aims to provide an easy way to pilot remotely an `OpenERP` server.
+`OERPLib` is a client library to OpenERP server. It aims to provide an easy way
+to remotely pilot an `OpenERP` server.
 In addition to supporting ``create``, ``read``, ``write``, ``unlink`` and
 ``search`` operations, this library is also able to generate objects which are
-somewhat similar to OSV server-side objects and manipulate them while hiding
+somewhat similar to the browsable objects available on OpenERP server via the
+implementation of the ``browse`` method, and manipulate them while hiding
 XML-RPC queries.
 Retrieve reports and execute workflow queries are also possible.
 
@@ -42,6 +44,11 @@ How does it work? See below::
     oerp.write(order)
 
 See the documentation for more details.
+
+Supported OpenERP versions
+--------------------------
+
+OERPLib is known to work with OpenERP server v5 and v6.
 
 Generate the documentation
 --------------------------

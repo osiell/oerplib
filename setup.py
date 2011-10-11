@@ -5,7 +5,7 @@ from distutils.core import setup
 name = 'OERPLib'
 version = '0.3'
 release = '0.3.0'
-description = 'Python library which allows to easily interact with a remote OpenERP server via XML-RPC.'
+description = 'OpenERP client library which allows to easily interact with an OpenERP server.'
 author = u"ABF Osiell - Sébastien Alix"
 author_email = 'sebastien.alix@osiell.com'
 url = 'http://www.osiell.com/'
