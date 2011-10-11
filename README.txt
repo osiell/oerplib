@@ -63,3 +63,8 @@ Bugs or suggestions
 Please, feel free to report bugs or suggestions in the `Bug Tracker
 <https://bitbucket.org/SebAlix/python-oerplib/issues?status=new&status=open>`_!
 
+Changes in this version
+-----------------------
+
+Consult the ``CHANGES.txt`` file.
+
