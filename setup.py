@@ -9,8 +9,8 @@ description = 'Python library which allows to easily interact with a remote Open
 author = u"ABF Osiell - Sébastien Alix"
 author_email = 'sebastien.alix@osiell.com'
 url = 'http://www.osiell.com/'
-#download_url = 'http://pypi.python.org/packages/source/o/oerplib/oerplib-%s.tar.gz' % version,
-download_url = 'https://bitbucket.org/SebAlix/python-oerplib/downloads'
+download_url = 'http://pypi.python.org/packages/source/O/OERPLib/OERPLib-%s.tar.gz' % release,
+#download_url = 'https://bitbucket.org/SebAlix/python-oerplib/downloads'
 license = 'LGPL v3'
 
 cmdclass = {}
