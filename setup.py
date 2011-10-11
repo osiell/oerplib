@@ -44,6 +44,12 @@ setup(name=name,
       license=license,
       cmdclass=cmdclass,
       command_options=command_options,
+      classifiers=[
+          "Intended Audience :: Developers",
+          "Programming Language :: Python",
+          "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
+          "Topic :: Software Development :: Libraries :: Python Modules",
+          ],
       )
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
