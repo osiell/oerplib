@@ -65,6 +65,11 @@ Contents
     tutorials
     api_reference
 
+Supported OpenERP versions
+--------------------------
+
+`OERPLib` is known to work with OpenERP server v5 and v6.
+
 Supported Python versions
 -------------------------
 
