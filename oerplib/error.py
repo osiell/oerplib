@@ -35,6 +35,10 @@ class ReportError(Error):
     pass
 
 
+class InternalError(Error):
+    pass
+
+
 class NotAllowedError(Error):
     def __init__(self, message):
         super(NotAllowedError, self).__init__(message)

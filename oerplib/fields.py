@@ -116,16 +116,16 @@ class Many2OneField(BaseField):
     def get_property(self):
         def getter(obj):
             if getattr(obj, "_{0}".format(self.name)):
-                return obj.__class__._oerp.browse(
-                    self.relation,
-                    getattr(obj, "_{0}".format(self.name))[0]
-                )
+                return obj.__class__.__oerp__.browse(
+                        self.relation,
+                        getattr(obj, "_{0}".format(self.name))[0]
+                    )
 
         def setter(obj, value):
             if isinstance(value, OSV_CLASS):
                 o_rel = value
             elif is_int(value):
-                o_rel = obj.__class__._oerp.browse(self.relation, value)
+                o_rel = obj.__class__.__oerp__.browse(self.relation, value)
             else:
                 raise ValueError(u"Value supplied has to be an integer or"
                                  " a browse_record object.")
@@ -178,7 +178,7 @@ class One2ManyField(BaseField):
         #        if isinstance(v, OSV_CLASS):
         #            o_rel = v
         #        elif is_int(v):
-        #            o_rel = obj.__class__._oerp.browse(self.relation, v)
+        #            o_rel = obj.__class__.__oerp__.browse(self.relation, v)
         #        else:
         #            raise ValueError(u"Value supplied have to be an integer or"
         #                             " a browse_record object.")

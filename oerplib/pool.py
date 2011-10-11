@@ -34,6 +34,9 @@ class OSVPool(collections.MutableMapping):
         corresponding to the OSV class supplied.
 
         """
+        if osv not in self._factories_by_osv_class:
+            raise error.InternalError(u"The class of this object is no longer"
+                                      " referenced.")
         return self._factories_by_osv_class[osv]
 
     def __str__(self):
@@ -51,6 +54,8 @@ class OSVPool(collections.MutableMapping):
     # ---------------------------- #
 
     def __delitem__(self, osv_name):
+        osv_class = self._factories_by_osv_name[osv_name].osv['class']
+        del self._factories_by_osv_class[osv_class]
         self._factories_by_osv_name[osv_name].clear()
         del self._factories_by_osv_name[osv_name]
         #raise error.NotAllowedError(u"Operation not supported")

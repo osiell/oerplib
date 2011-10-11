@@ -1,5 +1,5 @@
-v0.3.0, 2011-10-XX:
-    - Change ID field of browsable objects to readonly
+v0.3.0, 2011-10-11:
+    - ID field of browsable objects is readonly
     - Unable to perform refresh/reset/write and unlink operations on locally
       deprecated browsable objects
     - String representation of browsable objects is of the form
@@ -8,7 +8,7 @@ v0.3.0, 2011-10-XX:
     - 'join' parameter of the 'OERP.browse' method has been deleted
     - 'refresh' option of the 'OERP.browse' method is set to True by default
     - Update operation on One2Many field is no longer planned (setter property
-      is desactivated)
+      deleted)
 
 v0.2.0, 2011-09-30:
     - Updated tutorials in the documentation

@@ -60,8 +60,8 @@ class OERP(collections.MutableMapping):
             raise error.LoginError(u"{0}".format(exc.strerror))
         else:
             if user_id:
-                # Create a fake User object just to execute the
-                # first query : fetch the real User object
+                #NOTE: create a fake User object just to execute the
+                # first query : browse the real User object
                 self.user = type('User', (object,), {
                                     'id': user_id,
                                     'login': user,
@@ -153,7 +153,7 @@ class OERP(collections.MutableMapping):
         content = base64.decodestring(data['result'])
         if data.get('code') == 'zlib':
             content = zlib.decompress(content)
-    
+
         if data['format'] in ['pdf', 'html', 'doc', 'xls',
                               'sxw', 'odt', 'tiff']:
             if data['format'] == 'html' and os.name == 'nt':
@@ -257,6 +257,9 @@ class OERP(collections.MutableMapping):
         if not isinstance(osv_obj, factory.OSV):
             raise ValueError(u"Value is not an instance of OSV class")
         return self.pool.get_by_class(osv_obj.__class__).osv['name']
+
+    def __str__(self):
+        return str(self.pool)
 
     # ---------------------------- #
     # -- MutableMapping methods -- #

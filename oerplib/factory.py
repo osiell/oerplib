@@ -39,7 +39,7 @@ def check_obj(func):
     def wrapper(self, obj):
         if obj.id not in self.objects:
             raise ValueError("This object is no longer referenced,"
-                                          "operation canceled.")
+                             " operation canceled.")
         return func(self, obj)
     return wrapper
 
@@ -65,8 +65,8 @@ class Factory(collections.MutableMapping):
             except error.ExecuteQueryError as exc:
                 del self.objects[obj_id]
                 raise error.ExecuteQueryError(
-                    u"There is no '{0}' record with ID {1}.".format(
-                        self.osv['name'], obj_id))
+                    u"There is no '{osv_name}' record with ID {obj_id}.".format(
+                        osv_name=self.osv['name'], obj_id=obj_id))
         if refresh:
             self.refresh(self.objects[obj_id]['instance'])
         return self.objects[obj_id]['instance']
@@ -96,7 +96,7 @@ class Factory(collections.MutableMapping):
             cls_fields['name'] = fields.generate_field(self, 'name', field_data)
 
         cls = type(cls_name, (OSV,), {})
-        cls._oerp = self.oerp
+        cls.__oerp__ = self.oerp
         return cls, cls_fields
 
     @check_obj
@@ -124,7 +124,6 @@ class Factory(collections.MutableMapping):
                 # All other fields
                 else:
                     vals[field_name] = getattr(obj, "_{0}".format(field_name))
-        print vals
         try:
             res = self.oerp.write(self.osv['name'], [obj.id], vals)
         except error.Error as exc:
