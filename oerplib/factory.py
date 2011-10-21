@@ -145,7 +145,7 @@ class Factory(collections.MutableMapping):
         # Special field 'name' have to be filled with the value returned
         # by the 'name_get' method
         try:
-            name = self.oerp.execute(self.osv['name'], 'name_get', obj.id)
+            name = self.oerp.execute(self.osv['name'], 'name_get', [obj.id])
         except Exception as exc:
             pass
         else:
