@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 """This module contains classes representing the fields supported by OpenObject.
+A field is a Python descriptor which defines getter/setter methods for
+its related attribute.
 """
 import datetime
 
@@ -29,8 +31,10 @@ class BaseField(object):
         self.help = 'help' in data and data['help'] or False
         self.states = 'states' in data and data['states'] or False
 
-    def get_property(self):
-        """Generate a Python class property corresponding to the field type."""
+    def __get__(self, instance, owner):
+        pass
+
+    def __set__(self, instance, value):
         pass
 
     def check_value(self, value):
@@ -57,16 +61,13 @@ class SelectionField(BaseField):
         super(SelectionField, self).__init__(factory, name, data)
         self.selection = 'selection' in data and data['selection'] or False
 
-    def get_property(self):
-        def getter(obj):
-            return getattr(obj, "_{0}".format(self.name))
+    def __get__(self, instance, owner):
+        return getattr(instance, "_{0}".format(self.name))
 
-        def setter(obj, value):
-            value = self.check_value(value)
-            setattr(obj, "_{0}".format(self.name), value)
-            self.factory.objects[obj.id]['fields_updated'].append(self.name)
-
-        return property(getter, setter)
+    def __set__(self, instance, value):
+        value = self.check_value(value)
+        setattr(instance, "_{0}".format(self.name), value)
+        self.factory.objects[instance.id]['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(SelectionField, self).check_value(value)
@@ -90,15 +91,13 @@ class Many2ManyField(BaseField):
         self.context = 'context' in data and data['context'] or False
         self.domain = 'domain' in data and data['domain'] or False
 
-    def get_property(self):
-        def getter(obj):
-            return [self.factory.oerp.browse(self.relation, o_id) 
-                for o_id in self.factory.objects[obj.id]['raw_data'][self.name]]
+    def __get__(self, instance, owner):
+        return [self.factory.oerp.browse(self.relation, o_id)
+            for o_id in self.factory.objects[instance.id]['raw_data'][self.name]
+            ]
 
-        def setter(obj, value):
-            raise error.NotAllowedError(u"Not implemented yet")
-
-        return property(getter, setter)
+    def __set__(self, instance, value):
+        raise error.NotAllowedError(u"Not implemented yet")
 
     def check_value(self, value):
         #TODO Many2Many.check_value()
@@ -113,27 +112,24 @@ class Many2OneField(BaseField):
         self.context = 'context' in data and data['context'] or False
         self.domain = 'domain' in data and data['domain'] or False
 
-    def get_property(self):
-        def getter(obj):
-            if getattr(obj, "_{0}".format(self.name)):
-                return obj.__class__.__oerp__.browse(
-                        self.relation,
-                        getattr(obj, "_{0}".format(self.name))[0]
-                    )
+    def __get__(self, instance, owner):
+        if getattr(instance, "_{0}".format(self.name)):
+            return instance.__class__.__oerp__.browse(
+                    self.relation,
+                    getattr(instance, "_{0}".format(self.name))[0]
+                )
 
-        def setter(obj, value):
-            if isinstance(value, OSV_CLASS):
-                o_rel = value
-            elif is_int(value):
-                o_rel = obj.__class__.__oerp__.browse(self.relation, value)
-            else:
-                raise ValueError(u"Value supplied has to be an integer or"
-                                 " a browse_record object.")
-            o_rel = self.check_value(o_rel)
-            setattr(obj, "_{0}".format(self.name), [o_rel.id, o_rel.name])
-            self.factory.objects[obj.id]['fields_updated'].append(self.name)
-
-        return property(getter, setter)
+    def __set__(self, instance, value):
+        if isinstance(value, OSV_CLASS):
+            o_rel = value
+        elif is_int(value):
+            o_rel = instance.__class__.__oerp__.browse(self.relation, value)
+        else:
+            raise ValueError(u"Value supplied has to be an integer or"
+                             " a browse_record object.")
+        o_rel = self.check_value(o_rel)
+        setattr(instance, "_{0}".format(self.name), [o_rel.id, o_rel.name])
+        self.factory.objects[instance.id]['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(Many2OneField, self).check_value(value)
@@ -157,37 +153,12 @@ class One2ManyField(BaseField):
         self.context = 'context' in data and data['context'] or False
         self.domain = 'domain' in data and data['domain'] or False
 
-    def get_property(self):
-        def getter(obj):
-            return [self.factory.oerp.browse(self.relation, o_id) 
-                for o_id in self.factory.objects[obj.id]['raw_data'][self.name]]
+    def __get__(self, instance, owner):
+        return [self.factory.oerp.browse(self.relation, o_id)
+            for o_id in self.factory.objects[instance.id]['raw_data'][self.name]
+            ]
 
-        #def setter(obj, value):
-        #    # Value have to be iterable
-        #    try:
-        #        iter(value)
-        #    except:
-        #        raise ValueError(u"The value '{value}' supplied is not iterable"
-        #                         .format(value=value,
-        #                                 selection=selection,
-        #                                 field_name=self.name,
-        #                        ))
-        #    # Check integrity
-        #    rel_ids = []
-        #    for v in value:
-        #        if isinstance(v, OSV_CLASS):
-        #            o_rel = v
-        #        elif is_int(v):
-        #            o_rel = obj.__class__.__oerp__.browse(self.relation, v)
-        #        else:
-        #            raise ValueError(u"Value supplied have to be an integer or"
-        #                             " a browse_record object.")
-        #        o_rel = self.check_value(o_rel)
-        #        rel_ids.append(o_rel.id)
-        #    setattr(obj, "_{0}".format(self.name), rel_ids)
-        #    self.factory.objects[obj.id]['fields_updated'].append(self.name)
-
-        return property(getter)
+    #def __set__(self, instance, value):
 
     #def check_value(self, value):
     #    super(One2ManyField, self).check_value(value)
@@ -209,21 +180,18 @@ class DateField(BaseField):
     def __init__(self, factory, name, data):
         super(DateField, self).__init__(factory, name, data)
 
-    def get_property(self):
-        def getter(obj):
-            value = getattr(obj, "_{0}".format(self.name))
-            try:
-                res = datetime.datetime.strptime(value, self.pattern).date()
-            except Exception:
-                res = value
-            return res
+    def __get__(self, instance, owner):
+        value = getattr(instance, "_{0}".format(self.name))
+        try:
+            res = datetime.datetime.strptime(value, self.pattern).date()
+        except Exception:
+            res = value
+        return res
 
-        def setter(obj, value):
-            value = self.check_value(value)
-            setattr(obj, "_{0}".format(self.name), value)
-            self.factory.objects[obj.id]['fields_updated'].append(self.name)
-
-        return property(getter, setter)
+    def __set__(self, instance, value):
+        value = self.check_value(value)
+        setattr(obj, "_{0}".format(self.name), value)
+        self.factory.objects[instance.id]['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(DateField, self).check_value(value)
@@ -247,21 +215,18 @@ class DateTimeField(BaseField):
     def __init__(self, factory, name, data):
         super(DateTimeField, self).__init__(factory, name, data)
 
-    def get_property(self):
-        def getter(obj):
-            value = getattr(obj, "_{0}".format(self.name))
-            try:
-                res = datetime.datetime.strptime(value, self.pattern)
-            except Exception:
-                res = value
-            return res
+    def __get__(self, instance, owner):
+        value = getattr(instance, "_{0}".format(self.name))
+        try:
+            res = datetime.datetime.strptime(value, self.pattern)
+        except Exception:
+            res = value
+        return res
 
-        def setter(obj, value):
-            value = self.check_value(value)
-            setattr(obj, "_{0}".format(self.name), value)
-            self.factory.objects[obj.id]['fields_updated'].append(self.name)
-
-        return property(getter, setter)
+    def __set__(self, instance, value):
+        value = self.check_value(value)
+        setattr(instance, "_{0}".format(self.name), value)
+        self.factory.objects[instance.id]['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(DateTimeField, self).check_value(value)
@@ -292,16 +257,13 @@ class ValueField(BaseField):
     def __init__(self, factory, name, data):
         super(ValueField, self).__init__(factory, name, data)
 
-    def get_property(self):
-        def getter(obj):
-            return getattr(obj, "_{0}".format(self.name))
+    def __get__(self, instance, owner):
+        return getattr(instance, "_{0}".format(self.name))
 
-        def setter(obj, value):
-            value = self.check_value(value)
-            setattr(obj, "_{0}".format(self.name), value)
-            self.factory.objects[obj.id]['fields_updated'].append(self.name)
-
-        return property(getter, setter)
+    def __set__(self, instance, value):
+        value = self.check_value(value)
+        setattr(instance, "_{0}".format(self.name), value)
+        self.factory.objects[instance.id]['fields_updated'].append(self.name)
 
 
 def generate_field(factory, name, data):

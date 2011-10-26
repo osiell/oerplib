@@ -171,7 +171,7 @@ class Factory(collections.MutableMapping):
                 setattr(obj, "_{0}".format(field.name),
                         obj_info['raw_data'][field.name])
                 setattr(obj.__class__, field.name,
-                        field.get_property())
+                        field)
 
     @check_obj
     def unlink(self, obj):
