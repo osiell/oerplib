@@ -27,8 +27,8 @@ class Factory(collections.MutableMapping):
         self.objects = {}
         self.osv_class = self._generate_osv_class(osv_name)
 
-    def generate_browse_record(self, obj_id, refresh=True):
-        """Generate an instance of the OSV class."""
+    def browse(self, obj_id, refresh=True):
+        """Generate an instance of the OSV class (called 'browse_record')."""
         if obj_id not in self.objects:
             self.objects[obj_id] = {}
             try:
@@ -164,7 +164,7 @@ class Factory(collections.MutableMapping):
         #raise error.NotAllowedError(u"Operation not supported")
 
     def __getitem__(self, obj_id):
-        return self.generate_browse_record(obj_id)
+        return self.browse(obj_id)
 
     def __iter__(self):
         for obj_id in self.objects:

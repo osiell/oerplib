@@ -179,7 +179,7 @@ class OERP(collections.MutableMapping):
             return [self.browse(osv_name, o_id, refresh)
                     for o_id in ids]
         else:
-            return self.pool.get(osv_name).generate_browse_record(ids, refresh)
+            return self.pool.get(osv_name).browse(ids, refresh)
 
     def search(self, osv_name, args):
         """Return a list of IDs of records matching the given criteria in
@@ -197,13 +197,15 @@ class OERP(collections.MutableMapping):
         """
         return self.execute(osv_name, 'create', vals)
 
-    def read(self, osv_name, ids, fields=[]):
+    def read(self, osv_name, ids, fields=None):
         """Return the ID of each record with the values
         of the requested fields ``fields`` from the OSV server class
         ``osv_name``. If ``fields`` is not specified, all fields values
         will be retrieved.
 
         """
+        if fields is None:
+            fields = []
         return self.execute(osv_name, 'read', ids, fields)
 
     def write(self, obj, ids=None, vals=None):
