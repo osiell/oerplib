@@ -9,9 +9,7 @@ import collections
 import traceback, sys
 import base64, zlib, tempfile
 
-from oerplib import error
-from oerplib import factory
-from oerplib import pool
+from oerplib import error, osv, pool
 
 class OERP(collections.MutableMapping):
     """Return a new instance of the :class:`OERP` class.
@@ -208,7 +206,7 @@ class OERP(collections.MutableMapping):
         """
         return self.execute(osv_name, 'read', ids, fields)
 
-    def write(self, osv, ids=[], vals={}):
+    def write(self, obj, ids=None, vals=None):
         """Update records with given IDs (e.g. ``[1, 42, ...]``)
         with the given values contained in the ``vals`` dictionary
         (e.g. ``{'name': 'John', ...}``).
@@ -220,11 +218,15 @@ class OERP(collections.MutableMapping):
         Return True.
 
         """
-        if isinstance(osv, factory.OSV):
-            return self.pool.get_by_class(osv.__class__).write(osv)
-        return self.execute(osv, 'write', ids, vals)
+        if ids is None:
+            ids = []
+        if vals is None:
+            vals = {}
+        if isinstance(obj, osv.OSV):
+            return self.pool.get_by_class(obj.__class__).write(obj)
+        return self.execute(obj, 'write', ids, vals)
 
-    def unlink(self, osv, ids=[]):
+    def unlink(self, osv, ids=None):
         """Delete records with the given IDs (e.g. ``[1, 42, ...]``).
         ``osv`` parameter may be the OSV server class name
         (e.g. ``'sale.order'``) or an OSV instance (browsable object).
@@ -232,7 +234,9 @@ class OERP(collections.MutableMapping):
         Return True.
 
         """
-        if isinstance(osv, factory.OSV):
+        if ids is None:
+            ids = []
+        if isinstance(osv, osv.OSV):
             return self.pool.get_by_class(osv.__class__).unlink(osv)
         return self.execute(osv, 'unlink', ids)
 
@@ -254,9 +258,10 @@ class OERP(collections.MutableMapping):
 
     def get_osv_name(self, osv_obj):
         """Return the OSV name of the OSV instance ``osv_obj`` supplied."""
-        if not isinstance(osv_obj, factory.OSV):
+        if not isinstance(osv_obj, osv.OSV):
             raise ValueError(u"Value is not an instance of OSV class")
-        return self.pool.get_by_class(osv_obj.__class__).osv['name']
+        return osv_obj.__osv__['name']
+        #return self.pool.get_by_class(osv_obj.__class__).osv['name']
 
     def __str__(self):
         return str(self.pool)

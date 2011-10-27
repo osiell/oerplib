@@ -5,8 +5,7 @@ its related attribute.
 """
 import datetime
 
-from oerplib import error
-OSV_CLASS = None
+from oerplib import error, osv
 
 def is_int(value):
     try:
@@ -92,7 +91,7 @@ class Many2ManyField(BaseField):
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
-        return [self.factory.oerp.browse(self.relation, o_id)
+        return [instance.__oerp__.browse(self.relation, o_id)
             for o_id in self.factory.objects[instance.id]['raw_data'][self.name]
             ]
 
@@ -120,7 +119,7 @@ class Many2OneField(BaseField):
                 )
 
     def __set__(self, instance, value):
-        if isinstance(value, OSV_CLASS):
+        if isinstance(value, osv.OSV):
             o_rel = value
         elif is_int(value):
             o_rel = instance.__class__.__oerp__.browse(self.relation, value)
@@ -133,13 +132,11 @@ class Many2OneField(BaseField):
 
     def check_value(self, value):
         super(Many2OneField, self).check_value(value)
-        oerp = self.factory.oerp
-        value_factory = oerp.pool.get_by_class(value.__class__)
-        if value_factory.osv['name'] != self.relation:
+        if value.__osv__['name'] != self.relation:
             raise ValueError(
                 (u"Instance of '{osv_name}' supplied doesn't match with the " +\
                 u"relation '{relation}' of the '{field_name}' field.").format(
-                    osv_name=value_factory.osv['name'],
+                    osv_name=value.__osv__['name'],
                     relation=self.relation,
                     field_name=self.name))
         return value
@@ -154,7 +151,7 @@ class One2ManyField(BaseField):
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
-        return [self.factory.oerp.browse(self.relation, o_id)
+        return [instance.__oerp__.browse(self.relation, o_id)
             for o_id in self.factory.objects[instance.id]['raw_data'][self.name]
             ]
 

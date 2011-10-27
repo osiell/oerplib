@@ -26,7 +26,7 @@ class OSVPool(collections.MutableMapping):
         if osv_name not in self._factories_by_osv_name:
             facto = factory.Factory(self.oerp, osv_name)
             self._factories_by_osv_name[osv_name] = facto
-            self._factories_by_osv_class[facto.osv['class']] = facto
+            self._factories_by_osv_class[facto.osv_class] = facto
         return self._factories_by_osv_name[osv_name]
 
     def get_by_class(self, osv):
@@ -54,7 +54,7 @@ class OSVPool(collections.MutableMapping):
     # ---------------------------- #
 
     def __delitem__(self, osv_name):
-        osv_class = self._factories_by_osv_name[osv_name].osv['class']
+        osv_class = self._factories_by_osv_name[osv_name].osv_class
         del self._factories_by_osv_class[osv_class]
         self._factories_by_osv_name[osv_name].clear()
         del self._factories_by_osv_name[osv_name]
