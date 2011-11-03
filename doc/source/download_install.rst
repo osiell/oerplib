@@ -36,16 +36,3 @@ The project is hosted in a BitBucket repository. To get the code, just type::
 
     $ hg clone https://bitbucket.org/SebAlix/python-oerplib
 
-..
-    
-    On Debian-based systems
-    -----------------------
-    
-    On Debian, just type in a root shell::
-    
-        # apt-get install python-oerplib
-    
-    On Ubuntu::
-    
-        $ sudo apt-get install python-oerplib
-
