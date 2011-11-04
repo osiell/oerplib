@@ -33,7 +33,7 @@ class Factory(collections.MutableMapping):
             self.objects[obj_id] = {}
             try:
                 self.objects[obj_id]['instance'] = self.osv_class(obj_id)
-            except error.ExecuteQueryError as exc:
+            except error.ExecuteQueryError:
                 del self.objects[obj_id]
                 raise error.ExecuteQueryError(
                     u"There is no '{osv_name}' record with ID {obj_id}.".format(
@@ -50,16 +50,16 @@ class Factory(collections.MutableMapping):
         # Retrieve server fields info and generate corresponding local fields
         try:
             fields_get = self.oerp.execute(osv_name, 'fields_get')
-        except error.ExecuteQueryError as exc:
+        except error.ExecuteQueryError:
             raise error.ExecuteQueryError(
                 u"There is no OSV class named '{0}'.".format(osv_name))
         cls_name = osv_name.replace('.', '_')
         cls_fields = {}
         for field_name, field_data in fields_get.items():
             if field_name not in Factory.fields_reserved:
-               cls_fields[field_name] = fields.generate_field(self,
-                                                              field_name,
-                                                              field_data)
+                cls_fields[field_name] = fields.generate_field(self,
+                                                               field_name,
+                                                               field_data)
         # Case where no field 'name' exists, we generate one (which will be
         # in readonly mode) in purpose to be filled with the 'name_get' method
         if 'name' not in cls_fields:
@@ -99,7 +99,7 @@ class Factory(collections.MutableMapping):
         try:
             res = self.oerp.write(obj.__osv__['name'], [obj.id], vals)
         except error.Error as exc:
-            raise
+            raise exc
         else:
             # Update raw_data dictionary
             self.refresh(obj)
@@ -118,13 +118,13 @@ class Factory(collections.MutableMapping):
         # by the 'name_get' method
         try:
             name = self.oerp.execute(obj.__osv__['name'], 'name_get', [obj.id])
-        except Exception as exc:
+        except error.Error:
             pass
         else:
             if name:
                 try:
                     obj_info['raw_data']['name'] = ast.literal_eval(name[0][1])
-                except:
+                except Exception:
                     obj_info['raw_data']['name'] = name[0][1]
         self.reset(obj)
 

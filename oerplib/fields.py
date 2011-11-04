@@ -11,7 +11,7 @@ def is_int(value):
     try:
         int(value)
         return True
-    except Exception as exc:
+    except ValueError:
         return False
 
 
@@ -181,13 +181,13 @@ class DateField(BaseField):
         value = getattr(instance, "_{0}".format(self.name))
         try:
             res = datetime.datetime.strptime(value, self.pattern).date()
-        except Exception:
+        except ValueError:
             res = value
         return res
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        setattr(obj, "_{0}".format(self.name), value)
+        setattr(instance, "_{0}".format(self.name), value)
         self.factory.objects[instance.id]['fields_updated'].append(self.name)
 
     def check_value(self, value):
@@ -216,7 +216,7 @@ class DateTimeField(BaseField):
         value = getattr(instance, "_{0}".format(self.name))
         try:
             res = datetime.datetime.strptime(value, self.pattern)
-        except Exception:
+        except ValueError:
             res = value
         return res
 

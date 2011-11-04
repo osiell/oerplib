@@ -18,13 +18,13 @@ class DMS(FTP, object):
     def login(self, user="anonymous", pwd="", acct=""):
         try:
             super(DMS, self).connect(self.server, self.port)
-        except Exception as exc:
+        except Exception:
             raise error.DMSConnectionError(u"FTP connection failed. " + \
                                 u"Check the DMS service of OpenERP server " + \
                                 u"or connection settings")
         try:
             super(DMS, self).login(user, pwd, acct)
-        except Exception as exc:
+        except Exception:
             raise error.DMSConnectionError(u"Wrong login ID or password")
 
     def get(self, file_name):

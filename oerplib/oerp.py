@@ -6,7 +6,6 @@ import xmlrpclib, socket
 import os
 import time
 import collections
-import traceback, sys
 import base64, zlib, tempfile
 
 from oerplib import error, osv, pool
@@ -30,7 +29,13 @@ class OERP(collections.MutableMapping):
         self.port = port
         self.database = self.database_default = database
         self.pool = pool.OSVPool(self)
-        self.user = False
+        #NOTE: create a fake User object just to execute the
+        # first query : browse the real User object
+        self.user = type('User', (object,), {
+                            'id': None,
+                            'login': None,
+                            'password': None,
+                        })
         self.xmlrpc_url = 'http://{server}:{port}/xmlrpc'.format(
                 server=self.server,
                 port=self.port)
@@ -58,13 +63,16 @@ class OERP(collections.MutableMapping):
             raise error.LoginError(u"{0}".format(exc.strerror))
         else:
             if user_id:
-                #NOTE: create a fake User object just to execute the
-                # first query : browse the real User object
-                self.user = type('User', (object,), {
-                                    'id': user_id,
-                                    'login': user,
-                                    'password': passwd,
-                                })
+                ##NOTE: create a fake User object just to execute the
+                ## first query : browse the real User object
+                #self.user = type('User', (object,), {
+                #                    'id': user_id,
+                #                    'login': user,
+                #                    'password': passwd,
+                #                })
+                self.user.id = user_id
+                self.user.login = user
+                self.user.password = passwd
                 self.user = self.browse('res.users', user_id)
                 return self.user
             else:
@@ -105,7 +113,7 @@ class OERP(collections.MutableMapping):
             return self.sock.exec_workflow(
                         self.database, self.user.id,
                         self.user.password, *args)
-        except Exception as exc:
+        except Exception:
             raise error.WorkflowQueryError(
                         u"Workflow query has failed")
 
@@ -208,7 +216,7 @@ class OERP(collections.MutableMapping):
             fields = []
         return self.execute(osv_name, 'read', ids, fields)
 
-    def write(self, obj, ids=None, vals=None):
+    def write(self, osv_obj, ids=None, vals=None):
         """Update records with given IDs (e.g. ``[1, 42, ...]``)
         with the given values contained in the ``vals`` dictionary
         (e.g. ``{'name': 'John', ...}``).
@@ -224,11 +232,11 @@ class OERP(collections.MutableMapping):
             ids = []
         if vals is None:
             vals = {}
-        if isinstance(obj, osv.OSV):
-            return self.pool.get_by_class(obj.__class__).write(obj)
-        return self.execute(obj, 'write', ids, vals)
+        if isinstance(osv_obj, osv.OSV):
+            return self.pool.get_by_class(osv_obj.__class__).write(osv_obj)
+        return self.execute(osv_obj, 'write', ids, vals)
 
-    def unlink(self, osv, ids=None):
+    def unlink(self, osv_obj, ids=None):
         """Delete records with the given IDs (e.g. ``[1, 42, ...]``).
         ``osv`` parameter may be the OSV server class name
         (e.g. ``'sale.order'``) or an OSV instance (browsable object).
@@ -238,9 +246,9 @@ class OERP(collections.MutableMapping):
         """
         if ids is None:
             ids = []
-        if isinstance(osv, osv.OSV):
-            return self.pool.get_by_class(osv.__class__).unlink(osv)
-        return self.execute(osv, 'unlink', ids)
+        if isinstance(osv_obj, osv.OSV):
+            return self.pool.get(osv_obj.__osv__['name']).unlink(osv_obj)
+        return self.execute(osv_obj, 'unlink', ids)
 
     def refresh(self, osv_obj):
         """Restore original values of the object ``osv_obj`` from data

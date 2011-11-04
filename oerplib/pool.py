@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-"""
+"""This module contains the OSVPool class which manage OSV classes.
 """
 import collections
 
@@ -18,6 +18,7 @@ class OSVPool(collections.MutableMapping):
         self._factories_by_osv_name = {}
         self._factories_by_osv_class = {}
 
+    #TODO: change method name, get already implemented by MutableMapping
     def get(self, osv_name):
         """Return a factory which is able to create browsable objects
         corresponding to the OSV name supplied.
