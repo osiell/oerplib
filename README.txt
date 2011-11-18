@@ -58,7 +58,7 @@ generator::
 
     easy_install -U sphinx
 
-Now, you can use the ``build_sphinx`` option of the ``setup.py``::
+Then, you can use the ``build_sphinx`` option of the ``setup.py``::
 
     python setup.py build_sphinx
 
