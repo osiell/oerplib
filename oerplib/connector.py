@@ -17,9 +17,6 @@ import xmlrpclib, socket
 import abc
 import time
 
-#FIXME: try to not depend on the oerplib.error module
-from oerplib import error
-
 def get_connector(server, port, protocol='xmlrpc'):
     """Return a Connector class to interact with an OpenERP server.
     This one use either the XMLRPC protocol (by default) or NetRPC,
@@ -76,12 +73,12 @@ class _ConnectorXMLRPC(_Connector):
     def login(self, user, passwd, database):
         try:
             user_id = self.sock_common.login(database, user, passwd)
-        #FIXME: review exceptions management
         except xmlrpclib.Fault as exc:
-            #NOTE: exc.faultCode is in unicode
-            raise error.LoginError(u"{0}".format(repr(exc.faultCode)))
+            #NOTE: exc.faultCode is in unicode and Exception doesn't
+            # handle unicode object
+            raise Exception(repr(exc.faultCode))
         except socket.error as exc:
-            raise error.LoginError(u"{0}".format(exc.strerror))
+            raise Exception(exc.strerror)
         else:
             return user_id
 
@@ -91,16 +88,15 @@ class _ConnectorXMLRPC(_Connector):
                                      osv_name, method, *args)
         #FIXME: review exceptions management
         except xmlrpclib.Error as exc:
-            raise error.ExecuteQueryError(u"{0}: {1}".format(
-                                            exc.faultCode or "Unknown error",
-                                            exc.faultString))
+            raise Exception("{0}: {1}".format(exc.faultCode or "Unknown error",
+                                               exc.faultString))
 
     def exec_workflow(self, database, uid, upasswd, *args):
         #TODO need to be tested + fix exception
         try:
             return self.sock.exec_workflow(database, uid, upasswd, *args)
         except Exception:
-            raise error.WorkflowQueryError(u"Workflow query has failed")
+            raise Exception("Workflow query has failed")
 
     def exec_report(self, database, uid, upasswd, report_name,
                     osv_name, obj_id, report_type='pdf'):
@@ -110,7 +106,7 @@ class _ConnectorXMLRPC(_Connector):
             report_id = self.sock_report.report(database, uid, upasswd,
                                                 report_name, [obj_id], data)
         except xmlrpclib.Error as exc:
-            raise error.ReportError(u"{0}".format(exc.faultCode))
+            raise Exception(exc.faultCode)
         state = False
         attempt = 0
         while not state:
@@ -118,14 +114,14 @@ class _ConnectorXMLRPC(_Connector):
                 pdf_data = self.sock_report.report_get(database,
                                                        uid, upasswd, report_id)
             except xmlrpclib.Error as exc:
-                raise error.ReportError(u"{0}".format(exc.faultString))
+                raise Exception(unicode(exc.faultString))
             state = pdf_data['state']
             if not state:
                 time.sleep(1)
                 attempt += 1
             if attempt > 200:
-                raise error.ReportError(u"Download time exceeded, " + \
-                                        u"the operation has been canceled.")
+                raise Exception("Download time exceeded, "
+                                "the operation has been canceled.")
         return pdf_data
 
 
@@ -134,8 +130,8 @@ class _ConnectorNetRPC(_Connector):
     #TODO _ConnectorNetRPC, to implement
     def __init__(self, server, port):
         super(_ConnectorNetRPC, self).__init__(server, port)
-        raise error.InternalError(u"NetRPC protocol will be implemented "
-                                  "in a future release. Stay tuned!")
+        raise Exception("NetRPC protocol will be implemented "
+                        "in a future release. Stay tuned!")
 
     def login(self, user, passwd, database=None):
         pass
