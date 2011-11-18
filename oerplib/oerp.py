@@ -2,13 +2,11 @@
 """This module contains the OERP class which manage the interaction with
 the OpenERP server.
 """
-import xmlrpclib, socket
 import os
-import time
 import collections
 import base64, zlib, tempfile
 
-from oerplib import error, osv, pool
+from oerplib import connector, error, osv, pool
 
 class OERP(collections.MutableMapping):
     """Return a new instance of the :class:`OERP` class.
@@ -24,7 +22,8 @@ class OERP(collections.MutableMapping):
 #    database    -- database name
 
 
-    def __init__(self, server, database=None, port=8069):
+    def __init__(self, server, database=None, port=8069, protocol='xmlrpc'):
+        self.connector = connector.get_connector(server, port, protocol)
         self.server = server
         self.port = port
         self.database = self.database_default = database
@@ -36,12 +35,6 @@ class OERP(collections.MutableMapping):
                             'login': None,
                             'password': None,
                         })
-        self.xmlrpc_url = 'http://{server}:{port}/xmlrpc'.format(
-                server=self.server,
-                port=self.port)
-        self.sock = xmlrpclib.ServerProxy(self.xmlrpc_url+'/object')
-        self.sock_report = xmlrpclib.ServerProxy(self.xmlrpc_url+'/report')
-        self.sock_common = xmlrpclib.ServerProxy(self.xmlrpc_url+'/common')
 
     def login(self, user, passwd, database=None):
         """Log in as the given ``user`` with the password ``passwd`` on the
@@ -51,25 +44,18 @@ class OERP(collections.MutableMapping):
         If no database is found, a LoginError exception will be raised.
 
         """
+        # Raise an error if no database was given
         self.database = database or self.database_default
         if not self.database:
             raise error.LoginError(u"No database specified")
+        # Get the user's ID and generate the corresponding User object
         try:
-            user_id = self.sock_common.login(self.database, user, passwd)
-        except xmlrpclib.Fault as exc:
-            #NOTE: exc.faultCode is in unicode
-            raise error.LoginError(u"{0}".format(repr(exc.faultCode)))
-        except socket.error as exc:
-            raise error.LoginError(u"{0}".format(exc.strerror))
+            user_id = self.connector.login(user, passwd, self.database)
+        except Exception as exc:
+            #TODO: OERP.login method, manage exception
+            raise error.LoginError(unicode(exc))
         else:
             if user_id:
-                ##NOTE: create a fake User object just to execute the
-                ## first query : browse the real User object
-                #self.user = type('User', (object,), {
-                #                    'id': user_id,
-                #                    'login': user,
-                #                    'password': passwd,
-                #                })
                 self.user.id = user_id
                 self.user.login = user
                 self.user.password = passwd
@@ -87,17 +73,18 @@ class OERP(collections.MutableMapping):
         ``osv_name``. ``*args`` parameters varies according to the method used.
 
         """
+        # Raise an error if no user is logged
         if not self.user:
             raise error.LoginError(
                 u"Have to be logged to be able to execute queries")
+        # Execute the query
         try:
-            return self.sock.execute(
-                        self.database, self.user.id,
-                        self.user.password, osv_name, method, *args)
-        except xmlrpclib.Error as exc:
-            raise error.ExecuteQueryError(u"{0}".format(exc.faultCode
-                                                        or "Unknown error"),
-                                          exc.faultString)
+            return self.connector.execute(self.database, self.user.id,
+                                          self.user.password, osv_name,
+                                          method, *args)
+        except Exception as exc:
+            #TODO: OERP.execute method, manage exception
+            raise error.ExecuteQueryError(unicode(exc))
 
     def exec_workflow(self, *args):
         """XMLRPC Workflow query.
@@ -105,17 +92,16 @@ class OERP(collections.MutableMapping):
         `WARNING: not sufficiently tested.`
 
         """
+        # Raise an error if no user is logged
         if not self.user:
             raise error.LoginError(
                 u"Have to be logged to be able to execute queries")
-        #TODO need to be tested + fix exception
+        # Execute the workflow query
         try:
-            return self.sock.exec_workflow(
-                        self.database, self.user.id,
-                        self.user.password, *args)
-        except Exception:
-            raise error.WorkflowQueryError(
-                        u"Workflow query has failed")
+            pass
+        except Exception as exc:
+            #TODO: OERP.exec_workflow method, manage exception
+            raise error.WorkflowQueryError(unicode(exc))
 
     def exec_report(self, report_name, osv_name, obj_id, report_type='pdf'):
         """Download a report from the OpenERP server via XMLRPC
@@ -124,30 +110,19 @@ class OERP(collections.MutableMapping):
         `WARNING: not sufficiently tested.`
 
         """
+        # Raise an error if no user is logged
         if not self.user:
             raise error.LoginError(
                 u"Have to be logged to be able to execute queries")
-        data = {'model': osv_name, 'id': obj_id, 'report_type': report_type}
+
         try:
-            report_id = self.sock_report.report(self.database, self.user.id,
-                    self.user.password, report_name, [obj_id], data)
-        except xmlrpclib.Error as exc:
-            raise error.ReportError(u"{0}".format(exc.faultCode))
-        state = False
-        attempt = 0
-        while not state:
-            try:
-                pdf_data = self.sock_report.report_get(self.database,
-                        self.user.id, self.user.password, report_id)
-            except xmlrpclib.Error as exc:
-                raise error.ReportError(u"{0}".format(exc.faultString))
-            state = pdf_data['state']
-            if not state:
-                time.sleep(1)
-                attempt += 1
-            if attempt > 200:
-                raise error.ReportError(u"Download time exceeded, " + \
-                                        u"the operation has been canceled.")
+            pdf_data = self.connector.exec_report(self.database, self.user.id,
+                                                  self.user.password,
+                                                  report_name, osv_name,
+                                                  obj_id, report_type)
+        except Exception as exc:
+            #TODO: OERP.exec_report method, manage exception
+            raise error.ReportError(unicode(exc))
         return self.__print_file_data(pdf_data)
 
     @staticmethod

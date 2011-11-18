@@ -9,10 +9,10 @@ class OSV(object):
     fields defined in the OSV-base class on OpenERP server.
 
     """
+    __osv__ = None
     __slots__ = ['__oerp__']
     def __init__(self, o_id):
         self._id = o_id
-        self.__osv__ = None
 
     @property
     def id(self):
