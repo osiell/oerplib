@@ -22,11 +22,16 @@ def get_connector(server, port, protocol='xmlrpc'):
     This one use either the XMLRPC protocol (by default) or NetRPC,
     at the discretion of the user.
     """
-    connector = {
+    connectors = {
             'xmlrpc': _ConnectorXMLRPC,
             'netrpc': _ConnectorNetRPC,
-            }[protocol](server, port)
-    return connector
+            }
+    if protocol not in connectors:
+        error = ("The protocol '{0}' is not supported. "
+                "Please choose a protocol among these ones: {1}")
+        error.format(protocol, connectors.keys())
+        raise ProtocolError(error)
+    return connectors[protocol](server, port)
 
 
 class _Connector(object):
@@ -41,22 +46,31 @@ class _Connector(object):
 
     @abc.abstractmethod
     def login(self, user, passwd, database):
-        """Log in the user on a database. Return the user's ID."""
+        """Log in the user on a database. Return the user's ID.
+        Raise a LoginError exception if an error occured.
+        """
         pass
 
     @abc.abstractmethod
     def execute(self, database, uid, upasswd, osv_name, method, *args):
-        """Execute a simple RPC query."""
+        """Execute a simple RPC query. Return the result of
+        the remote procedure.
+        Raise a ExecuteError exception if an error occured.
+        """
         pass
 
     @abc.abstractmethod
     def exec_workflow(self, *args):
-        """Execute a RPC workflow query."""
+        """Execute a RPC workflow query.
+        Raise a ExecWorkflowError exception if an error occured.
+        """
         pass
 
     @abc.abstractmethod
     def exec_report(self, database, uid, passwd, report_id):
-        """Execute a RPC query to retrieve a report."""
+        """Execute a RPC query to retrieve a report.
+        Raise a ExecReportError exception if an error occured.
+        """
         pass
 
 
@@ -76,9 +90,9 @@ class _ConnectorXMLRPC(_Connector):
         except xmlrpclib.Fault as exc:
             #NOTE: exc.faultCode is in unicode and Exception doesn't
             # handle unicode object
-            raise Exception(repr(exc.faultCode))
+            raise LoginError(repr(exc.faultCode))
         except socket.error as exc:
-            raise Exception(exc.strerror)
+            raise LoginError(exc.strerror)
         else:
             return user_id
 
@@ -86,17 +100,17 @@ class _ConnectorXMLRPC(_Connector):
         try:
             return self.sock.execute(database, uid, upasswd,
                                      osv_name, method, *args)
-        #FIXME: review exceptions management
         except xmlrpclib.Error as exc:
-            raise Exception("{0}: {1}".format(exc.faultCode or "Unknown error",
-                                               exc.faultString))
+            raise ExecuteError("{0}: {1}".format(
+                                            exc.faultCode or "Unknown error",
+                                            exc.faultString))
 
     def exec_workflow(self, database, uid, upasswd, *args):
         #TODO need to be tested + fix exception
         try:
             return self.sock.exec_workflow(database, uid, upasswd, *args)
         except Exception:
-            raise Exception("Workflow query has failed")
+            raise ExecWorkflowError("Workflow query has failed")
 
     def exec_report(self, database, uid, upasswd, report_name,
                     osv_name, obj_id, report_type='pdf'):
@@ -106,7 +120,7 @@ class _ConnectorXMLRPC(_Connector):
             report_id = self.sock_report.report(database, uid, upasswd,
                                                 report_name, [obj_id], data)
         except xmlrpclib.Error as exc:
-            raise Exception(exc.faultCode)
+            raise ExecReportError(exc.faultCode)
         state = False
         attempt = 0
         while not state:
@@ -114,14 +128,14 @@ class _ConnectorXMLRPC(_Connector):
                 pdf_data = self.sock_report.report_get(database,
                                                        uid, upasswd, report_id)
             except xmlrpclib.Error as exc:
-                raise Exception(unicode(exc.faultString))
+                raise ExecReportError(unicode(exc.faultString))
             state = pdf_data['state']
             if not state:
                 time.sleep(1)
                 attempt += 1
             if attempt > 200:
-                raise Exception("Download time exceeded, "
-                                "the operation has been canceled.")
+                raise ExecReportError("Download time exceeded, "
+                                      "the operation has been canceled.")
         return pdf_data
 
 
@@ -135,5 +149,36 @@ class _ConnectorNetRPC(_Connector):
 
     def login(self, user, passwd, database=None):
         pass
+
+
+#===========
+# Exceptions
+#===========
+
+class ProtocolError(BaseException):
+    """Exception raised if the protocol supplied
+    does not exist/is not supported.
+    """
+    pass
+
+
+class LoginError(BaseException):
+    """Exception raised during a user login."""
+    pass
+
+
+class ExecuteError(BaseException):
+    """Exception raised during a 'execute' query."""
+    pass
+
+
+class ExecWorkflowError(BaseException):
+    """Exception raised during a 'exec_workflow' query."""
+    pass
+
+
+class ExecReportError(BaseException):
+    """Exception raised during a 'exec_report' query."""
+    pass
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
