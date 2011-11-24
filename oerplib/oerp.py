@@ -98,30 +98,36 @@ class OERP(collections.MutableMapping):
                 u"Have to be logged to be able to execute queries")
         # Execute the workflow query
         try:
+            #TODO
             pass
         except Exception as exc:
             #TODO: OERP.exec_workflow method, manage exception
             raise error.WorkflowQueryError(unicode(exc))
 
-    def exec_report(self, report_name, osv_name, obj_id, report_type='pdf'):
+    def report(self, report_name, osv_name, obj_id, report_type='pdf',
+               context=None):
         """Download a report from the OpenERP server via XMLRPC
         and return the path of the file.
-
-        `WARNING: not sufficiently tested.`
+        ``report_type`` can be 'pdf', 'webkit', etc.
 
         """
+        if context is None:
+            context = {}
         # Raise an error if no user is logged
         if not self.user:
             raise error.LoginError(
                 u"Have to be logged to be able to execute queries")
-
+        # Set the language of the user connected as the
+        # context language by default
+        if 'lang' not in context:
+            context['lang'] = self.user.context_lang
+        # Execute the report query
         try:
-            pdf_data = self.connector.exec_report(self.database, self.user.id,
-                                                  self.user.password,
-                                                  report_name, osv_name,
-                                                  obj_id, report_type)
-        except Exception as exc:
-            #TODO: OERP.exec_report method, manage exception
+            pdf_data = self.connector.report(self.database, self.user.id,
+                                             self.user.password,
+                                             report_name, osv_name,
+                                             obj_id, report_type, context)
+        except connector.ExecReportError as exc:
             raise error.ReportError(unicode(exc))
         return self.__print_file_data(pdf_data)
 

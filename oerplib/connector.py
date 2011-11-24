@@ -29,7 +29,7 @@ def get_connector(server, port, protocol='xmlrpc'):
     if protocol not in connectors:
         error = ("The protocol '{0}' is not supported. "
                 "Please choose a protocol among these ones: {1}")
-        error.format(protocol, connectors.keys())
+        error = error.format(protocol, connectors.keys())
         raise ProtocolError(error)
     return connectors[protocol](server, port)
 
@@ -47,7 +47,7 @@ class _Connector(object):
     @abc.abstractmethod
     def login(self, user, passwd, database):
         """Log in the user on a database. Return the user's ID.
-        Raise a LoginError exception if an error occured.
+        Raise a LoginError exception if an error occurred.
         """
         pass
 
@@ -55,21 +55,23 @@ class _Connector(object):
     def execute(self, database, uid, upasswd, osv_name, method, *args):
         """Execute a simple RPC query. Return the result of
         the remote procedure.
-        Raise a ExecuteError exception if an error occured.
+        Raise a ExecuteError exception if an error occurred.
         """
         pass
 
     @abc.abstractmethod
-    def exec_workflow(self, *args):
+    def exec_workflow(self, database, uid, upasswd, *args):
         """Execute a RPC workflow query.
-        Raise a ExecWorkflowError exception if an error occured.
+        Raise a ExecWorkflowError exception if an error occurred.
         """
         pass
 
     @abc.abstractmethod
-    def exec_report(self, database, uid, passwd, report_id):
+    def report(self, database, uid, upasswd, report_name,
+                    osv_name, obj_id, report_type='pdf'):
         """Execute a RPC query to retrieve a report.
-        Raise a ExecReportError exception if an error occured.
+        'report_type' can be 'pdf', 'webkit', etc.
+        Raise a ExecReportError exception if an error occurred.
         """
         pass
 
@@ -80,7 +82,7 @@ class _ConnectorXMLRPC(_Connector):
         super(_ConnectorXMLRPC, self).__init__(server, port)
         self.url = 'http://{server}:{port}/xmlrpc'.format(server=self.server,
                                                           port=self.port)
-        self.sock = xmlrpclib.ServerProxy(self.url+'/object')
+        self.sock_object = xmlrpclib.ServerProxy(self.url+'/object')
         self.sock_report = xmlrpclib.ServerProxy(self.url+'/report')
         self.sock_common = xmlrpclib.ServerProxy(self.url+'/common')
 
@@ -98,8 +100,8 @@ class _ConnectorXMLRPC(_Connector):
 
     def execute(self, database, uid, upasswd, osv_name, method, *args):
         try:
-            return self.sock.execute(database, uid, upasswd,
-                                     osv_name, method, *args)
+            return self.sock_object.execute(database, uid, upasswd,
+                                            osv_name, method, *args)
         except xmlrpclib.Error as exc:
             raise ExecuteError("{0}: {1}".format(
                                             exc.faultCode or "Unknown error",
@@ -108,17 +110,19 @@ class _ConnectorXMLRPC(_Connector):
     def exec_workflow(self, database, uid, upasswd, *args):
         #TODO need to be tested + fix exception
         try:
-            return self.sock.exec_workflow(database, uid, upasswd, *args)
+            return self.sock_object.exec_workflow(database, uid, upasswd, *args)
         except Exception:
             raise ExecWorkflowError("Workflow query has failed")
 
-    def exec_report(self, database, uid, upasswd, report_name,
-                    osv_name, obj_id, report_type='pdf'):
-        #TODO _ConnectorXMLRPC.exec_report: need to be tested + fix exceptions
+    def report(self, database, uid, upasswd, report_name,
+               osv_name, obj_id, report_type='pdf', context=None):
+        if context is None:
+            context = {}
         data = {'model': osv_name, 'id': obj_id, 'report_type': report_type}
         try:
             report_id = self.sock_report.report(database, uid, upasswd,
-                                                report_name, [obj_id], data)
+                                                report_name, [obj_id],
+                                                data, context)
         except xmlrpclib.Error as exc:
             raise ExecReportError(exc.faultCode)
         state = False
@@ -128,7 +132,8 @@ class _ConnectorXMLRPC(_Connector):
                 pdf_data = self.sock_report.report_get(database,
                                                        uid, upasswd, report_id)
             except xmlrpclib.Error as exc:
-                raise ExecReportError(unicode(exc.faultString))
+                raise ExecReportError("Unknown error occurred during the "
+                                      "download of the report.")
             state = pdf_data['state']
             if not state:
                 time.sleep(1)
@@ -148,6 +153,16 @@ class _ConnectorNetRPC(_Connector):
                         "in a future release. Stay tuned!")
 
     def login(self, user, passwd, database=None):
+        pass
+
+    def execute(self, database, uid, upasswd, osv_name, method, *args):
+        pass
+
+    def exec_workflow(self, database, uid, upasswd, *args):
+        pass
+
+    def report(self, database, uid, upasswd, report_name,
+               osv_name, obj_id, report_type='pdf', context=None):
         pass
 
 
