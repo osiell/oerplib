@@ -45,7 +45,7 @@ class _Connector(object):
         self.port = port
 
     @abc.abstractmethod
-    def login(self, user, passwd, database):
+    def login(self, database, user, passwd):
         """Log in the user on a database. Return the user's ID.
         Raise a LoginError exception if an error occurred.
         """
@@ -60,7 +60,7 @@ class _Connector(object):
         pass
 
     @abc.abstractmethod
-    def exec_workflow(self, database, uid, upasswd, *args):
+    def exec_workflow(self, database, uid, upasswd, osv_name, signal, obj_id):
         """Execute a RPC workflow query.
         Raise a ExecWorkflowError exception if an error occurred.
         """
@@ -86,7 +86,7 @@ class _ConnectorXMLRPC(_Connector):
         self.sock_report = xmlrpclib.ServerProxy(self.url+'/report')
         self.sock_common = xmlrpclib.ServerProxy(self.url+'/common')
 
-    def login(self, user, passwd, database):
+    def login(self, database, user, passwd):
         try:
             user_id = self.sock_common.login(database, user, passwd)
         except xmlrpclib.Fault as exc:
@@ -107,12 +107,12 @@ class _ConnectorXMLRPC(_Connector):
                                             exc.faultCode or "Unknown error",
                                             exc.faultString))
 
-    def exec_workflow(self, database, uid, upasswd, *args):
-        #TODO need to be tested + fix exception
+    def exec_workflow(self, database, uid, upasswd, osv_name, signal, obj_id):
         try:
-            return self.sock_object.exec_workflow(database, uid, upasswd, *args)
+            return self.sock_object.exec_workflow(database, uid, upasswd,
+                                                  osv_name, signal, obj_id)
         except Exception:
-            raise ExecWorkflowError("Workflow query has failed")
+            raise ExecWorkflowError("Workflow query has failed.")
 
     def report(self, database, uid, upasswd, report_name,
                osv_name, obj_id, report_type='pdf', context=None):
@@ -152,13 +152,13 @@ class _ConnectorNetRPC(_Connector):
         raise Exception("NetRPC protocol will be implemented "
                         "in a future release. Stay tuned!")
 
-    def login(self, user, passwd, database=None):
+    def login(self, database, user, passwd):
         pass
 
     def execute(self, database, uid, upasswd, osv_name, method, *args):
         pass
 
-    def exec_workflow(self, database, uid, upasswd, *args):
+    def exec_workflow(self, database, uid, upasswd, osv_name, signal, obj_id):
         pass
 
     def report(self, database, uid, upasswd, report_name,

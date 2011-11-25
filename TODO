@@ -8,7 +8,7 @@ TODO:
     - Write a decorator to check if a user is connected instead of doing
       a check in each methods
 
-RPC methods known for 'url/object' :
+RPC methods for 'url/object' :
     - execute ('res.request', 'request_get')
 
     - execute ('ir.ui.view_sc', 'get_sc', 1, 'ir.ui.menu',
@@ -32,15 +32,7 @@ RPC methods known for 'url/object' :
     - execute ('ir.attachment', 'search_count',
                [('res_model', '=', u'res.partner.address'), ('res_id', '=', 1)])
 
-RPC methods known for 'url/report' :
-    - report (u'res.partner.address', [3],
-              {'model': u'res.partner', 'id': 3, 'report_type': u'pdf'},
-              {'lang': u'fr_FR', 'tz': False,
-               'active_ids': [84], 'active_id': 84})
-      report_get (1,)
-      report_get (1,)
-
-RPC methods known for 'url/wizard' :
+RPC methods for 'url/wizard' :
     - create ('stock.partial_picking',)
 
     - execute (1, {'model': 'stock.picking', 'form': {}, 'id': 2,

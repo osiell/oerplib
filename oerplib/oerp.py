@@ -10,7 +10,7 @@ from oerplib import connector, error, osv, pool
 
 class OERP(collections.MutableMapping):
     """Return a new instance of the :class:`OERP` class.
-    The optional *database* parameter specifies the default database to use
+    The optional ``database`` parameter specifies the default database to use
     when the ``login(user, passwd)`` is called. By default, the port 8069
     is used.
 
@@ -23,9 +23,9 @@ class OERP(collections.MutableMapping):
 
 
     def __init__(self, server, database=None, port=8069, protocol='xmlrpc'):
-        self.connector = connector.get_connector(server, port, protocol)
         self.server = server
         self.port = port
+        self.protocol = protocol
         self.database = self.database_default = database
         self.pool = pool.OSVPool(self)
         #NOTE: create a fake User object just to execute the
@@ -48,11 +48,13 @@ class OERP(collections.MutableMapping):
         self.database = database or self.database_default
         if not self.database:
             raise error.LoginError(u"No database specified")
+        # Instanciate the OpenERP server connector
+        self.connector = connector.get_connector(self.server, self.port,
+                                                 self.protocol)
         # Get the user's ID and generate the corresponding User object
         try:
-            user_id = self.connector.login(user, passwd, self.database)
-        except Exception as exc:
-            #TODO: OERP.login method, manage exception
+            user_id = self.connector.login(self.database, user, passwd)
+        except connector.LoginError as exc:
             raise error.LoginError(unicode(exc))
         else:
             if user_id:
@@ -82,12 +84,12 @@ class OERP(collections.MutableMapping):
             return self.connector.execute(self.database, self.user.id,
                                           self.user.password, osv_name,
                                           method, *args)
-        except Exception as exc:
-            #TODO: OERP.execute method, manage exception
+        except connector.ExecuteError as exc:
             raise error.ExecuteQueryError(unicode(exc))
 
-    def exec_workflow(self, *args):
-        """XMLRPC Workflow query.
+    def exec_workflow(self, osv_name, signal, obj_id):
+        """XMLRPC Workflow query. Execute the workflow signal ``signal`` on
+        the instance having the ID ``obj_id`` of OSV server class ``osv_name``.
 
         `WARNING: not sufficiently tested.`
 
@@ -98,10 +100,10 @@ class OERP(collections.MutableMapping):
                 u"Have to be logged to be able to execute queries")
         # Execute the workflow query
         try:
-            #TODO
-            pass
-        except Exception as exc:
-            #TODO: OERP.exec_workflow method, manage exception
+            self.connector.exec_workflow(self.database, self.user.id,
+                                         self.user.password, osv_name,
+                                         signal, obj_id)
+        except connector.ExecWorkflowError as exc:
             raise error.WorkflowQueryError(unicode(exc))
 
     def report(self, report_name, osv_name, obj_id, report_type='pdf',
