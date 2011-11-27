@@ -70,7 +70,7 @@ class OERP(collections.MutableMapping):
     # -- Raw XML-RPC methods -- #
     # ------------------------- #
 
-    def execute(self, osv_name, method, *args):
+    def execute(self, osv_name, method, *args, **kwargs):
         """Execute a simple XMLRPC method ``method`` on the OSV server class
         ``osv_name``. ``*args`` parameters varies according to the method used.
 
@@ -81,9 +81,8 @@ class OERP(collections.MutableMapping):
                 u"Have to be logged to be able to execute queries")
         # Execute the query
         try:
-            return self.connector.execute(self.database, self.user.id,
-                                          self.user.password, osv_name,
-                                          method, *args)
+            return self.connector.execute(self.user.id, self.user.password,
+                                          osv_name, method, *args, **kwargs)
         except connector.ExecuteError as exc:
             raise error.ExecuteQueryError(unicode(exc))
 
@@ -100,9 +99,8 @@ class OERP(collections.MutableMapping):
                 u"Have to be logged to be able to execute queries")
         # Execute the workflow query
         try:
-            self.connector.exec_workflow(self.database, self.user.id,
-                                         self.user.password, osv_name,
-                                         signal, obj_id)
+            self.connector.exec_workflow(self.user.id, self.user.password,
+                                         osv_name, signal, obj_id)
         except connector.ExecWorkflowError as exc:
             raise error.WorkflowQueryError(unicode(exc))
 
@@ -125,8 +123,7 @@ class OERP(collections.MutableMapping):
             context['lang'] = self.user.context_lang
         # Execute the report query
         try:
-            pdf_data = self.connector.report(self.database, self.user.id,
-                                             self.user.password,
+            pdf_data = self.connector.report(self.user.id, self.user.password,
                                              report_name, osv_name,
                                              obj_id, report_type, context)
         except connector.ExecReportError as exc:

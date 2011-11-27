@@ -1,16 +1,23 @@
 # -*- coding: UTF-8 -*-
 """This module provides a connector (via the 'get_connector' method)
-which use the XMLRPC or NetRPC protocol. Ex:
+which use the XMLRPC or NetRPC protocol to communicate with an OpenERP server.
+Here an example of using:
 
-Get a connector object:
+    Get a connector object:
     >>> import connector
     >>> cnt = connector.get_connector('localhost', 8070, 'netrpc')
 
-Login and retrieve ID of the user connected:
-    >>> uid = cnt.login('user', 'passwd', 'database')
+    Login and retrieve ID of the user connected:
+    >>> uid = cnt.login('database', 'user', 'passwd')
 
-Execute a query:
-    >>> res = cnt.execute('database', uid, 'passwd', 'res.partner', 'read', 42)
+    Execute a query:
+    >>> res = cnt.execute(uid, 'passwd', 'res.partner', 'read', 42)
+
+    Execute a workflow query:
+    >>> res = cnt.exec_workflow(uid, 'passwd', 'sale.order', 'order_confirm', 4)
+
+    Download the data of a report :
+    >>> data = cnt.report(uid, 'passwd', 'sale.order', 'sale.order', 4, 'pdf')
 """
 
 import xmlrpclib, socket
@@ -47,31 +54,31 @@ class _Connector(object):
     @abc.abstractmethod
     def login(self, database, user, passwd):
         """Log in the user on a database. Return the user's ID.
-        Raise a LoginError exception if an error occurred.
+        Raise a LoginError exception if an error occur.
         """
         pass
 
     @abc.abstractmethod
-    def execute(self, database, uid, upasswd, osv_name, method, *args):
+    def execute(self, uid, upasswd, osv_name, method, *args, **kwargs):
         """Execute a simple RPC query. Return the result of
         the remote procedure.
-        Raise a ExecuteError exception if an error occurred.
+        Raise a ExecuteError exception if an error occur.
         """
         pass
 
     @abc.abstractmethod
-    def exec_workflow(self, database, uid, upasswd, osv_name, signal, obj_id):
+    def exec_workflow(self, uid, upasswd, osv_name, signal, obj_id):
         """Execute a RPC workflow query.
-        Raise a ExecWorkflowError exception if an error occurred.
+        Raise a ExecWorkflowError exception if an error occur.
         """
         pass
 
     @abc.abstractmethod
-    def report(self, database, uid, upasswd, report_name,
+    def report(self, uid, upasswd, report_name,
                     osv_name, obj_id, report_type='pdf'):
         """Execute a RPC query to retrieve a report.
         'report_type' can be 'pdf', 'webkit', etc.
-        Raise a ExecReportError exception if an error occurred.
+        Raise a ExecReportError exception if an error occur.
         """
         pass
 
@@ -87,8 +94,9 @@ class _ConnectorXMLRPC(_Connector):
         self.sock_common = xmlrpclib.ServerProxy(self.url+'/common')
 
     def login(self, database, user, passwd):
+        self.database = database
         try:
-            user_id = self.sock_common.login(database, user, passwd)
+            user_id = self.sock_common.login(self.database, user, passwd)
         except xmlrpclib.Fault as exc:
             #NOTE: exc.faultCode is in unicode and Exception doesn't
             # handle unicode object
@@ -98,29 +106,29 @@ class _ConnectorXMLRPC(_Connector):
         else:
             return user_id
 
-    def execute(self, database, uid, upasswd, osv_name, method, *args):
+    def execute(self, uid, upasswd, osv_name, method, *args, **kwargs):
         try:
-            return self.sock_object.execute(database, uid, upasswd,
-                                            osv_name, method, *args)
+            return self.sock_object.execute(self.database, uid, upasswd,
+                                            osv_name, method, *args, **kwargs)
         except xmlrpclib.Error as exc:
             raise ExecuteError("{0}: {1}".format(
                                             exc.faultCode or "Unknown error",
                                             exc.faultString))
 
-    def exec_workflow(self, database, uid, upasswd, osv_name, signal, obj_id):
+    def exec_workflow(self, uid, upasswd, osv_name, signal, obj_id):
         try:
-            return self.sock_object.exec_workflow(database, uid, upasswd,
+            return self.sock_object.exec_workflow(self.database, uid, upasswd,
                                                   osv_name, signal, obj_id)
         except Exception:
             raise ExecWorkflowError("Workflow query has failed.")
 
-    def report(self, database, uid, upasswd, report_name,
+    def report(self, uid, upasswd, report_name,
                osv_name, obj_id, report_type='pdf', context=None):
         if context is None:
             context = {}
         data = {'model': osv_name, 'id': obj_id, 'report_type': report_type}
         try:
-            report_id = self.sock_report.report(database, uid, upasswd,
+            report_id = self.sock_report.report(self.database, uid, upasswd,
                                                 report_name, [obj_id],
                                                 data, context)
         except xmlrpclib.Error as exc:
@@ -129,7 +137,7 @@ class _ConnectorXMLRPC(_Connector):
         attempt = 0
         while not state:
             try:
-                pdf_data = self.sock_report.report_get(database,
+                pdf_data = self.sock_report.report_get(self.database,
                                                        uid, upasswd, report_id)
             except xmlrpclib.Error as exc:
                 raise ExecReportError("Unknown error occurred during the "
@@ -153,15 +161,16 @@ class _ConnectorNetRPC(_Connector):
                         "in a future release. Stay tuned!")
 
     def login(self, database, user, passwd):
+        self.database = database
         pass
 
-    def execute(self, database, uid, upasswd, osv_name, method, *args):
+    def execute(self, uid, upasswd, osv_name, method, *args, **kwargs):
         pass
 
-    def exec_workflow(self, database, uid, upasswd, osv_name, signal, obj_id):
+    def exec_workflow(self, uid, upasswd, osv_name, signal, obj_id):
         pass
 
-    def report(self, database, uid, upasswd, report_name,
+    def report(self, uid, upasswd, report_name,
                osv_name, obj_id, report_type='pdf', context=None):
         pass
 

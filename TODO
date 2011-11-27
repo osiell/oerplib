@@ -1,4 +1,8 @@
 TODO:
+    - Add context parameter to methods, and a decorator to generate a context
+      if this one was not supplied (with 'context_get' method of the
+      'res.users' model).
+
     - Implement NET-RPC protocol
 
     - Manage the exception raised when a wrong ID is assigned to a Many2One field
@@ -7,6 +11,8 @@ TODO:
 
     - Write a decorator to check if a user is connected instead of doing
       a check in each methods
+
+    - Implement __str__ and __repr__ methods for Fields* classes
 
 RPC methods for 'url/object' :
     - execute ('res.request', 'request_get')
