@@ -113,6 +113,8 @@ class _ConnectorXMLRPC(_Connector):
         try:
             return self.sock_object.execute(self.database, uid, upasswd,
                                             osv_name, method, *args)
+        except socket.error as exc:
+            raise ExecuteError(exc.strerror)
         except xmlrpclib.Fault as exc:
             raise ExecuteError(exc.faultCode)
         except xmlrpclib.Error as exc:
