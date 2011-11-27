@@ -14,6 +14,8 @@ TODO:
 
     - Implement __str__ and __repr__ methods for Fields* classes
 
+    - Implement __slots__ where its possible to reduce memory consumption
+
 RPC methods for 'url/object' :
     - execute ('res.request', 'request_get')
 

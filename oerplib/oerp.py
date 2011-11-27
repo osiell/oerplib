@@ -8,6 +8,19 @@ import base64, zlib, tempfile
 
 from oerplib import connector, error, osv, pool
 
+def context_auto(index):
+    """Decorator function, generate automatically a default context
+    parameter if this one is not supplied to the decorated function.
+    """
+    def wrapper(func):
+        def wrapped(*args, **kwargs):
+            if len(args) < (index + 1) and 'context' not in kwargs:
+                kwargs['context'] = args[0].execute('res.users', 'context_get')
+            return func(*args, **kwargs)
+        return wrapped
+    return wrapper
+
+
 class OERP(collections.MutableMapping):
     """Return a new instance of the :class:`OERP` class.
     The optional ``database`` parameter specifies the default database to use
@@ -70,7 +83,7 @@ class OERP(collections.MutableMapping):
     # -- Raw XML-RPC methods -- #
     # ------------------------- #
 
-    def execute(self, osv_name, method, *args, **kwargs):
+    def execute(self, osv_name, method, *args):
         """Execute a simple XMLRPC method ``method`` on the OSV server class
         ``osv_name``. ``*args`` parameters varies according to the method used.
 
@@ -82,7 +95,7 @@ class OERP(collections.MutableMapping):
         # Execute the query
         try:
             return self.connector.execute(self.user.id, self.user.password,
-                                          osv_name, method, *args, **kwargs)
+                                          osv_name, method, *args)
         except connector.ExecuteError as exc:
             raise error.ExecuteQueryError(unicode(exc))
 
@@ -104,6 +117,7 @@ class OERP(collections.MutableMapping):
         except connector.ExecWorkflowError as exc:
             raise error.WorkflowQueryError(unicode(exc))
 
+    @context_auto(index=5)
     def report(self, report_name, osv_name, obj_id, report_type='pdf',
                context=None):
         """Download a report from the OpenERP server via XMLRPC
@@ -111,16 +125,14 @@ class OERP(collections.MutableMapping):
         ``report_type`` can be 'pdf', 'webkit', etc.
 
         """
-        if context is None:
-            context = {}
         # Raise an error if no user is logged
         if not self.user:
             raise error.LoginError(
                 u"Have to be logged to be able to execute queries")
-        # Set the language of the user connected as the
-        # context language by default
-        if 'lang' not in context:
-            context['lang'] = self.user.context_lang
+
+        # If no context was supplied, get the default one FIXME to delete
+        #context = context or self._get_default_context()
+
         # Execute the report query
         try:
             pdf_data = self.connector.report(self.user.id, self.user.password,
@@ -128,10 +140,10 @@ class OERP(collections.MutableMapping):
                                              obj_id, report_type, context)
         except connector.ExecReportError as exc:
             raise error.ReportError(unicode(exc))
-        return self.__print_file_data(pdf_data)
+        return self._print_file_data(pdf_data)
 
     @staticmethod
-    def __print_file_data(data):
+    def _print_file_data(data):
         """Print data in a temporary file and return the path of this one."""
         if 'result' not in data:
             raise error.ReportError(
@@ -151,11 +163,17 @@ class OERP(collections.MutableMapping):
             os.close(file_no)
             return file_path
 
+    def _get_default_context(self):
+        """Generate a default context parameter if this one was not supplied.
+        """
+        return self.execute('res.users', 'context_get')
+
     # ------------------------- #
     # -- High Level methods  -- #
     # ------------------------- #
 
-    def browse(self, osv_name, ids, refresh=True):
+    #@context_auto(index=3)
+    def browse(self, osv_name, ids, context=None, refresh=True):
         """Return a browsable object (or a list of objects)
         according to the OSV name and ID (or IDs) supplied.
         ``refresh`` option will reinitialize the object if this one has
@@ -169,23 +187,30 @@ class OERP(collections.MutableMapping):
         else:
             return self.pool.get(osv_name).browse(ids, refresh)
 
-    def search(self, osv_name, args):
+    #@context_auto(index=6)
+    def search(self, osv_name, args=None, offset=0, limit=None, order=None,
+               context=None, count=False):
         """Return a list of IDs of records matching the given criteria in
         ``args`` parameter. ``args`` must be of the form
         ``[('name', '=', 'John'), (...)]``
 
         """
-        return self.execute(osv_name, 'search', args)
+        if args is None:
+            args = []
+        return self.execute(osv_name, 'search', args, offset, limit, order,
+                            context, count)
 
-    def create(self, osv_name, vals):
+    #@context_auto(index=3)
+    def create(self, osv_name, vals, context=None):
         """Create a new record with the specified values contained in the
         ``vals`` dictionary (e.g. ``{'name': 'John', ...}``).
         Return the ID of the new record.
 
         """
-        return self.execute(osv_name, 'create', vals)
+        return self.execute(osv_name, 'create', vals, context)
 
-    def read(self, osv_name, ids, fields=None):
+    #@context_auto(index=4)
+    def read(self, osv_name, ids, fields=None, context=None):
         """Return the ID of each record with the values
         of the requested fields ``fields`` from the OSV server class
         ``osv_name``. If ``fields`` is not specified, all fields values
@@ -194,9 +219,10 @@ class OERP(collections.MutableMapping):
         """
         if fields is None:
             fields = []
-        return self.execute(osv_name, 'read', ids, fields)
+        return self.execute(osv_name, 'read', ids, fields, context)
 
-    def write(self, osv_obj, ids=None, vals=None):
+    #@context_auto(index=4)
+    def write(self, osv_obj, ids=None, vals=None, context=None):
         """Update records with given IDs (e.g. ``[1, 42, ...]``)
         with the given values contained in the ``vals`` dictionary
         (e.g. ``{'name': 'John', ...}``).
@@ -214,9 +240,10 @@ class OERP(collections.MutableMapping):
             vals = {}
         if isinstance(osv_obj, osv.OSV):
             return self.pool.get_by_class(osv_obj.__class__).write(osv_obj)
-        return self.execute(osv_obj, 'write', ids, vals)
+        return self.execute(osv_obj, 'write', ids, vals, context)
 
-    def unlink(self, osv_obj, ids=None):
+    #@context_auto(index=3)
+    def unlink(self, osv_obj, ids=None, context=None):
         """Delete records with the given IDs (e.g. ``[1, 42, ...]``).
         ``osv`` parameter may be the OSV server class name
         (e.g. ``'sale.order'``) or an OSV instance (browsable object).
@@ -228,7 +255,7 @@ class OERP(collections.MutableMapping):
             ids = []
         if isinstance(osv_obj, osv.OSV):
             return self.pool.get(osv_obj.__osv__['name']).unlink(osv_obj)
-        return self.execute(osv_obj, 'unlink', ids)
+        return self.execute(osv_obj, 'unlink', ids, context)
 
     def refresh(self, osv_obj):
         """Restore original values of the object ``osv_obj`` from data

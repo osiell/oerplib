@@ -59,7 +59,7 @@ class _Connector(object):
         pass
 
     @abc.abstractmethod
-    def execute(self, uid, upasswd, osv_name, method, *args, **kwargs):
+    def execute(self, uid, upasswd, osv_name, method, *args):
         """Execute a simple RPC query. Return the result of
         the remote procedure.
         Raise a ExecuteError exception if an error occur.
@@ -75,7 +75,7 @@ class _Connector(object):
 
     @abc.abstractmethod
     def report(self, uid, upasswd, report_name,
-                    osv_name, obj_id, report_type='pdf'):
+               osv_name, obj_id, report_type='pdf', context=None):
         """Execute a RPC query to retrieve a report.
         'report_type' can be 'pdf', 'webkit', etc.
         Raise a ExecReportError exception if an error occur.
@@ -89,9 +89,12 @@ class _ConnectorXMLRPC(_Connector):
         super(_ConnectorXMLRPC, self).__init__(server, port)
         self.url = 'http://{server}:{port}/xmlrpc'.format(server=self.server,
                                                           port=self.port)
-        self.sock_object = xmlrpclib.ServerProxy(self.url+'/object')
-        self.sock_report = xmlrpclib.ServerProxy(self.url+'/report')
-        self.sock_common = xmlrpclib.ServerProxy(self.url+'/common')
+        self.sock_object = xmlrpclib.ServerProxy(self.url+'/object',
+                                                 allow_none=True)
+        self.sock_report = xmlrpclib.ServerProxy(self.url+'/report',
+                                                 allow_none=True)
+        self.sock_common = xmlrpclib.ServerProxy(self.url+'/common',
+                                                 allow_none=True)
 
     def login(self, database, user, passwd):
         self.database = database
@@ -106,10 +109,12 @@ class _ConnectorXMLRPC(_Connector):
         else:
             return user_id
 
-    def execute(self, uid, upasswd, osv_name, method, *args, **kwargs):
+    def execute(self, uid, upasswd, osv_name, method, *args):
         try:
             return self.sock_object.execute(self.database, uid, upasswd,
-                                            osv_name, method, *args, **kwargs)
+                                            osv_name, method, *args)
+        except xmlrpclib.Fault as exc:
+            raise ExecuteError(exc.faultCode)
         except xmlrpclib.Error as exc:
             raise ExecuteError("{0}: {1}".format(
                                             exc.faultCode or "Unknown error",
@@ -164,7 +169,7 @@ class _ConnectorNetRPC(_Connector):
         self.database = database
         pass
 
-    def execute(self, uid, upasswd, osv_name, method, *args, **kwargs):
+    def execute(self, uid, upasswd, osv_name, method, *args):
         pass
 
     def exec_workflow(self, uid, upasswd, osv_name, signal, obj_id):
