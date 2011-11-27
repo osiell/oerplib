@@ -20,6 +20,17 @@ def context_auto(index):
         return wrapped
     return wrapper
 
+def check_logged_user(func):
+    """Decorator function which check that a user is logged.
+    Otherwise, an error is raised.
+    """
+    def wrapper(*args):
+        if not args[0].user:
+            raise error.LoginError(
+                u"Have to be logged to be able to execute queries")
+        return func(*args)
+    return wrapper
+
 
 class OERP(collections.MutableMapping):
     """Return a new instance of the :class:`OERP` class.
@@ -41,13 +52,7 @@ class OERP(collections.MutableMapping):
         self.protocol = protocol
         self.database = self.database_default = database
         self.pool = pool.OSVPool(self)
-        #NOTE: create a fake User object just to execute the
-        # first query : browse the real User object
-        self.user = type('User', (object,), {
-                            'id': None,
-                            'login': None,
-                            'password': None,
-                        })
+        self.user = None
 
     def login(self, user, passwd, database=None):
         """Log in as the given ``user`` with the password ``passwd`` on the
@@ -71,6 +76,13 @@ class OERP(collections.MutableMapping):
             raise error.LoginError(unicode(exc))
         else:
             if user_id:
+                #NOTE: create a fake User object just to execute the
+                # first query : browse the real User object
+                self.user = type('User', (object,), {
+                                    'id': None,
+                                    'login': None,
+                                    'password': None,
+                                })
                 self.user.id = user_id
                 self.user.login = user
                 self.user.password = passwd
@@ -83,15 +95,12 @@ class OERP(collections.MutableMapping):
     # -- Raw XML-RPC methods -- #
     # ------------------------- #
 
+    @check_logged_user
     def execute(self, osv_name, method, *args):
         """Execute a simple XMLRPC method ``method`` on the OSV server class
         ``osv_name``. ``*args`` parameters varies according to the method used.
 
         """
-        # Raise an error if no user is logged
-        if not self.user:
-            raise error.LoginError(
-                u"Have to be logged to be able to execute queries")
         # Execute the query
         try:
             return self.connector.execute(self.user.id, self.user.password,
@@ -99,6 +108,7 @@ class OERP(collections.MutableMapping):
         except connector.ExecuteError as exc:
             raise error.ExecuteQueryError(unicode(exc))
 
+    @check_logged_user
     def exec_workflow(self, osv_name, signal, obj_id):
         """XMLRPC Workflow query. Execute the workflow signal ``signal`` on
         the instance having the ID ``obj_id`` of OSV server class ``osv_name``.
@@ -106,10 +116,6 @@ class OERP(collections.MutableMapping):
         `WARNING: not sufficiently tested.`
 
         """
-        # Raise an error if no user is logged
-        if not self.user:
-            raise error.LoginError(
-                u"Have to be logged to be able to execute queries")
         # Execute the workflow query
         try:
             self.connector.exec_workflow(self.user.id, self.user.password,
@@ -117,6 +123,7 @@ class OERP(collections.MutableMapping):
         except connector.ExecWorkflowError as exc:
             raise error.WorkflowQueryError(unicode(exc))
 
+    @check_logged_user
     @context_auto(index=5)
     def report(self, report_name, osv_name, obj_id, report_type='pdf',
                context=None):
@@ -125,11 +132,6 @@ class OERP(collections.MutableMapping):
         ``report_type`` can be 'pdf', 'webkit', etc.
 
         """
-        # Raise an error if no user is logged
-        if not self.user:
-            raise error.LoginError(
-                u"Have to be logged to be able to execute queries")
-
         # If no context was supplied, get the default one FIXME to delete
         #context = context or self._get_default_context()
 
