@@ -44,10 +44,10 @@ The basic method to execute queries is ``execute``. It takes at least two
 parameters (OSV class name and the method name) following by variable parameters
 according to the method called. Example::
 
-    >>> user_data = oerp.execute('sale.order', 'read', 1)
+    >>> order_data = oerp.execute('sale.order', 'read', 1)
 
 This instruction will call the ``read`` method of the OSV class ``sale.order``
-with the parameter ``1`` (the ID record asked by ``read``).
+with the parameter ``1`` (the record ID asked by ``read``).
 
 For standard OSV methods suscribed to the XML-RPC service like ``create``,
 ``read``, ``write``, ``unlink`` and ``search``, convenient methods exist::
@@ -64,7 +64,7 @@ Browse objects
 --------------
 
 The main functionality of `OERPLib` is its ability to generate objects that are
-similar to browsable objects that can be found on the `OpenERP` server. All this
+similar to browsable objects found on the `OpenERP` server. All this
 is possible using the ``browse`` method::
 
     # fetch one object

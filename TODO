@@ -9,6 +9,8 @@ TODO:
 
     - Implement __slots__ where its possible to reduce memory consumption
 
+    - Implement write capabilities for one2many fields
+
 RPC methods for 'url/object' :
     - execute ('res.request', 'request_get')
 
