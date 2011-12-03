@@ -31,13 +31,7 @@ class Factory(collections.MutableMapping):
         """Generate an instance of the OSV class (called 'browse_record')."""
         if obj_id not in self.objects:
             self.objects[obj_id] = {}
-            try:
-                self.objects[obj_id]['instance'] = self.osv_class(obj_id)
-            except error.ExecuteQueryError:
-                del self.objects[obj_id]
-                raise error.ExecuteQueryError(
-                    u"There is no '{osv_name}' record with ID {obj_id}.".format(
-                        osv_name=self.osv_class.__osv__['name'], obj_id=obj_id))
+            self.objects[obj_id]['instance'] = self.osv_class(obj_id)
         if refresh:
             self.refresh(self.objects[obj_id]['instance'])
         return self.objects[obj_id]['instance']
@@ -117,6 +111,10 @@ class Factory(collections.MutableMapping):
         """
         obj_info = self.objects[obj.id]
         obj_info['raw_data'] = self.oerp.read(obj.__osv__['name'], obj.id)
+        if obj_info['raw_data'] is False:
+            raise error.ExecuteQueryError(
+                u"There is no '{osv_name}' record with ID {obj_id}.".format(
+                    osv_name=obj.__class__.__osv__['name'], obj_id=obj.id))
         # Special field 'name' have to be filled with the value returned
         # by the 'name_get' method
         try:

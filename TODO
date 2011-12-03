@@ -1,11 +1,7 @@
 TODO:
     - Implement NET-RPC protocol
 
-    - Manage the exception raised when a wrong ID is assigned to a Many2One field
-
     - Instantiate socket for each request?
-
-    - Implement __str__ and __repr__ methods for Fields* classes
 
     - Implement __slots__ where its possible to reduce memory consumption
 
