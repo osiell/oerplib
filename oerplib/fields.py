@@ -36,6 +36,21 @@ class BaseField(object):
     def __set__(self, instance, value):
         pass
 
+    def __repr__(self):
+        """Return a string representation of the field."""
+        attrs = ['string', 'relation', 'required', 'readonly', 'size', 'domain']
+        attrs_rep = []
+        for attr in attrs:
+            if hasattr(self, attr):
+                value = getattr(self, attr)
+                if value:
+                    if isinstance(value, basestring):
+                        attrs_rep.append("{0}='{1}'".format(attr, value))
+                    else:
+                        attrs_rep.append("{0}={1}".format(attr, value))
+        attrs_rep = ", ".join(attrs_rep)
+        return "{0}({1})".format(self.type.upper(), attrs_rep)
+
     def check_value(self, value):
         """Check the validity of a value for the field."""
         if self.readonly:
