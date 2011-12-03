@@ -69,6 +69,9 @@ class Factory(collections.MutableMapping):
         cls = type(cls_name, (osv.OSV,), {})
         cls.__oerp__ = self.oerp
         cls.__osv__ = {'name': osv_name, 'columns': cls_fields}
+        slots = ['__oerp__', '__osv__', '__dict__']
+        slots.extend(cls_fields.keys())
+        cls.__slots__ = slots
         return cls
 
     @check_obj
