@@ -68,7 +68,7 @@ class Factory(collections.MutableMapping):
 
         cls = type(cls_name, (osv.OSV,), {})
         cls.__oerp__ = self.oerp
-        cls.__osv__ = {'name': osv_name, 'fields': cls_fields}
+        cls.__osv__ = {'name': osv_name, 'columns': cls_fields}
         return cls
 
     @check_obj
@@ -78,7 +78,7 @@ class Factory(collections.MutableMapping):
         vals = {}
         for field_name in obj_info['fields_updated']:
             if field_name in obj_info['raw_data']:
-                field = self.osv_class.__osv__['fields'][field_name]
+                field = self.osv_class.__osv__['columns'][field_name]
                 # Many2One fields
                 if isinstance(field, fields.Many2OneField):
                     vals[field_name] = getattr(obj,
@@ -138,7 +138,7 @@ class Factory(collections.MutableMapping):
         obj_info = self.objects[obj.id]
         obj_info['fields_updated'] = []
         # Load fields and their values
-        for field in self.osv_class.__osv__['fields'].values():
+        for field in self.osv_class.__osv__['columns'].values():
             if field.name in obj_info['raw_data']:
                 setattr(obj, "_{0}".format(field.name),
                         obj_info['raw_data'][field.name])
