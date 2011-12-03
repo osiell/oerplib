@@ -36,8 +36,8 @@ class BaseField(object):
     def __set__(self, instance, value):
         pass
 
-    def __repr__(self):
-        """Return a string representation of the field."""
+    def __str__(self):
+        """Return a human readable string representation of the field."""
         attrs = ['string', 'relation', 'required', 'readonly', 'size', 'domain']
         attrs_rep = []
         for attr in attrs:
