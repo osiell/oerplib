@@ -5,7 +5,7 @@ its related attribute.
 """
 import datetime
 
-from oerplib import error, osv
+from oerplib import error, browse
 
 def is_int(value):
     try:
@@ -134,7 +134,7 @@ class Many2OneField(BaseField):
                 )
 
     def __set__(self, instance, value):
-        if isinstance(value, osv.BrowseRecord):
+        if isinstance(value, browse.BrowseRecord):
             o_rel = value
         elif is_int(value):
             o_rel = instance.__class__.__oerp__.browse(self.relation, value)
