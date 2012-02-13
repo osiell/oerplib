@@ -132,8 +132,8 @@ class OERP(collections.MutableMapping):
         ``report_type`` can be 'pdf', 'webkit', etc.
 
         """
-        # If no context was supplied, get the default one FIXME to delete
-        #context = context or self._get_default_context()
+        # If no context was supplied, get the default one FIXME
+        #context = context or self.get_user_context()
 
         # Execute the report query
         try:
@@ -164,11 +164,6 @@ class OERP(collections.MutableMapping):
                 fp.write(content)
             os.close(file_no)
             return file_path
-
-    def _get_default_context(self):
-        """Generate a default context parameter if this one was not supplied.
-        """
-        return self.execute('res.users', 'context_get')
 
     # ------------------------- #
     # -- High Level methods  -- #
@@ -281,6 +276,11 @@ class OERP(collections.MutableMapping):
             raise ValueError(u"Value is not an instance of OSV class")
         return osv_obj.__osv__['name']
         #return self.pool.get_by_class(osv_obj.__class__).osv['name']
+
+    def get_user_context(self):
+        """Generate a default user context parameter."""
+        return self.execute('res.users', 'context_get')
+
 
     def __str__(self):
         return str(self.pool)
