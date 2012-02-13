@@ -25,18 +25,18 @@ class OSV(collections.MutableMapping):
         super(OSV, self).__init__()
         self.oerp = oerp
         self.objects = {}
-        self.osv_class = self._generate_osv_class(osv_name)
+        self.browse_class = self._generate_browse_class(osv_name)
 
     def browse(self, obj_id, refresh=True):
         """Generate an instance of the OSV class (called 'browse_record')."""
         if obj_id not in self.objects:
             self.objects[obj_id] = {}
-            self.objects[obj_id]['instance'] = self.osv_class(obj_id)
+            self.objects[obj_id]['instance'] = self.browse_class(obj_id)
         if refresh:
             self.refresh(self.objects[obj_id]['instance'])
         return self.objects[obj_id]['instance']
 
-    def _generate_osv_class(self, osv_name):
+    def _generate_browse_class(self, osv_name):
         """Generate a class with all its fields corresponding to
         the OSV name supplied and return them.
 
@@ -75,7 +75,7 @@ class OSV(collections.MutableMapping):
         vals = {}
         for field_name in obj_info['fields_updated']:
             if field_name in obj_info['raw_data']:
-                field = self.osv_class.__osv__['columns'][field_name]
+                field = self.browse_class.__osv__['columns'][field_name]
                 # Many2One fields
                 if isinstance(field, fields.Many2OneField):
                     vals[field_name] = getattr(obj,
@@ -139,7 +139,7 @@ class OSV(collections.MutableMapping):
         obj_info = self.objects[obj.id]
         obj_info['fields_updated'] = []
         # Load fields and their values
-        for field in self.osv_class.__osv__['columns'].values():
+        for field in self.browse_class.__osv__['columns'].values():
             if field.name in obj_info['raw_data']:
                 setattr(obj, "_{0}".format(field.name),
                         obj_info['raw_data'][field.name])

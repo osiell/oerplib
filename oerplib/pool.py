@@ -13,23 +13,24 @@ class OSVPool(collections.MutableMapping):
         super(OSVPool, self).__init__()
         self.oerp = oerp
         self._osv_class_by_name = {}
-        self._factories_by_osv_class = {}
+        self._osv_class_by_browse_class = {}
 
     def get_by_class(self, osv):
         """Return a OSV class which is able to create browsable objects
         corresponding to the BrowseRecord class supplied.
 
         """
-        if osv not in self._factories_by_osv_class:
+        if osv not in self._osv_class_by_browse_class:
             raise error.InternalError(u"The class of this object is no longer"
                                       " referenced.")
-        return self._factories_by_osv_class[osv]
+        return self._osv_class_by_browse_class[osv]
 
     def __str__(self):
         """Return string representation of this pool."""
+        #TODO: not needed when browse records will be no longer stored
         res = {}
-        for osv_name, facto in self._osv_class_by_name.iteritems():
-            res[osv_name] = facto.keys()
+        for osv_name, osv_class in self._osv_class_by_name.iteritems():
+            res[osv_name] = osv_class.keys()
         return str(res)
 
     def __repr__(self):
@@ -40,8 +41,8 @@ class OSVPool(collections.MutableMapping):
     # ---------------------------- #
 
     def __delitem__(self, osv_name):
-        osv_class = self._osv_class_by_name[osv_name].osv_class
-        del self._factories_by_osv_class[osv_class]
+        browse_class = self._osv_class_by_name[osv_name].browse_class
+        del self._osv_class_by_browse_class[browse_class]
         self._osv_class_by_name[osv_name].clear()
         del self._osv_class_by_name[osv_name]
         #raise error.NotAllowedError(u"Operation not supported")
@@ -52,9 +53,10 @@ class OSVPool(collections.MutableMapping):
 
         """
         if osv_name not in self._osv_class_by_name:
-            facto = osv.OSV(self.oerp, osv_name)
-            self._osv_class_by_name[osv_name] = facto
-            self._factories_by_osv_class[facto.osv_class] = facto
+            osv_class = osv.OSV(self.oerp, osv_name)
+            self._osv_class_by_name[osv_name] = osv_class
+            self._osv_class_by_browse_class[osv_class.browse_class] =\
+                    osv_class
         return self._osv_class_by_name[osv_name]
 
     def __iter__(self):
