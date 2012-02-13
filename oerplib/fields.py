@@ -81,7 +81,7 @@ class SelectionField(BaseField):
     def __set__(self, instance, value):
         value = self.check_value(value)
         setattr(instance, "_{0}".format(self.name), value)
-        self.osv.browse_records[instance.id]['fields_updated'].append(self.name)
+        instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(SelectionField, self).check_value(value)
@@ -107,8 +107,7 @@ class Many2ManyField(BaseField):
 
     def __get__(self, instance, owner):
         return [instance.__oerp__.browse(self.relation, o_id)
-            for o_id in self.osv.browse_records[instance.id]['raw_data'][self.name]
-            ]
+                for o_id in instance.__data__['raw_data'][self.name]]
 
     def __set__(self, instance, value):
         raise error.NotAllowedError(u"Not implemented yet")
@@ -143,7 +142,7 @@ class Many2OneField(BaseField):
                              " a browse_record object.")
         o_rel = self.check_value(o_rel)
         setattr(instance, "_{0}".format(self.name), [o_rel.id, o_rel.name])
-        self.osv.browse_records[instance.id]['fields_updated'].append(self.name)
+        instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(Many2OneField, self).check_value(value)
@@ -167,8 +166,7 @@ class One2ManyField(BaseField):
 
     def __get__(self, instance, owner):
         return [instance.__oerp__.browse(self.relation, o_id)
-            for o_id in self.osv.browse_records[instance.id]['raw_data'][self.name]
-            ]
+                for o_id in instance.__data__['raw_data'][self.name]]
 
     #def __set__(self, instance, value):
 
@@ -203,7 +201,7 @@ class DateField(BaseField):
     def __set__(self, instance, value):
         value = self.check_value(value)
         setattr(instance, "_{0}".format(self.name), value)
-        self.osv.browse_records[instance.id]['fields_updated'].append(self.name)
+        instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(DateField, self).check_value(value)
@@ -238,7 +236,7 @@ class DateTimeField(BaseField):
     def __set__(self, instance, value):
         value = self.check_value(value)
         setattr(instance, "_{0}".format(self.name), value)
-        self.osv.browse_records[instance.id]['fields_updated'].append(self.name)
+        instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(DateTimeField, self).check_value(value)
@@ -275,7 +273,7 @@ class ValueField(BaseField):
     def __set__(self, instance, value):
         value = self.check_value(value)
         setattr(instance, "_{0}".format(self.name), value)
-        self.osv.browse_records[instance.id]['fields_updated'].append(self.name)
+        instance.__data__['fields_updated'].append(self.name)
 
 
 def generate_field(osv, name, data):

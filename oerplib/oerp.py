@@ -281,7 +281,6 @@ class OERP(collections.MutableMapping):
         """Generate a default user context parameter."""
         return self.execute('res.users', 'context_get')
 
-
     def __str__(self):
         return str(self.pool)
 

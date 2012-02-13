@@ -10,9 +10,9 @@ class BrowseRecord(object):
 
     """
     __osv__ = None
-    __slots__ = ['__oerp__']
     def __init__(self, o_id):
         self._id = o_id
+        self.__data__ = {'raw_data': False, 'fields_updated': []}
 
     @property
     def id(self):
@@ -34,11 +34,9 @@ class BrowseRecord(object):
         differents objects.
 
         """
-        if hasattr(other, 'id') and hasattr(other, '__osv__') and \
+        return isinstance(other, BrowseRecord) and \
             self.id == other.id and \
-            self.__osv__['name'] == other.__osv__['name']: # and \
+            self.__osv__['name'] == other.__osv__['name'] # and \
             #self.__osv__['columns'].keys() == other.__osv__['columns'].keys():
-            return True
-        return False
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
