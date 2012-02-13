@@ -2,11 +2,11 @@
 """This module provides the OSV class"""
 
 
-class OSV(object):
-    """Base class that all OSV classes inherit from.
+class BrowseRecord(object):
+    """Base class that all browsable objects inherit from.
     No attributes should be defined in this class (except _id/id, __oerp__,
     __osv__ and Python magic methods) in order to not be conflicted with the
-    fields defined in the OSV-base class on OpenERP server.
+    fields defined in the OSV model class on OpenERP server.
 
     """
     __osv__ = None

@@ -134,7 +134,7 @@ class Many2OneField(BaseField):
                 )
 
     def __set__(self, instance, value):
-        if isinstance(value, osv.OSV):
+        if isinstance(value, osv.BrowseRecord):
             o_rel = value
         elif is_int(value):
             o_rel = instance.__class__.__oerp__.browse(self.relation, value)

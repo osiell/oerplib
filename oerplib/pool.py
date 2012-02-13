@@ -18,18 +18,6 @@ class OSVPool(collections.MutableMapping):
         self._factories_by_osv_name = {}
         self._factories_by_osv_class = {}
 
-    #TODO: change method name, get already implemented by MutableMapping
-    def get(self, osv_name):
-        """Return a factory which is able to create browsable objects
-        corresponding to the OSV name supplied.
-
-        """
-        if osv_name not in self._factories_by_osv_name:
-            facto = factory.Factory(self.oerp, osv_name)
-            self._factories_by_osv_name[osv_name] = facto
-            self._factories_by_osv_class[facto.osv_class] = facto
-        return self._factories_by_osv_name[osv_name]
-
     def get_by_class(self, osv):
         """Return a factory which is able to create browsable objects
         corresponding to the OSV class supplied.
@@ -62,7 +50,15 @@ class OSVPool(collections.MutableMapping):
         #raise error.NotAllowedError(u"Operation not supported")
 
     def __getitem__(self, osv_name):
-        return self.get(osv_name)
+        """Return an OSV class which is able to create browsable objects
+        corresponding to the OSV name supplied.
+
+        """
+        if osv_name not in self._factories_by_osv_name:
+            facto = factory.Factory(self.oerp, osv_name)
+            self._factories_by_osv_name[osv_name] = facto
+            self._factories_by_osv_class[facto.osv_class] = facto
+        return self._factories_by_osv_name[osv_name]
 
     def __iter__(self):
         for osv_name in self._factories_by_osv_name:

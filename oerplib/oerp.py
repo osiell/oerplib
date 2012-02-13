@@ -235,7 +235,7 @@ class OERP(collections.MutableMapping):
             ids = []
         if vals is None:
             vals = {}
-        if isinstance(osv_obj, osv.OSV):
+        if isinstance(osv_obj, osv.BrowseRecord):
             return self.pool.get_by_class(osv_obj.__class__).write(osv_obj)
         return self.execute(osv_obj, 'write', ids, vals, context)
 
@@ -250,7 +250,7 @@ class OERP(collections.MutableMapping):
         """
         if ids is None:
             ids = []
-        if isinstance(osv_obj, osv.OSV):
+        if isinstance(osv_obj, osv.BrowseRecord):
             return self.pool.get(osv_obj.__osv__['name']).unlink(osv_obj)
         return self.execute(osv_obj, 'unlink', ids, context)
 
@@ -272,7 +272,7 @@ class OERP(collections.MutableMapping):
 
     def get_osv_name(self, osv_obj):
         """Return the OSV name of the OSV instance ``osv_obj`` supplied."""
-        if not isinstance(osv_obj, osv.OSV):
+        if not isinstance(osv_obj, osv.BrowseRecord):
             raise ValueError(u"Value is not an instance of OSV class")
         return osv_obj.__osv__['name']
         #return self.pool.get_by_class(osv_obj.__class__).osv['name']

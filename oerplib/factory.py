@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 """This module provides the Factory class
 and some functions to manipulate its instances.
+
 """
 import collections
 import ast
@@ -60,7 +61,7 @@ class Factory(collections.MutableMapping):
             field_data = {'type': 'text', 'string': 'Name', 'readonly': True}
             cls_fields['name'] = fields.generate_field(self, 'name', field_data)
 
-        cls = type(cls_name, (osv.OSV,), {})
+        cls = type(cls_name, (osv.BrowseRecord,), {})
         cls.__oerp__ = self.oerp
         cls.__osv__ = {'name': osv_name, 'columns': cls_fields}
         slots = ['__oerp__', '__osv__', '__dict__']
