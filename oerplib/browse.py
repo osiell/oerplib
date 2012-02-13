@@ -26,3 +26,19 @@ class BrowseRecord(object):
     def __repr__(self):
         return str(self)
 
+    def __eq__(self, other):
+        """Compare two browse records. Return ``True`` if their ID and OSV name
+        are equals.
+
+        NOTE: the comparison is made this way because their OSV classes can be
+        differents objects.
+
+        """
+        if hasattr(other, 'id') and hasattr(other, '__osv__') and \
+            self.id == other.id and \
+            self.__osv__['name'] == other.__osv__['name']: # and \
+            #self.__osv__['columns'].keys() == other.__osv__['columns'].keys():
+            return True
+        return False
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

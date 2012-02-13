@@ -6,7 +6,7 @@ import os
 import collections
 import base64, zlib, tempfile
 
-from oerplib import connector, error, osv, pool
+from oerplib import connector, error, pool, browse
 
 def context_auto(index):
     """Decorator function, generate automatically a default context
@@ -235,7 +235,7 @@ class OERP(collections.MutableMapping):
             ids = []
         if vals is None:
             vals = {}
-        if isinstance(osv_obj, osv.BrowseRecord):
+        if isinstance(osv_obj, browse.BrowseRecord):
             return self.pool.get_by_class(osv_obj.__class__).write(osv_obj)
         return self.execute(osv_obj, 'write', ids, vals, context)
 
@@ -250,7 +250,7 @@ class OERP(collections.MutableMapping):
         """
         if ids is None:
             ids = []
-        if isinstance(osv_obj, osv.BrowseRecord):
+        if isinstance(osv_obj, browse.BrowseRecord):
             return self.pool.get(osv_obj.__osv__['name']).unlink(osv_obj)
         return self.execute(osv_obj, 'unlink', ids, context)
 
@@ -272,7 +272,7 @@ class OERP(collections.MutableMapping):
 
     def get_osv_name(self, osv_obj):
         """Return the OSV name of the OSV instance ``osv_obj`` supplied."""
-        if not isinstance(osv_obj, osv.BrowseRecord):
+        if not isinstance(osv_obj, browse.BrowseRecord):
             raise ValueError(u"Value is not an instance of OSV class")
         return osv_obj.__osv__['name']
         #return self.pool.get_by_class(osv_obj.__class__).osv['name']
@@ -290,11 +290,11 @@ class OERP(collections.MutableMapping):
     # ---------------------------- #
 
     def __delitem__(self, osv_name):
-        del self.pool[osv_name]
-        #raise error.NotAllowedError(u"Operation not supported")
+        #del self.pool.get(osv_name)
+        raise error.NotAllowedError(u"Operation not supported")
 
     def __getitem__(self, osv_name):
-        return self.pool[osv_name]
+        return self.pool.get(osv_name)
 
     def __iter__(self):
         for osv_name in self.pool:

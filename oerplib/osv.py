@@ -10,7 +10,7 @@ from oerplib import error, fields, browse
 def check_obj(func):
     """Decorator to check the availability of the object."""
     def wrapper(self, obj):
-        if obj.id not in self.objects:
+        if obj.id not in self.browse_records:
             raise ValueError("This object is no longer referenced,"
                              " operation canceled.")
         return func(self, obj)
@@ -24,17 +24,17 @@ class OSV(collections.MutableMapping):
     def __init__(self, oerp, osv_name):
         super(OSV, self).__init__()
         self.oerp = oerp
-        self.objects = {}
+        self.browse_records = {}
         self.browse_class = self._generate_browse_class(osv_name)
 
     def browse(self, obj_id, refresh=True):
         """Generate an instance of the OSV class (called 'browse_record')."""
-        if obj_id not in self.objects:
-            self.objects[obj_id] = {}
-            self.objects[obj_id]['instance'] = self.browse_class(obj_id)
+        if obj_id not in self.browse_records:
+            self.browse_records[obj_id] = {}
+            self.browse_records[obj_id]['instance'] = self.browse_class(obj_id)
         if refresh:
-            self.refresh(self.objects[obj_id]['instance'])
-        return self.objects[obj_id]['instance']
+            self.refresh(self.browse_records[obj_id]['instance'])
+        return self.browse_records[obj_id]['instance']
 
     def _generate_browse_class(self, osv_name):
         """Generate a class with all its fields corresponding to
@@ -71,7 +71,7 @@ class OSV(collections.MutableMapping):
     @check_obj
     def write(self, obj):
         """Send values of fields updated to the OpenERP server."""
-        obj_info = self.objects[obj.id]
+        obj_info = self.browse_records[obj.id]
         vals = {}
         for field_name in obj_info['fields_updated']:
             if field_name in obj_info['raw_data']:
@@ -109,7 +109,7 @@ class OSV(collections.MutableMapping):
         in the purpose to cancel all changes made.
 
         """
-        obj_info = self.objects[obj.id]
+        obj_info = self.browse_records[obj.id]
         obj_info['raw_data'] = self.oerp.read(obj.__osv__['name'], obj.id)
         if obj_info['raw_data'] is False:
             raise error.ExecuteQueryError(
@@ -136,7 +136,7 @@ class OSV(collections.MutableMapping):
         last call to refresh(obj) method).
 
         """
-        obj_info = self.objects[obj.id]
+        obj_info = self.browse_records[obj.id]
         obj_info['fields_updated'] = []
         # Load fields and their values
         for field in self.browse_class.__osv__['columns'].values():
@@ -149,31 +149,31 @@ class OSV(collections.MutableMapping):
     @check_obj
     def unlink(self, obj):
         """Delete the object locally and from the server."""
-        del self.objects[obj.id]
+        del self.browse_records[obj.id]
         return self.oerp.unlink(obj.__osv__, [obj.id])
 
     def __str__(self):
         """Return string representation of this OSV class."""
-        return str([obj_id for obj_id in self.objects.keys()])
+        return str([obj_id for obj_id in self.browse_records.keys()])
 
     # ---------------------------- #
     # -- MutableMapping methods -- #
     # ---------------------------- #
 
     def __delitem__(self, obj_id):
-        del self.objects[obj_id]
+        del self.browse_records[obj_id]
         #raise error.NotAllowedError(u"Operation not supported")
 
     def __getitem__(self, obj_id):
         return self.browse(obj_id)
 
     def __iter__(self):
-        for obj_id in self.objects:
+        for obj_id in self.browse_records:
             yield obj_id
-            #yield self.objects[obj_id]
+            #yield self.browse_records[obj_id]
 
     def __len__(self):
-        return len(self.objects)
+        return len(self.browse_records)
 
     def __setitem__(self, key, value):
         raise error.NotAllowedError(u"Operation not supported")

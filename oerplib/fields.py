@@ -19,8 +19,8 @@ class BaseField(object):
     """Field which all other fields inherit.
     Manage common metadata.
     """
-    def __init__(self, factory, name, data):
-        self.factory = factory
+    def __init__(self, osv, name, data):
+        self.osv = osv
         self.name = name
         self.type = 'type' in data and data['type'] or False
         self.string = 'string' in data and data['string'] or False
@@ -71,8 +71,8 @@ class BaseField(object):
 
 class SelectionField(BaseField):
     """Represent the OpenObject 'fields.selection'"""
-    def __init__(self, factory, name, data):
-        super(SelectionField, self).__init__(factory, name, data)
+    def __init__(self, osv, name, data):
+        super(SelectionField, self).__init__(osv, name, data)
         self.selection = 'selection' in data and data['selection'] or False
 
     def __get__(self, instance, owner):
@@ -81,7 +81,7 @@ class SelectionField(BaseField):
     def __set__(self, instance, value):
         value = self.check_value(value)
         setattr(instance, "_{0}".format(self.name), value)
-        self.factory.objects[instance.id]['fields_updated'].append(self.name)
+        self.osv.browse_records[instance.id]['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(SelectionField, self).check_value(value)
@@ -99,15 +99,15 @@ values '{selection}' for the '{field_name}' field".format(
 
 class Many2ManyField(BaseField):
     """Represent the OpenObject 'fields.many2many'"""
-    def __init__(self, factory, name, data):
-        super(Many2ManyField, self).__init__(factory, name, data)
+    def __init__(self, osv, name, data):
+        super(Many2ManyField, self).__init__(osv, name, data)
         self.relation = 'relation' in data and data['relation'] or False
         self.context = 'context' in data and data['context'] or False
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
         return [instance.__oerp__.browse(self.relation, o_id)
-            for o_id in self.factory.objects[instance.id]['raw_data'][self.name]
+            for o_id in self.osv.browse_records[instance.id]['raw_data'][self.name]
             ]
 
     def __set__(self, instance, value):
@@ -120,8 +120,8 @@ class Many2ManyField(BaseField):
 
 class Many2OneField(BaseField):
     """Represent the OpenObject 'fields.many2one'"""
-    def __init__(self, factory, name, data):
-        super(Many2OneField, self).__init__(factory, name, data)
+    def __init__(self, osv, name, data):
+        super(Many2OneField, self).__init__(osv, name, data)
         self.relation = 'relation' in data and data['relation'] or False
         self.context = 'context' in data and data['context'] or False
         self.domain = 'domain' in data and data['domain'] or False
@@ -143,7 +143,7 @@ class Many2OneField(BaseField):
                              " a browse_record object.")
         o_rel = self.check_value(o_rel)
         setattr(instance, "_{0}".format(self.name), [o_rel.id, o_rel.name])
-        self.factory.objects[instance.id]['fields_updated'].append(self.name)
+        self.osv.browse_records[instance.id]['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(Many2OneField, self).check_value(value)
@@ -159,28 +159,28 @@ class Many2OneField(BaseField):
 
 class One2ManyField(BaseField):
     """Represent the OpenObject 'fields.one2many'"""
-    def __init__(self, factory, name, data):
-        super(One2ManyField, self).__init__(factory, name, data)
+    def __init__(self, osv, name, data):
+        super(One2ManyField, self).__init__(osv, name, data)
         self.relation = 'relation' in data and data['relation'] or False
         self.context = 'context' in data and data['context'] or False
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
         return [instance.__oerp__.browse(self.relation, o_id)
-            for o_id in self.factory.objects[instance.id]['raw_data'][self.name]
+            for o_id in self.osv.browse_records[instance.id]['raw_data'][self.name]
             ]
 
     #def __set__(self, instance, value):
 
     #def check_value(self, value):
     #    super(One2ManyField, self).check_value(value)
-    #    oerp = self.factory.oerp
-    #    value_factory = oerp.pool.get_by_class(value.__class__)
-    #    if value_factory.osv['name'] != self.relation:
+    #    oerp = self.osv.oerp
+    #    value_osv = oerp.pool.get_by_class(value.__class__)
+    #    if value_osv.osv['name'] != self.relation:
     #        raise ValueError(
     #            (u"Instance of '{osv_name}' supplied doesn't match with the "+\
     #            u"relation '{relation}' of the '{field_name}' field.").format(
-    #                osv_name=value_factory.osv['name'],
+    #                osv_name=value_osv.osv['name'],
     #                relation=self.relation,
     #                field_name=self.name))
     #    return value
@@ -189,8 +189,8 @@ class One2ManyField(BaseField):
 class DateField(BaseField):
     """Represent the OpenObject 'fields.data'"""
     pattern = "%Y-%m-%d"
-    def __init__(self, factory, name, data):
-        super(DateField, self).__init__(factory, name, data)
+    def __init__(self, osv, name, data):
+        super(DateField, self).__init__(osv, name, data)
 
     def __get__(self, instance, owner):
         value = getattr(instance, "_{0}".format(self.name))
@@ -203,7 +203,7 @@ class DateField(BaseField):
     def __set__(self, instance, value):
         value = self.check_value(value)
         setattr(instance, "_{0}".format(self.name), value)
-        self.factory.objects[instance.id]['fields_updated'].append(self.name)
+        self.osv.browse_records[instance.id]['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(DateField, self).check_value(value)
@@ -224,8 +224,8 @@ class DateField(BaseField):
 class DateTimeField(BaseField):
     """Represent the OpenObject 'fields.datetime'"""
     pattern = "%Y-%m-%d %H:%M:%S"
-    def __init__(self, factory, name, data):
-        super(DateTimeField, self).__init__(factory, name, data)
+    def __init__(self, osv, name, data):
+        super(DateTimeField, self).__init__(osv, name, data)
 
     def __get__(self, instance, owner):
         value = getattr(instance, "_{0}".format(self.name))
@@ -238,7 +238,7 @@ class DateTimeField(BaseField):
     def __set__(self, instance, value):
         value = self.check_value(value)
         setattr(instance, "_{0}".format(self.name), value)
-        self.factory.objects[instance.id]['fields_updated'].append(self.name)
+        self.osv.browse_records[instance.id]['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(DateTimeField, self).check_value(value)
@@ -266,8 +266,8 @@ class ValueField(BaseField):
     - 'fields.text',
     - 'fields.binary',
     """
-    def __init__(self, factory, name, data):
-        super(ValueField, self).__init__(factory, name, data)
+    def __init__(self, osv, name, data):
+        super(ValueField, self).__init__(osv, name, data)
 
     def __get__(self, instance, owner):
         return getattr(instance, "_{0}".format(self.name))
@@ -275,10 +275,10 @@ class ValueField(BaseField):
     def __set__(self, instance, value):
         value = self.check_value(value)
         setattr(instance, "_{0}".format(self.name), value)
-        self.factory.objects[instance.id]['fields_updated'].append(self.name)
+        self.osv.browse_records[instance.id]['fields_updated'].append(self.name)
 
 
-def generate_field(factory, name, data):
+def generate_field(osv, name, data):
     """Generate a well-typed field according to the data dictionary supplied
     (obtained via 'fields_get' XML-RPC/NET-RPC method).
 
@@ -286,20 +286,20 @@ def generate_field(factory, name, data):
     assert 'type' in data
     field = None
     if data['type'] == 'selection':
-        field = SelectionField(factory, name, data)
+        field = SelectionField(osv, name, data)
     elif data['type'] == 'many2many':
-        field = Many2ManyField(factory, name, data)
+        field = Many2ManyField(osv, name, data)
     elif data['type'] == 'many2one':
-        field = Many2OneField(factory, name, data)
+        field = Many2OneField(osv, name, data)
     elif data['type'] == 'one2many':
-        field = One2ManyField(factory, name, data)
+        field = One2ManyField(osv, name, data)
     elif data['type'] == 'date':
-        field = DateField(factory, name, data)
+        field = DateField(osv, name, data)
     elif data['type'] == 'datetime':
-        field = DateTimeField(factory, name, data)
+        field = DateTimeField(osv, name, data)
     elif data['type'] in ['char', 'float', 'integer',
                           'boolean', 'text', 'binary']:
-        field = ValueField(factory, name, data)
+        field = ValueField(osv, name, data)
     else:
         raise error.UnknownError(
             u"Can't instanciate the field '{field_name}', type unknown".format(
