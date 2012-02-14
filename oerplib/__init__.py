@@ -7,7 +7,7 @@ variety of automated jobs that communicate with an OpenERP server.
 
 """
 from oerplib.oerp import OERP
-from oerplib.dms import DMS
+#from oerplib.dms import DMS
 from oerplib import error
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

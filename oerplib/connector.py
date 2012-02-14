@@ -18,11 +18,14 @@ Here an example of using:
 
     Download the data of a report :
     >>> data = cnt.report(uid, 'passwd', 'sale.order', 'sale.order', 4, 'pdf')
+
 """
 
 import xmlrpclib, socket
 import abc
 import time
+
+from oerplib import netrpc
 
 def get_connector(server, port, protocol='xmlrpc'):
     """Return a Connector class to interact with an OpenERP server.
@@ -35,9 +38,9 @@ def get_connector(server, port, protocol='xmlrpc'):
             }
     if protocol not in connectors:
         error = ("The protocol '{0}' is not supported. "
-                "Please choose a protocol among these ones: {1}")
+                 "Please choose a protocol among these ones: {1}")
         error = error.format(protocol, connectors.keys())
-        raise ProtocolError(error)
+        raise ConnectorError(error)
     return connectors[protocol](server, port)
 
 
@@ -49,7 +52,14 @@ class _Connector(object):
 
     def __init__(self, server, port):
         self.server = server
-        self.port = port
+        try:
+            int(port)
+        except ValueError:
+            error = "The port '{0}' is invalid. An integer is required."
+            error = error.format(port)
+            raise ConnectorError(error)
+        else:
+            self.port = port
 
     @abc.abstractmethod
     def login(self, database, user, passwd):
@@ -161,34 +171,76 @@ class _ConnectorXMLRPC(_Connector):
 
 class _ConnectorNetRPC(_Connector):
     """Connector class using NetRPC protocol."""
-    #TODO _ConnectorNetRPC, to implement
     def __init__(self, server, port):
         super(_ConnectorNetRPC, self).__init__(server, port)
-        raise Exception("NetRPC protocol will be implemented "
-                        "in a future release. Stay tuned!")
+
+    def _request(self, service, method, *args):
+        self.sock = netrpc.NetRPC()
+        self.sock.connect(self.server, self.port)
+        self.sock.send((service, method, )+args)
+        result = self.sock.receive()
+        self.sock.disconnect()
+        return result
 
     def login(self, database, user, passwd):
         self.database = database
-        pass
+        try:
+            return self._request('common', 'login',
+                                 self.database, user, passwd)
+        except netrpc.NetRPCError as exc:
+            raise LoginError(unicode(exc))
 
     def execute(self, uid, upasswd, osv_name, method, *args):
-        pass
+        try:
+            return self._request('object', 'execute', self.database,
+                                 uid, upasswd, osv_name, method, *args)
+        except netrpc.NetRPCError as exc:
+            raise ExecuteError(unicode(exc))
 
     def exec_workflow(self, uid, upasswd, osv_name, signal, obj_id):
-        pass
+        try:
+            return self._request('object', 'exec_workflow', self.database,
+                                 uid, upasswd, osv_name, signal, obj_id)
+        except netrpc.NetRPCError as exc:
+            raise ExecWorkflowError("Workflow query has failed.")
 
     def report(self, uid, upasswd, report_name,
                osv_name, obj_id, report_type='pdf', context=None):
-        pass
+        if context is None:
+            context = {}
+        data = {'model': osv_name, 'id': obj_id, 'report_type': report_type}
+        try:
+            report_id = self._request('report', 'report', self.database,
+                                      uid, upasswd, report_name, [obj_id],
+                                      data, context)
+        except netrpc.NetRPCError as exc:
+            raise ExecReportError(unicode(exc))
+        state = False
+        attempt = 0
+        while not state:
+            try:
+                pdf_data = self._request('report', 'report_get', self.database,
+                                         uid, upasswd, report_id)
+            except netrpc.NetRPCError as exc:
+                raise ExecReportError("Unknown error occurred during the "
+                                      "download of the report.")
+            state = pdf_data['state']
+            if not state:
+                time.sleep(1)
+                attempt += 1
+            if attempt > 200:
+                raise ExecReportError("Download time exceeded, "
+                                      "the operation has been canceled.")
+        return pdf_data
 
 
 #===========
 # Exceptions
 #===========
 
-class ProtocolError(BaseException):
-    """Exception raised if the protocol supplied
-    does not exist/is not supported.
+class ConnectorError(BaseException):
+    """Exception raised if the informations supplied
+    to initiate the connector are wrong.
     """
     pass
 
