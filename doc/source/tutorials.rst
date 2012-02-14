@@ -9,7 +9,7 @@ First step: prepare the connection and login
 You need an instance of the :class:`OERP <oerplib.OERP>` class to dialog with an
 `OpenERP` server. Let's pretend that you want to connect as `admin` on the
 `db_name` database of the local `OpenERP` server (with the `XML-RPC` service
-which listens on port 8071). First, prepare the connection::
+which listens on port `8071`). First, prepare the connection::
 
     >>> import oerplib
     >>> oerp = oerplib.OERP(server='localhost', port=8071)
@@ -34,22 +34,22 @@ informations are accessible (see :ref:`browse-objects` section)::
     >>> print(user.name)            # print the full name of the user
     >>> print(user.company_id.name) # print the name of its company
 
-Now you are connected, you can easily execute XML-RPC queries and handle all OSV
+Now you are connected, you can easily execute `XML-RPC` queries and handle all OSV
 classes from the `OpenERP` server.
 
 Execute queries
 ---------------
 
 The basic method to execute queries is ``execute``. It takes at least two
-parameters (OSV class name and the method name) following by variable parameters
+parameters (OSV model name and the method name) following by variable parameters
 according to the method called. Example::
 
     >>> order_data = oerp.execute('sale.order', 'read', 1)
 
-This instruction will call the ``read`` method of the OSV class ``sale.order``
+This instruction will call the ``read`` method of the OSV model ``sale.order``
 with the parameter ``1`` (the record ID asked by ``read``).
 
-For standard OSV methods suscribed to the XML-RPC service like ``create``,
+For standard OSV methods suscribed to the `XML-RPC` service like ``create``,
 ``read``, ``write``, ``unlink`` and ``search``, convenient methods exist::
 
     >>> partner_id = oerp.create('res.partner', {'name': 'Jacky Bob', 'lang': 'fr_FR'})
@@ -190,4 +190,18 @@ As always, a wrong type will raise an exception::
       File "oerplib/fields.py", line 203, in check_value
         self.pattern))
     ValueError: Value not well formatted, expecting '%Y-%m-%d' format
+
+Generate reports
+----------------
+
+Another nice functionnality is the reports generation with the ``report``
+method. You have to supply the name of the report, the name of the OSV model and
+the ID of the record related::
+
+    >>> oerp.report('sale.order', 'sale.order', 1)
+    '/tmp/oerplib_uJ8Iho.pdf'
+    >>> oerp.report('webkitaccount.invoice', 'account.invoice', 1)
+    '/tmp/oerplib_r1W9jG.pdf'
+
+The method will return the path to the generated temporary report file.
 

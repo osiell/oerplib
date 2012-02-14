@@ -24,11 +24,11 @@ def check_logged_user(func):
     """Decorator function which check that a user is logged.
     Otherwise, an error is raised.
     """
-    def wrapper(*args):
+    def wrapper(*args, **kwargs):
         if not args[0]._user:
             raise error.LoginError(
                 u"Have to be logged to be able to execute queries")
-        return func(*args)
+        return func(*args, **kwargs)
     return wrapper
 
 
@@ -100,7 +100,7 @@ class OERP(object):
 
     @check_logged_user
     def execute(self, osv_name, method, *args):
-        """Execute a simple XMLRPC method ``method`` on the OSV server class
+        """Execute a simple `XML-RPC` method ``method`` on the OSV server class
         ``osv_name``. ``*args`` parameters varies according to the method used.
 
         """
@@ -113,7 +113,7 @@ class OERP(object):
 
     @check_logged_user
     def exec_workflow(self, osv_name, signal, obj_id):
-        """XMLRPC Workflow query. Execute the workflow signal ``signal`` on
+        """`XML-RPC` Workflow query. Execute the workflow signal ``signal`` on
         the instance having the ID ``obj_id`` of OSV server class ``osv_name``.
 
         `WARNING: not sufficiently tested.`
@@ -130,11 +130,12 @@ class OERP(object):
     @context_auto(index=5)
     def report(self, report_name, osv_name, obj_id, report_type='pdf',
                context=None):
-        """Download a report from the OpenERP server via XMLRPC
+        """Download a report from the OpenERP server via `XML-RPC`
         and return the path of the file.
-        ``report_type`` can be 'pdf', 'webkit', etc.
 
         """
+        #TODO report_type: what it means exactly?
+
         # If no context was supplied, get the default one FIXME
         #context = context or self.get_user_context()
 

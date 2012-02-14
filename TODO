@@ -1,6 +1,4 @@
 TODO:
-    - Implement NET-RPC protocol
-
     - Instantiate socket for each request?
 
     - Implement __slots__ where its possible to reduce memory consumption
@@ -20,8 +18,6 @@ RPC methods for 'url/object' :
     - execute (u'ir.ui.menu', 'fields_view_get', 1, u'tree',
                {'lang': u'fr_FR', 'active_ids': [], 'tz': False,
                 'active_id': False})
-
-    - execute ('res.users', 'context_get')
 
     - execute ('ir.values', 'get', 'action', 'tree_but_open',
                [('ir.ui.menu', 80)], False, {'lang': u'fr_FR', 'tz': False})
