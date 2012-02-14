@@ -5,10 +5,11 @@
 class BrowseRecord(object):
     """Base class that all browsable objects inherit from.
     No attributes should be defined in this class (except _id/id, __oerp__,
-    __osv__ and Python magic methods) in order to not be conflicted with the
+    __osv__, __data__ and Python magic methods) in order to not be conflicted with the
     fields defined in the OSV model class on OpenERP server.
 
     """
+    __oerp__ = None
     __osv__ = None
     def __init__(self, o_id):
         self._id = o_id

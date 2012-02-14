@@ -25,34 +25,37 @@ def check_logged_user(func):
     Otherwise, an error is raised.
     """
     def wrapper(*args):
-        if not args[0].user:
+        if not args[0]._user:
             raise error.LoginError(
                 u"Have to be logged to be able to execute queries")
         return func(*args)
     return wrapper
 
 
-class OERP(collections.MutableMapping):
+class OERP(object):
     """Return a new instance of the :class:`OERP` class.
     The optional ``database`` parameter specifies the default database to use
     when the ``login(user, passwd)`` is called. By default, the port 8069
     is used.
 
     """
-#    Attributes:
-#    user        -- object which contains User's informations
-#    server      -- domain name or IP of the server
-#    port        -- port used to connect to the server
-#    database    -- database name
-
 
     def __init__(self, server, database=None, port=8069, protocol='xmlrpc'):
-        self.server = server
-        self.port = port
-        self.protocol = protocol
-        self.database = self.database_default = database
-        self.pool = pool.OSVPool(self)
-        self.user = None
+        self._server = server
+        self._port = port
+        self._protocol = protocol
+        self._database = self._database_default = database
+        self._pool = pool.OSVPool(self)
+        self._user = None
+
+    user = property(lambda self: self._user,
+                    doc="Return the user object connected.")
+    server = property(lambda self: self._server,
+                      doc="Return the server name used.")
+    port = property(lambda self: self._port,
+                    doc="Return the port used.")
+    protocol = property(lambda self: self._protocol,
+                        doc="Return the protocol used.")
 
     def login(self, user, passwd, database=None):
         """Log in as the given ``user`` with the password ``passwd`` on the
@@ -63,31 +66,31 @@ class OERP(collections.MutableMapping):
 
         """
         # Raise an error if no database was given
-        self.database = database or self.database_default
-        if not self.database:
+        self._database = database or self._database_default
+        if not self._database:
             raise error.LoginError(u"No database specified")
         # Instanciate the OpenERP server connector
-        self.connector = connector.get_connector(self.server, self.port,
-                                                 self.protocol)
+        self.connector = connector.get_connector(self._server, self._port,
+                                                 self._protocol)
         # Get the user's ID and generate the corresponding User object
         try:
-            user_id = self.connector.login(self.database, user, passwd)
+            user_id = self.connector.login(self._database, user, passwd)
         except connector.LoginError as exc:
             raise error.LoginError(unicode(exc))
         else:
             if user_id:
                 #NOTE: create a fake User object just to execute the
                 # first query : browse the real User object
-                self.user = type('User', (object,), {
+                self._user = type('User', (object,), {
                                     'id': None,
                                     'login': None,
                                     'password': None,
                                 })
-                self.user.id = user_id
-                self.user.login = user
-                self.user.password = passwd
-                self.user = self.browse('res.users', user_id)
-                return self.user
+                self._user.id = user_id
+                self._user.login = user
+                self._user.password = passwd
+                self._user = self.browse('res.users', user_id)
+                return self._user
             else:
                 raise error.LoginError(u"Wrong login ID or password")
 
@@ -103,7 +106,7 @@ class OERP(collections.MutableMapping):
         """
         # Execute the query
         try:
-            return self.connector.execute(self.user.id, self.user.password,
+            return self.connector.execute(self._user.id, self._user.password,
                                           osv_name, method, *args)
         except connector.ExecuteError as exc:
             raise error.ExecuteQueryError(unicode(exc))
@@ -118,7 +121,7 @@ class OERP(collections.MutableMapping):
         """
         # Execute the workflow query
         try:
-            self.connector.exec_workflow(self.user.id, self.user.password,
+            self.connector.exec_workflow(self._user.id, self._user.password,
                                          osv_name, signal, obj_id)
         except connector.ExecWorkflowError as exc:
             raise error.WorkflowQueryError(unicode(exc))
@@ -137,7 +140,7 @@ class OERP(collections.MutableMapping):
 
         # Execute the report query
         try:
-            pdf_data = self.connector.report(self.user.id, self.user.password,
+            pdf_data = self.connector.report(self._user.id, self._user.password,
                                              report_name, osv_name,
                                              obj_id, report_type, context)
         except connector.ExecReportError as exc:
@@ -182,7 +185,7 @@ class OERP(collections.MutableMapping):
             return [self.browse(osv_name, o_id, refresh)
                     for o_id in ids]
         else:
-            return self.pool.get(osv_name).browse(ids, refresh)
+            return self._pool.get(osv_name).browse(ids, refresh)
 
     #@context_auto(index=6)
     def search(self, osv_name, args=None, offset=0, limit=None, order=None,
@@ -236,7 +239,7 @@ class OERP(collections.MutableMapping):
         if vals is None:
             vals = {}
         if isinstance(osv_obj, browse.BrowseRecord):
-            return self.pool.get_by_class(osv_obj.__class__).write(osv_obj)
+            return self._pool.get_by_class(osv_obj.__class__).write(osv_obj)
         return self.execute(osv_obj, 'write', ids, vals, context)
 
     #@context_auto(index=3)
@@ -251,7 +254,7 @@ class OERP(collections.MutableMapping):
         if ids is None:
             ids = []
         if isinstance(osv_obj, browse.BrowseRecord):
-            return self.pool.get(osv_obj.__osv__['name']).unlink(osv_obj)
+            return self._pool.get(osv_obj.__osv__['name']).unlink(osv_obj)
         return self.execute(osv_obj, 'unlink', ids, context)
 
     def refresh(self, osv_obj):
@@ -260,7 +263,7 @@ class OERP(collections.MutableMapping):
         Thus, all changes made locally on the object are canceled.
 
         """
-        return self.pool.get_by_class(osv_obj.__class__).refresh(osv_obj)
+        return self._pool.get_by_class(osv_obj.__class__).refresh(osv_obj)
 
     def reset(self, osv_obj):
         """Cancel all changes made locally on the object ``osv_obj``.
@@ -268,41 +271,16 @@ class OERP(collections.MutableMapping):
         Therefore, values restored may be outdated.
 
         """
-        return self.pool.get_by_class(osv_obj.__class__).reset(osv_obj)
+        return self._pool.get_by_class(osv_obj.__class__).reset(osv_obj)
 
     def get_osv_name(self, osv_obj):
         """Return the OSV name of the OSV instance ``osv_obj`` supplied."""
         if not isinstance(osv_obj, browse.BrowseRecord):
-            raise ValueError(u"Value is not an instance of OSV class")
+            raise ValueError(u"Value is not a browse record.")
         return osv_obj.__osv__['name']
-        #return self.pool.get_by_class(osv_obj.__class__).osv['name']
 
     def get_user_context(self):
         """Generate a default user context parameter."""
         return self.execute('res.users', 'context_get')
-
-    def __str__(self):
-        return str(self.pool)
-
-    # ---------------------------- #
-    # -- MutableMapping methods -- #
-    # ---------------------------- #
-
-    def __delitem__(self, osv_name):
-        #del self.pool.get(osv_name)
-        raise error.NotAllowedError(u"Operation not supported")
-
-    def __getitem__(self, osv_name):
-        return self.pool.get(osv_name)
-
-    def __iter__(self):
-        for osv_name in self.pool:
-            yield osv_name
-
-    def __len__(self):
-        return len(self.pool)
-
-    def __setitem__(self, osv_name, value):
-        raise error.NotAllowedError(u"Operation not supported")
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
