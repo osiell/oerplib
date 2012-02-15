@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
-"""This module defines the :class:`OERP` and :class:`DMS` classes.
+"""The `OERPLib` module defines the :class:`OERP` class.
 
 The :class:`OERP` class manage the client-side operations which are related to
-an OpenERP server. You can use this to write Python programs that performs a
-variety of automated jobs that communicate with an OpenERP server.
+an `OpenERP` server. You can use this one to write Python programs that performs
+a variety of automated jobs that communicate with an `OpenERP` server.
 
 """
 from oerplib.oerp import OERP

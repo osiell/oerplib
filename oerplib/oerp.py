@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
-"""This module contains the OERP class which manage the interaction with
-the OpenERP server.
+"""This module contains the ``OERP`` class which manage the interaction with
+the `OpenERP` server.
+
 """
 import os
-import collections
 import base64, zlib, tempfile
 
 from oerplib import connector, error, pool, browse
@@ -20,16 +20,17 @@ def context_auto(index):
         return wrapped
     return wrapper
 
-def check_logged_user(func):
-    """Decorator function which check that a user is logged.
-    Otherwise, an error is raised.
-    """
-    def wrapper(*args, **kwargs):
-        if not args[0]._user:
-            raise error.LoginError(
-                u"Have to be logged to be able to execute queries")
-        return func(*args, **kwargs)
-    return wrapper
+#FIXME: deprecated
+#def check_logged_user(func):
+#    """Decorator function which check that a user is logged.
+#    Otherwise, an error is raised.
+#    """
+#    def wrapper(*args, **kwargs):
+#        if not args[0]._user:
+#            raise error.LoginError(
+#                u"Have to be logged to be able to execute queries")
+#        return func(*args, **kwargs)
+#    return wrapper
 
 
 class OERP(object):
@@ -57,12 +58,23 @@ class OERP(object):
     protocol = property(lambda self: self._protocol,
                         doc="Return the protocol used.")
 
+    #NOTE: in the past this function was implemented as a decorator for other
+    # methods needed to be checked, but Sphinx documentation generator is not
+    # able to auto-document decorated methods.
+    def _check_logged_user(self):
+        """Check if a user is logged. Otherwise, an error is raised."""
+        if not self._user:
+            raise error.LoginError(
+                u"Have to be logged to be able to execute queries")
+
     def login(self, user, passwd, database=None):
         """Log in as the given ``user`` with the password ``passwd`` on the
         database ``database`` and return the corresponding User browsable
         object.
         If ``database`` is not specified, the default one will be used instead.
         If no database is found, a LoginError exception will be raised.
+
+        :raise: :class:`oerplib.error.LoginError`
 
         """
         # Raise an error if no database was given
@@ -98,12 +110,14 @@ class OERP(object):
     # -- Raw XML-RPC methods -- #
     # ------------------------- #
 
-    @check_logged_user
     def execute(self, osv_name, method, *args):
         """Execute a simple `XML-RPC` method ``method`` on the OSV server class
         ``osv_name``. ``*args`` parameters varies according to the method used.
 
+        :raise: :class:`oerplib.error.ExecuteQueryError`
+
         """
+        self._check_logged_user()
         # Execute the query
         try:
             return self.connector.execute(self._user.id, self._user.password,
@@ -111,14 +125,16 @@ class OERP(object):
         except connector.ExecuteError as exc:
             raise error.ExecuteQueryError(unicode(exc))
 
-    @check_logged_user
     def exec_workflow(self, osv_name, signal, obj_id):
         """`XML-RPC` Workflow query. Execute the workflow signal ``signal`` on
         the instance having the ID ``obj_id`` of OSV server class ``osv_name``.
 
+        :raise: :class:`oerplib.error.WorkflowQueryError`
+
         `WARNING: not sufficiently tested.`
 
         """
+        self._check_logged_user()
         # Execute the workflow query
         try:
             self.connector.exec_workflow(self._user.id, self._user.password,
@@ -126,14 +142,16 @@ class OERP(object):
         except connector.ExecWorkflowError as exc:
             raise error.WorkflowQueryError(unicode(exc))
 
-    @check_logged_user
     @context_auto(index=5)
     def report(self, report_name, osv_name, obj_id, report_type='pdf',
                context=None):
         """Download a report from the OpenERP server via `XML-RPC`
         and return the path of the file.
 
+        :raise: :class:`oerplib.error.ReportError`
+
         """
+        self._check_logged_user()
         #TODO report_type: what it means exactly?
 
         # If no context was supplied, get the default one FIXME
@@ -181,6 +199,8 @@ class OERP(object):
         already been loaded previously (this is the default behaviour, set to
         False to change that).
 
+        :raise: :class:`oerplib.error.ExecuteQueryError`
+
         """
         if isinstance(ids, list):
             return [self.browse(osv_name, o_id, refresh)
@@ -195,6 +215,8 @@ class OERP(object):
         ``args`` parameter. ``args`` must be of the form
         ``[('name', '=', 'John'), (...)]``
 
+        :raise: :class:`oerplib.error.ExecuteQueryError`
+
         """
         if args is None:
             args = []
@@ -207,6 +229,8 @@ class OERP(object):
         ``vals`` dictionary (e.g. ``{'name': 'John', ...}``).
         Return the ID of the new record.
 
+        :raise: :class:`oerplib.error.ExecuteQueryError`
+
         """
         return self.execute(osv_name, 'create', vals, context)
 
@@ -216,6 +240,8 @@ class OERP(object):
         of the requested fields ``fields`` from the OSV server class
         ``osv_name``. If ``fields`` is not specified, all fields values
         will be retrieved.
+
+        :raise: :class:`oerplib.error.ExecuteQueryError`
 
         """
         if fields is None:
@@ -234,6 +260,8 @@ class OERP(object):
         ``ids`` and ``vals`` are useless.
         Return True.
 
+        :raise: :class:`oerplib.error.ExecuteQueryError`
+
         """
         if ids is None:
             ids = []
@@ -251,6 +279,8 @@ class OERP(object):
         In the latter case, the parameter ``ids`` is useless.
         Return True.
 
+        :raise: :class:`oerplib.error.ExecuteQueryError`
+
         """
         if ids is None:
             ids = []
@@ -262,6 +292,8 @@ class OERP(object):
         """Restore original values of the object ``osv_obj`` from data
         retrieved on the OpenERP server.
         Thus, all changes made locally on the object are canceled.
+
+        :raise: :class:`oerplib.error.ExecuteQueryError`
 
         """
         return self._pool.get_by_class(osv_obj.__class__).refresh(osv_obj)
@@ -281,7 +313,11 @@ class OERP(object):
         return osv_obj.__osv__['name']
 
     def get_user_context(self):
-        """Generate a default user context parameter."""
+        """Generate a default user context parameter.
+
+        :raise: :class:`oerplib.error.ExecuteQueryError`
+
+        """
         return self.execute('res.users', 'context_get')
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

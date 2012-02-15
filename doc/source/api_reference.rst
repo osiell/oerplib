@@ -4,11 +4,11 @@ Reference
 .. automodule:: oerplib
     :members:
 
-Here's a sample session using the :mod:`oerplib` module::
+Here's a sample session using this module::
 
     >>> import oerplib
-    >>> oerp = oerplib.OERP('localhost')     # connect to localhost, default port
-    >>> user = oerp.login('admin', 'admin')  # login returns an user object
+    >>> oerp = oerplib.OERP('localhost')                    # connect to localhost, default port
+    >>> user = oerp.login('admin', 'admin', 'my_database')  # login returns an user object
     >>> user.name
     'Administrator'
 
@@ -47,4 +47,10 @@ fields.many2one   ``OSV`` object
 fields.one2many   list of ``OSV`` objects
 fields.many2many  list of ``OSV`` objects
 ================  =======================
+
+Exceptions
+----------
+
+.. automodule:: oerplib.error
+    :members:
 

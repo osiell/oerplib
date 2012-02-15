@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
-"""This module contains all Exception classes to manage errors.
+"""This module contains all exceptions raised by `OERPLib` when an error
+occurred.
+
 """
 #import traceback, sys
 
@@ -20,31 +22,40 @@ class DMSConnectionError(Error):
 
 
 class LoginError(Error):
+    """Exception raised when an error occurred during a login operation."""
     pass
 
 
 class ExecuteQueryError(Error):
+    """Exception raised when an error occurred during an execute query."""
     pass
 
 
 class WorkflowQueryError(Error):
+    """Exception raised when an error occurred during an workflow query."""
     pass
 
 
 class ReportError(Error):
+    """Exception raised when an error occurred during a retrieval
+    report operation.
+    """
     pass
 
 
 class InternalError(Error):
+    """Exception raised when an error occurred during an internal operation."""
     pass
 
 
 class NotAllowedError(Error):
+    """Exception raised if a prohibited operation is made."""
     def __init__(self, message):
         super(NotAllowedError, self).__init__(message)
 
 
 class UnknownError(Error):
+    """Exception raised when an unknown error occurred."""
     def __init__(self, message):
         super(UnknownError, self).__init__(message)
 
