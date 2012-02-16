@@ -65,7 +65,7 @@ class OERP(object):
         """Check if a user is logged. Otherwise, an error is raised."""
         if not self._user:
             raise error.LoginError(
-                u"Have to be logged to be able to execute queries")
+                u"User login required.")
 
     def login(self, user, passwd, database=None):
         """Log in as the given ``user`` with the password ``passwd`` on the

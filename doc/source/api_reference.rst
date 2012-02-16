@@ -34,8 +34,8 @@ fields.date       datetime.date
 fields.datetime   datetime.datetime
 fields.float      float
 fields.integer    integer
-fields.selection  basestring
-fields.text       basestring
+fields.selection  basestring (str or unicode)
+fields.text       basestring (str or unicode)
 ================  ==============================
 
 Exceptions made for relation fields:
