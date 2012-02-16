@@ -1,7 +1,7 @@
 v0.4.0, 2012-02-16:
     - Browse records are no longer stored in OERPLib, each call to the 'browse',
-      method will generate a new object,
-    - Net-RPC protocol supported alongside XML-RPC,
+      method will generate a new instance,
+    - Net-RPC protocol support added,
     - Methods which need a user connected raise an exception
       if it is not the case.
     - Browse records now store their own original data and fields updated in
