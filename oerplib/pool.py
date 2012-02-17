@@ -12,14 +12,14 @@ class OSVPool(object):
         self.oerp = oerp
 
     def get(self, osv_name):
-        """Return an OSV class which is able to create browsable objects
+        """Return an OSV class which is able to create browsable records
         corresponding to the OSV name supplied.
 
         """
         return osv.OSV(self.oerp, osv_name)
 
     def get_by_class(self, browse_class):
-        """Return a OSV class which is able to create browsable objects
+        """Return a OSV class which is able to create browsable records
         corresponding to the BrowseRecord class supplied.
 
         """

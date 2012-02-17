@@ -8,7 +8,7 @@ from oerplib import error, fields, browse
 
 
 class OSV(collections.Mapping):
-    """Manage the objects corresponding to an OSV class."""
+    """Represent a data model from the `OpenERP` server."""
 
     fields_reserved = ['id', '__oerp__', '__osv__', '__data__']
     def __init__(self, oerp, osv_name):
@@ -16,11 +16,10 @@ class OSV(collections.Mapping):
         self.oerp = oerp
         self.browse_class = self._generate_browse_class(osv_name)
 
-    def browse(self, obj_id, refresh=True):
+    def browse(self, obj_id):
         """Generate an instance of the OSV class (called 'browse_record')."""
         obj = self.browse_class(obj_id)
-        if refresh:
-            self.refresh(obj)
+        self.refresh(obj)
         return obj
 
     def _generate_browse_class(self, osv_name):
@@ -55,7 +54,7 @@ class OSV(collections.Mapping):
         cls.__slots__ = slots
         return cls
 
-    def write(self, obj):
+    def write(self, obj, context=None):
         """Send values of fields updated to the OpenERP server."""
         obj_data = obj.__data__
         vals = {}
@@ -80,7 +79,7 @@ class OSV(collections.Mapping):
                 else:
                     vals[field_name] = getattr(obj, "_{0}".format(field_name))
         try:
-            res = self.oerp.write(obj.__osv__['name'], [obj.id], vals)
+            res = self.oerp.write(obj.__osv__['name'], [obj.id], vals, context)
         except error.Error as exc:
             raise exc
         else:
@@ -130,9 +129,9 @@ class OSV(collections.Mapping):
                 setattr(obj.__class__, field.name,
                         field)
 
-    def unlink(self, obj):
+    def unlink(self, obj, context=None):
         """Delete the object locally and from the server."""
-        return self.oerp.unlink(obj.__osv__, [obj.id])
+        return self.oerp.unlink(obj.__osv__, [obj.id], context)
 
     # ---------------------------- #
     # -- MutableMapping methods -- #

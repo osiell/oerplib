@@ -22,7 +22,7 @@ An alternative way is to download the tarball from
 `Python Package Index <http://pypi.python.org/pypi/OERPLib/>`_ page,
 and install manually (replace `X.Y.Z` accordingly)::
 
-    $ wget https://bitbucket.org/SebAlix/python-oerplib/downloads/OERPLib-X.Y.Z.tar.gz
+    $ wget http://pypi.python.org/packages/source/O/OERPLib/OERPLib-X.Y.Z.tar.gz
     $ tar xzvf OERPLib-X.Y.Z.tar.gz
     $ cd OERPLib-X.Y.Z
     $ python setup.py install

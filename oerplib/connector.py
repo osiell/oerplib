@@ -27,22 +27,6 @@ import time
 
 from oerplib import netrpc
 
-def get_connector(server, port, protocol='xmlrpc'):
-    """Return a Connector class to interact with an OpenERP server.
-    This one use either the XMLRPC protocol (by default) or NetRPC,
-    at the discretion of the user.
-    """
-    connectors = {
-            'xmlrpc': _ConnectorXMLRPC,
-            'netrpc': _ConnectorNetRPC,
-            }
-    if protocol not in connectors:
-        error = ("The protocol '{0}' is not supported. "
-                 "Please choose a protocol among these ones: {1}")
-        error = error.format(protocol, connectors.keys())
-        raise ConnectorError(error)
-    return connectors[protocol](server, port)
-
 
 class _Connector(object):
     """Connector base class defining the interface used
@@ -233,6 +217,23 @@ class _ConnectorNetRPC(_Connector):
                                       "the operation has been canceled.")
         return pdf_data
 
+
+PROTOCOLS = {
+        'xmlrpc': _ConnectorXMLRPC,
+        'netrpc': _ConnectorNetRPC,
+        }
+
+def get_connector(server, port, protocol='xmlrpc'):
+    """Return a Connector class to interact with an OpenERP server.
+    This one use either the XMLRPC protocol (by default) or NetRPC,
+    at the discretion of the user.
+    """
+    if protocol not in PROTOCOLS:
+        error = ("The protocol '{0}' is not supported. "
+                 "Please choose a protocol among these ones: {1}")
+        error = error.format(protocol, PROTOCOLS.keys())
+        raise ConnectorError(error)
+    return PROTOCOLS[protocol](server, port)
 
 #===========
 # Exceptions

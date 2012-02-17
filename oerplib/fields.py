@@ -53,10 +53,10 @@ class BaseField(object):
 
     def check_value(self, value):
         """Check the validity of a value for the field."""
-        if self.readonly:
-            raise error.NotAllowedError(
-                u"'{field_name}' field is readonly".format(
-                    field_name=self.name))
+        #if self.readonly:
+        #    raise error.NotAllowedError(
+        #        u"'{field_name}' field is readonly".format(
+        #            field_name=self.name))
         if self.size and len(value) > self.size:
             raise ValueError(
                 u"Lenght of the '{field_name}' is limited to {size}".format(
