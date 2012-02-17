@@ -245,6 +245,10 @@ class OERP(object):
         ``args`` parameter. ``args`` must be of the form
         ``[('name', '=', 'John'), (...)]``
 
+        >>> oerp.search('res.partner', [('name', 'like', 'Agrolait')])
+        [3]
+
+        :return: a list of IDs
         :raise: :class:`oerplib.error.ExecuteQueryError`
 
         """
@@ -291,6 +295,9 @@ class OERP(object):
         ``osv_name`` parameter is the OSV server class name
         (e.g. ``'sale.order'``).
 
+        >>> oerp.write('res.users', [1], {'name': u"Administrator"})
+        True
+
         :return: `True`
         :raise: :class:`oerplib.error.ExecuteQueryError`
 
@@ -302,17 +309,6 @@ class OERP(object):
         #if isinstance(osv_obj, browse.BrowseRecord):
         #    return self._pool.get_by_class(osv_obj.__class__).write(osv_obj)
         return self.execute(osv_name, 'write', ids, vals, context)
-
-    def write_record(self, browse_record, context=None):
-        """Update the field values of ``browse_record`` by sending them to the
-        `OpenERP` server (only field values which have been changed).
-
-        """
-        if not isinstance(browse_record, browse.BrowseRecord):
-            raise ValueError(u"An instance of BrowseRecord is required")
-        return self._pool.get_by_class(browse_record.__class__).write(
-                browse_record, context)
-
 
     #@context_auto(index=3)
     def unlink(self, osv_name, ids, context=None):
@@ -329,6 +325,20 @@ class OERP(object):
         #if isinstance(osv_obj, browse.BrowseRecord):
         #    return self._pool.get(osv_obj.__osv__['name']).unlink(osv_obj)
         return self.execute(osv_name, 'unlink', ids, context)
+
+    # ---------------------- #
+    # -- Special methods  -- #
+    # ---------------------- #
+
+    def write_record(self, browse_record, context=None):
+        """Update the field values of ``browse_record`` by sending them to the
+        `OpenERP` server (only field values which have been changed).
+
+        """
+        if not isinstance(browse_record, browse.BrowseRecord):
+            raise ValueError(u"An instance of BrowseRecord is required")
+        return self._pool.get_by_class(browse_record.__class__).write(
+                browse_record, context)
 
     def unlink_record(self, browse_record, context=None):
         """Delete the ``browse_record`` from the `OpenERP` server."""
