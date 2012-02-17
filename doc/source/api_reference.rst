@@ -40,13 +40,13 @@ fields.text       basestring (str or unicode)
 
 Exceptions made for relation fields:
 
-================  =======================
+================  ===============================================
 `OpenERP` fields  Types used in `OERPLib`
-================  =======================
-fields.many2one   ``OSV`` object
-fields.one2many   list of ``OSV`` objects
-fields.many2many  list of ``OSV`` objects
-================  =======================
+================  ===============================================
+fields.many2one   ``oerplib.browse.BrowseRecord`` object
+fields.one2many   list of ``oerplib.browse.BrowseRecord`` objects
+fields.many2many  list of ``oerplib.browse.BrowseRecord`` objects
+================  ===============================================
 
 Exceptions
 ----------

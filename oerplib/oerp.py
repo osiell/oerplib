@@ -67,14 +67,24 @@ class OERP(object):
             raise error.InternalError(unicode(exc))
 
     # Readonly properties
-    user = property(lambda self: self._user,
-                    doc="Return the browsable record of the user connected.")
+    @property
+    def user(self):
+        """The browsable record of the user connected.
+
+        >>> oerp.login('admin', 'admin') == oerp.user
+        True
+
+        """
+        return self._user
+
+    #user = property(lambda self: self._user,
+    #                doc="Return the browsable record of the user connected.")
     server = property(lambda self: self._server,
-                      doc="Return the server name used.")
+                      doc="The server name.")
     port = property(lambda self: self._port,
-                    doc="Return the port used.")
+                    doc="The port used.")
     protocol = property(lambda self: self._protocol,
-                        doc="Return the protocol used.")
+                        doc="The protocol used.")
 
     #NOTE: in the past this function was implemented as a decorator for other
     # methods needed to be checked, but Sphinx documentation generator is not
@@ -315,6 +325,8 @@ class OERP(object):
         """Delete records with the given ``ids`` (e.g. ``[1, 42, ...]``).
         ``osv_name`` parameter is the OSV server class name
         (e.g. ``'sale.order'``).
+
+        >>> oerp.unlink('res.partner', [1])
 
         :return: `True`
         :raise: :class:`oerplib.error.ExecuteQueryError`

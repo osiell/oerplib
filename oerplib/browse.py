@@ -17,6 +17,7 @@ class BrowseRecord(object):
 
     @property
     def id(self):
+        """ID of the record."""
         return self._id
 
     def __str__(self):

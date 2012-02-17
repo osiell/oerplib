@@ -1,7 +1,7 @@
-v0.4.0, 2012-02-16:
+v0.4.0, 2012-02-17:
+    - Net-RPC protocol support added,
     - Browse records are no longer stored in OERPLib, each call to the 'browse',
       method will generate a new instance,
-    - Net-RPC protocol support added,
     - Methods which need a user connected raise an exception
       if it is not the case.
     - Browse records now store their own original data and fields updated in
@@ -9,6 +9,8 @@ v0.4.0, 2012-02-16:
     - Browse record classes now store their metadata (OSV name and columns) in
       the '__osv__' attribute,
     - Dictionary interface of the OERP class dropped.
+    - 'write' and 'unlink' methods don't handle browse records anymore.
+      'write_record' and 'unlink_record' added for this purpose.
 
     Bugfixes:
     - 'name' attribute of a browse record fixed,
