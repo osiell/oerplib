@@ -43,7 +43,7 @@ How does it work? See below::
 
     # Update data through a browsable record
     user.name = "Brian Jones"
-    oerp.write(user)
+    oerp.write_record(user)
 
 See the documentation for more details.
 

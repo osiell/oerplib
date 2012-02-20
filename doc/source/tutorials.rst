@@ -94,18 +94,18 @@ Outside relation fields, Python data types are used, like ``datetime.date`` and
 Update data through browsable records
 -------------------------------------
 
-Update data of a browsable record is workable with the ``write`` method of an
-:class:`OERP <oerplib.OERP>` instance. Let's update the first contact's name of
-a partner::
+Update data of a browsable record is workable with the ``write_record`` method
+of an :class:`OERP <oerplib.OERP>` instance. Let's update the first contact's
+name of a partner::
 
     >>> partner.address[0].name = "Caporal Jones"
-    >>> oerp.write(partner.address[0])
+    >>> oerp.write_record(partner.address[0])
 
 This is equivalent to::
 
     >>> addr_osv_name = oerp.get_osv_name(partner.address[0]) # 'res.partner.address'
     >>> addr_id = partner.address[0].id
-    >>> oerp.write(addr_osv_name, [addr_id], {'name': "Caporal Jones"})
+    >>> oerp.write_record(addr_osv_name, [addr_id], {'name': "Caporal Jones"})
 
 Update operation through browsable records doesn't support
 ``one2many`` and ``many2many`` fields.
@@ -116,7 +116,7 @@ Char, Float, Integer, Boolean, Text and Binary
 As see above, it's as simple as that::
 
     >>> partner.name = "OpenERP"
-    >>> oerp.write(partner)
+    >>> oerp.write_record(partner)
 
 Selection
 '''''''''
@@ -142,10 +142,10 @@ You can also update a ``many2one`` field, with either an ID or a browsable
 record::
 
     >>> addr.partner_id = 42 # with an ID
-    >>> oerp.write(addr)
+    >>> oerp.write_record(addr)
     >>> partner = oerp.browse('res.partner', 42) # with a browsable record
     >>> addr.partner_id = partner
-    >>> oerp.write(addr)
+    >>> oerp.write_record(addr)
 
 You can't put any ID or browsable record, a check is made on the relationship
 to ensure data integrity::
@@ -172,13 +172,13 @@ With ``datetime.date`` and ``datetime.datetime`` objects::
     >>> order = oerp.browse('purchase.order', 42)
     >>> order.date_order = datetime.date(2011, 9, 20)
     >>> order.minimum_planned_date = datetime.datetime(2011, 9, 20, 12, 31, 24)
-    >>> oerp.write(order)
+    >>> oerp.write_record(order)
 
 With formated strings::
 
     >>> order.date_order = "2011-09-20"                     # %Y-%m-%d
     >>> order.minimum_planned_date = "2011-09-20 12:31:24"  # %Y-%m-%d %H:%M:%S
-    >>> oerp.write(order)
+    >>> oerp.write_record(order)
 
 As always, a wrong type will raise an exception::
 
