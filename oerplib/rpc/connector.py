@@ -1,31 +1,11 @@
 # -*- coding: UTF-8 -*-
-"""This module provides a `RPC` connector (via the 'get_connector' method) which
-use the `XML-RPC` or `Net-RPC` protocol to communicate with an OpenERP server.
-Here an example of using:
-
-    Get a `RPC` connector object:
-    >>> from oerplib import rpc
-    >>> cnt = rpc.get_connector('localhost', 8070, 'netrpc')
-
-    Login and retrieve ID of the user connected:
-    >>> uid = cnt.login('database', 'user', 'passwd')
-
-    Execute a query:
-    >>> res = cnt.execute(uid, 'passwd', 'res.partner', 'read', 42)
-
-    Execute a workflow query:
-    >>> res = cnt.exec_workflow(uid, 'passwd', 'sale.order', 'order_confirm', 4)
-
-    Download the data of a report :
-    >>> data = cnt.report(uid, 'passwd', 'sale.order', 'sale.order', 4, 'pdf')
-
-"""
+"""Provides the ``ConnectorXMLRPC`` and ``ConnectorNetRPC`` classes."""
 
 import xmlrpclib, socket
 import abc
 import time
 
-from oerplib.rpc import error, netrpc
+from oerplib.rpc import error, socket_netrpc
 
 
 class Connector(object):
@@ -89,6 +69,10 @@ class ConnectorXMLRPC(Connector):
                                                  allow_none=True)
         self.sock_common = xmlrpclib.ServerProxy(self.url+'/common',
                                                  allow_none=True)
+
+    def __getattr__(self, name):
+        #TODO: instanciate on the fly resource objects (common, object, ...)
+        pass
 
     def login(self, database, user, passwd):
         self.database = database
@@ -159,7 +143,7 @@ class ConnectorNetRPC(Connector):
         super(ConnectorNetRPC, self).__init__(server, port)
 
     def _request(self, service, method, *args):
-        self.sock = netrpc.NetRPC()
+        self.sock = socket_netrpc.NetRPC()
         self.sock.connect(self.server, self.port)
         self.sock.send((service, method, )+args)
         result = self.sock.receive()
@@ -171,21 +155,21 @@ class ConnectorNetRPC(Connector):
         try:
             return self._request('common', 'login',
                                  self.database, user, passwd)
-        except netrpc.NetRPCError as exc:
+        except socket_netrpc.NetRPCError as exc:
             raise error.LoginError(unicode(exc))
 
     def execute(self, uid, upasswd, osv_name, method, *args):
         try:
             return self._request('object', 'execute', self.database,
                                  uid, upasswd, osv_name, method, *args)
-        except netrpc.NetRPCError as exc:
+        except socket_netrpc.NetRPCError as exc:
             raise error.ExecuteError(unicode(exc))
 
     def exec_workflow(self, uid, upasswd, osv_name, signal, obj_id):
         try:
             return self._request('object', 'exec_workflow', self.database,
                                  uid, upasswd, osv_name, signal, obj_id)
-        except netrpc.NetRPCError as exc:
+        except socket_netrpc.NetRPCError as exc:
             raise error.ExecWorkflowError("Workflow query has failed.")
 
     def report(self, uid, upasswd, report_name,
@@ -197,7 +181,7 @@ class ConnectorNetRPC(Connector):
             report_id = self._request('report', 'report', self.database,
                                       uid, upasswd, report_name, [obj_id],
                                       data, context)
-        except netrpc.NetRPCError as exc:
+        except socket_netrpc.NetRPCError as exc:
             raise error.ExecReportError(unicode(exc))
         state = False
         attempt = 0
@@ -205,7 +189,7 @@ class ConnectorNetRPC(Connector):
             try:
                 pdf_data = self._request('report', 'report_get', self.database,
                                          uid, upasswd, report_id)
-            except netrpc.NetRPCError as exc:
+            except socket_netrpc.NetRPCError as exc:
                 raise error.ExecReportError("Unknown error occurred during the "
                                       "download of the report.")
             state = pdf_data['state']
