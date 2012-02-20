@@ -1,11 +1,12 @@
 TODO:
     - Instantiate socket for each request?
 
-    - Implement __slots__ where its possible to reduce memory consumption
+    - Find a better design to manage /object, /common, /db, /wizard,
+      and /report resources
 
-    - Implement write capabilities for one2many fields
 
 RPC methods for 'url/object' :
+
     - execute ('res.request', 'request_get')
 
     - execute ('ir.ui.view_sc', 'get_sc', 1, 'ir.ui.menu',
@@ -27,7 +28,9 @@ RPC methods for 'url/object' :
     - execute ('ir.attachment', 'search_count',
                [('res_model', '=', u'res.partner.address'), ('res_id', '=', 1)])
 
+
 RPC methods for 'url/wizard' :
+
     - create ('stock.partial_picking',)
 
     - execute (1, {'model': 'stock.picking', 'form': {}, 'id': 2,
@@ -50,4 +53,73 @@ RPC methods for 'url/wizard' :
                'end2',
                {'lang': 'fr_FR', 'contact_display': 'partner', 'tz': False,
                 'active_ids': [260], 'active_id': 260})
+
+
+RPC methods for 'url/db' :
+
+    - list()
+        url: socket://localhost:8070
+        resource: db
+        method: list
+        args: ()
+        res: ['db_name1', 'db_name2', ...]
+
+    - server_version()
+        url: socket://172.24.1.117:8070
+        resource: db
+        method: server_version
+        args: ()
+        res: '5.0.16'
+
+    - list_lang()
+        url: socket://172.24.1.117:8070
+        resource: db
+        method: list_lang
+        args: ()
+        res: [('sq_AL', u'Albanian / Shqip\xebri'), ...]
+
+    - create(super_admin_pwd, db_name, True?, lang, admin_pwd)
+        url: socket://172.24.1.117:8070
+        resource: db
+        method: create
+        args: ('admin', '20120220', True, 'fr_FR', 'admin')
+        res: 4
+
+        url: socket://172.24.1.117:8070
+        resource: db
+        method: get_progress
+        args: ('admin', 4)
+        res: (0, [])
+
+        url: socket://172.24.1.117:8070
+        resource: db
+        method: get_progress
+        args: ('admin', 4)
+        res: (0, [])            #NOTE: Progressing = 0%
+
+        ... (loop on 'get_process' to check progress)
+
+        url: socket://172.24.1.117:8070
+        resource: db
+        method: get_progress
+        args: ('admin', 4)
+        res: (1.0,              #NOTE: Progressing = 100%
+              [{'login': u'admin', 'password': u'admin', 'name': u'Administrator'},
+               {'login': u'demo', 'password': u'demo', 'name': u'Demo User'}])
+
+    - drop(admin_pwd, db_name)
+        url: socket://172.24.1.117:8070
+        resource: db
+        method: drop
+        args: ('admin', '20120220')
+        res: True
+
+RPC methods for 'url/common' :
+
+    - login_message()
+        url: socket://172.24.1.117:8070
+        resource: common
+        method: login_message
+        args: ()
+        res: False
 
