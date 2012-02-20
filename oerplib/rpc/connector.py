@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
-"""This module provides a connector (via the 'get_connector' method)
-which use the XMLRPC or NetRPC protocol to communicate with an OpenERP server.
+"""This module provides a `RPC` connector (via the 'get_connector' method) which
+use the `XML-RPC` or `Net-RPC` protocol to communicate with an OpenERP server.
 Here an example of using:
 
-    Get a connector object:
-    >>> import connector
-    >>> cnt = connector.get_connector('localhost', 8070, 'netrpc')
+    Get a `RPC` connector object:
+    >>> from oerplib import rpc
+    >>> cnt = rpc.get_connector('localhost', 8070, 'netrpc')
 
     Login and retrieve ID of the user connected:
     >>> uid = cnt.login('database', 'user', 'passwd')
@@ -25,10 +25,10 @@ import xmlrpclib, socket
 import abc
 import time
 
-from oerplib import netrpc
+from oerplib.rpc import error, netrpc
 
 
-class _Connector(object):
+class Connector(object):
     """Connector base class defining the interface used
     to interact with an OpenERP server.
     """
@@ -39,9 +39,9 @@ class _Connector(object):
         try:
             int(port)
         except ValueError:
-            error = "The port '{0}' is invalid. An integer is required."
-            error = error.format(port)
-            raise ConnectorError(error)
+            txt = "The port '{0}' is invalid. An integer is required."
+            txt = error.format(port)
+            raise error.ConnectorError(txt)
         else:
             self.port = port
 
@@ -77,10 +77,10 @@ class _Connector(object):
         pass
 
 
-class _ConnectorXMLRPC(_Connector):
+class ConnectorXMLRPC(Connector):
     """Connector class using XMLRPC protocol."""
     def __init__(self, server, port):
-        super(_ConnectorXMLRPC, self).__init__(server, port)
+        super(ConnectorXMLRPC, self).__init__(server, port)
         self.url = 'http://{server}:{port}/xmlrpc'.format(server=self.server,
                                                           port=self.port)
         self.sock_object = xmlrpclib.ServerProxy(self.url+'/object',
@@ -97,9 +97,9 @@ class _ConnectorXMLRPC(_Connector):
         except xmlrpclib.Fault as exc:
             #NOTE: exc.faultCode is in unicode and Exception doesn't
             # handle unicode object
-            raise LoginError(repr(exc.faultCode))
+            raise error.LoginError(repr(exc.faultCode))
         except socket.error as exc:
-            raise LoginError(exc.strerror)
+            raise error.LoginError(exc.strerror)
         else:
             return user_id
 
@@ -108,11 +108,11 @@ class _ConnectorXMLRPC(_Connector):
             return self.sock_object.execute(self.database, uid, upasswd,
                                             osv_name, method, *args)
         except socket.error as exc:
-            raise ExecuteError(exc.strerror)
+            raise error.ExecuteError(exc.strerror)
         except xmlrpclib.Fault as exc:
-            raise ExecuteError(exc.faultCode)
+            raise error.ExecuteError(exc.faultCode)
         except xmlrpclib.Error as exc:
-            raise ExecuteError("{0}: {1}".format(
+            raise error.ExecuteError("{0}: {1}".format(
                                             exc.faultCode or "Unknown error",
                                             exc.faultString))
 
@@ -121,7 +121,7 @@ class _ConnectorXMLRPC(_Connector):
             return self.sock_object.exec_workflow(self.database, uid, upasswd,
                                                   osv_name, signal, obj_id)
         except Exception:
-            raise ExecWorkflowError("Workflow query has failed.")
+            raise error.ExecWorkflowError("Workflow query has failed.")
 
     def report(self, uid, upasswd, report_name,
                osv_name, obj_id, report_type='pdf', context=None):
@@ -133,7 +133,7 @@ class _ConnectorXMLRPC(_Connector):
                                                 report_name, [obj_id],
                                                 data, context)
         except xmlrpclib.Error as exc:
-            raise ExecReportError(exc.faultCode)
+            raise error.ExecReportError(exc.faultCode)
         state = False
         attempt = 0
         while not state:
@@ -141,22 +141,22 @@ class _ConnectorXMLRPC(_Connector):
                 pdf_data = self.sock_report.report_get(self.database,
                                                        uid, upasswd, report_id)
             except xmlrpclib.Error as exc:
-                raise ExecReportError("Unknown error occurred during the "
+                raise error.ExecReportError("Unknown error occurred during the "
                                       "download of the report.")
             state = pdf_data['state']
             if not state:
                 time.sleep(1)
                 attempt += 1
             if attempt > 200:
-                raise ExecReportError("Download time exceeded, "
+                raise error.ExecReportError("Download time exceeded, "
                                       "the operation has been canceled.")
         return pdf_data
 
 
-class _ConnectorNetRPC(_Connector):
+class ConnectorNetRPC(Connector):
     """Connector class using NetRPC protocol."""
     def __init__(self, server, port):
-        super(_ConnectorNetRPC, self).__init__(server, port)
+        super(ConnectorNetRPC, self).__init__(server, port)
 
     def _request(self, service, method, *args):
         self.sock = netrpc.NetRPC()
@@ -172,21 +172,21 @@ class _ConnectorNetRPC(_Connector):
             return self._request('common', 'login',
                                  self.database, user, passwd)
         except netrpc.NetRPCError as exc:
-            raise LoginError(unicode(exc))
+            raise error.LoginError(unicode(exc))
 
     def execute(self, uid, upasswd, osv_name, method, *args):
         try:
             return self._request('object', 'execute', self.database,
                                  uid, upasswd, osv_name, method, *args)
         except netrpc.NetRPCError as exc:
-            raise ExecuteError(unicode(exc))
+            raise error.ExecuteError(unicode(exc))
 
     def exec_workflow(self, uid, upasswd, osv_name, signal, obj_id):
         try:
             return self._request('object', 'exec_workflow', self.database,
                                  uid, upasswd, osv_name, signal, obj_id)
         except netrpc.NetRPCError as exc:
-            raise ExecWorkflowError("Workflow query has failed.")
+            raise error.ExecWorkflowError("Workflow query has failed.")
 
     def report(self, uid, upasswd, report_name,
                osv_name, obj_id, report_type='pdf', context=None):
@@ -198,7 +198,7 @@ class _ConnectorNetRPC(_Connector):
                                       uid, upasswd, report_name, [obj_id],
                                       data, context)
         except netrpc.NetRPCError as exc:
-            raise ExecReportError(unicode(exc))
+            raise error.ExecReportError(unicode(exc))
         state = False
         attempt = 0
         while not state:
@@ -206,63 +206,16 @@ class _ConnectorNetRPC(_Connector):
                 pdf_data = self._request('report', 'report_get', self.database,
                                          uid, upasswd, report_id)
             except netrpc.NetRPCError as exc:
-                raise ExecReportError("Unknown error occurred during the "
+                raise error.ExecReportError("Unknown error occurred during the "
                                       "download of the report.")
             state = pdf_data['state']
             if not state:
                 time.sleep(1)
                 attempt += 1
             if attempt > 200:
-                raise ExecReportError("Download time exceeded, "
-                                      "the operation has been canceled.")
+                raise error.ExecReportError(
+                        "Download time exceeded, "
+                        "the operation has been canceled.")
         return pdf_data
-
-
-PROTOCOLS = {
-        'xmlrpc': _ConnectorXMLRPC,
-        'netrpc': _ConnectorNetRPC,
-        }
-
-def get_connector(server, port, protocol='xmlrpc'):
-    """Return a Connector class to interact with an OpenERP server.
-    This one use either the XMLRPC protocol (by default) or NetRPC,
-    at the discretion of the user.
-    """
-    if protocol not in PROTOCOLS:
-        error = ("The protocol '{0}' is not supported. "
-                 "Please choose a protocol among these ones: {1}")
-        error = error.format(protocol, PROTOCOLS.keys())
-        raise ConnectorError(error)
-    return PROTOCOLS[protocol](server, port)
-
-#===========
-# Exceptions
-#===========
-
-class ConnectorError(BaseException):
-    """Exception raised if the informations supplied
-    to initiate the connector are wrong.
-    """
-    pass
-
-
-class LoginError(BaseException):
-    """Exception raised during a user login."""
-    pass
-
-
-class ExecuteError(BaseException):
-    """Exception raised during a 'execute' query."""
-    pass
-
-
-class ExecWorkflowError(BaseException):
-    """Exception raised during a 'exec_workflow' query."""
-    pass
-
-
-class ExecReportError(BaseException):
-    """Exception raised during a 'exec_report' query."""
-    pass
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
