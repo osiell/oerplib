@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 
 class ConnectorError(BaseException):
     """Exception raised if the informations supplied

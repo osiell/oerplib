@@ -26,6 +26,11 @@ class Connector(object):
             self.port = port
 
     @abc.abstractmethod
+    def _request(self, service, method, *args):
+        """Execute the given `method` on the `service` supplied."""
+        pass
+
+    @abc.abstractmethod
     def login(self, database, user, passwd):
         """Log in the user on a database. Return the user's ID.
         Raise a LoginError exception if an error occur.
@@ -61,23 +66,24 @@ class ConnectorXMLRPC(Connector):
     """Connector class using XMLRPC protocol."""
     def __init__(self, server, port):
         super(ConnectorXMLRPC, self).__init__(server, port)
-        self.url = 'http://{server}:{port}/xmlrpc'.format(server=self.server,
+        self._url = 'http://{server}:{port}/xmlrpc'.format(server=self.server,
                                                           port=self.port)
-        self.sock_object = xmlrpclib.ServerProxy(self.url+'/object',
-                                                 allow_none=True)
-        self.sock_report = xmlrpclib.ServerProxy(self.url+'/report',
-                                                 allow_none=True)
-        self.sock_common = xmlrpclib.ServerProxy(self.url+'/common',
-                                                 allow_none=True)
 
     def __getattr__(self, name):
         #TODO: instanciate on the fly resource objects (common, object, ...)
         pass
 
+    def _request(self, service, method, *args):
+        service_url = self._url + '/' + service
+        sock = xmlrpclib.ServerProxy(service_url, allow_none=True)
+        sock_method = getattr(sock, method, False)
+        return sock_method(*args)
+
     def login(self, database, user, passwd):
         self.database = database
         try:
-            user_id = self.sock_common.login(self.database, user, passwd)
+            user_id = self._request('common', 'login',
+                                    self.database, user, passwd)
         except xmlrpclib.Fault as exc:
             #NOTE: exc.faultCode is in unicode and Exception doesn't
             # handle unicode object
@@ -89,8 +95,9 @@ class ConnectorXMLRPC(Connector):
 
     def execute(self, uid, upasswd, osv_name, method, *args):
         try:
-            return self.sock_object.execute(self.database, uid, upasswd,
-                                            osv_name, method, *args)
+            return self._request('object', 'execute',
+                                 self.database, uid, upasswd,
+                                 osv_name, method, *args)
         except socket.error as exc:
             raise error.ExecuteError(exc.strerror)
         except xmlrpclib.Fault as exc:
@@ -102,8 +109,9 @@ class ConnectorXMLRPC(Connector):
 
     def exec_workflow(self, uid, upasswd, osv_name, signal, obj_id):
         try:
-            return self.sock_object.exec_workflow(self.database, uid, upasswd,
-                                                  osv_name, signal, obj_id)
+            return self._request('object', 'exec_workflow',
+                                 self.database, uid, upasswd,
+                                 osv_name, signal, obj_id)
         except Exception:
             raise error.ExecWorkflowError("Workflow query has failed.")
 
@@ -113,17 +121,17 @@ class ConnectorXMLRPC(Connector):
             context = {}
         data = {'model': osv_name, 'id': obj_id, 'report_type': report_type}
         try:
-            report_id = self.sock_report.report(self.database, uid, upasswd,
-                                                report_name, [obj_id],
-                                                data, context)
+            report_id = self._request('report', 'report',
+                                      self.database, uid, upasswd,
+                                      report_name, [obj_id], data, context)
         except xmlrpclib.Error as exc:
             raise error.ExecReportError(exc.faultCode)
         state = False
         attempt = 0
         while not state:
             try:
-                pdf_data = self.sock_report.report_get(self.database,
-                                                       uid, upasswd, report_id)
+                pdf_data = self._request('report', 'report_get',
+                                         self.database, uid, upasswd, report_id)
             except xmlrpclib.Error as exc:
                 raise error.ExecReportError("Unknown error occurred during the "
                                       "download of the report.")
