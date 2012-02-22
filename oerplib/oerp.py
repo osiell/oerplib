@@ -63,7 +63,7 @@ class OERP(object):
         try:
             self._connector = rpc.get_connector(self._server, self._port,
                                                       self._protocol)
-        except rpc.ConnectorError as exc:
+        except rpc.error.ConnectorError as exc:
             raise error.InternalError(unicode(exc))
 
     # Readonly properties
@@ -116,7 +116,7 @@ class OERP(object):
         # Get the user's ID and generate the corresponding User record
         try:
             user_id = self._connector.login(self._database, user, passwd)
-        except rpc.LoginError as exc:
+        except rpc.error.LoginError as exc:
             raise error.LoginError(unicode(exc))
         else:
             if user_id:
@@ -155,7 +155,7 @@ class OERP(object):
         try:
             return self._connector.execute(self._user.id, self._user.password,
                                           osv_name, method, *args)
-        except rpc.ExecuteError as exc:
+        except rpc.error.ExecuteError as exc:
             raise error.ExecuteQueryError(unicode(exc))
 
     def exec_workflow(self, osv_name, signal, obj_id):
@@ -172,7 +172,7 @@ class OERP(object):
         try:
             self._connector.exec_workflow(self._user.id, self._user.password,
                                          osv_name, signal, obj_id)
-        except rpc.ExecWorkflowError as exc:
+        except rpc.error.ExecWorkflowError as exc:
             raise error.WorkflowQueryError(unicode(exc))
 
     #@context_auto(index=5)
@@ -198,7 +198,7 @@ class OERP(object):
             pdf_data = self._connector.report(self.user.id, self.user.password,
                                              report_name, osv_name,
                                              obj_id, report_type, context)
-        except rpc.ExecReportError as exc:
+        except rpc.error.ExecReportError as exc:
             raise error.ReportError(unicode(exc))
         return self._print_file_data(pdf_data)
 
