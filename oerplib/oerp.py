@@ -5,33 +5,9 @@ the `OpenERP` server.
 """
 import os
 import base64, zlib, tempfile
+import time
 
 from oerplib import rpc, error, pool, browse
-
-#FIXME: deprecated
-#def context_auto(index):
-#    """Decorator function, generate automatically a default context
-#    parameter if this one is not supplied to the decorated function.
-#    """
-#    def wrapper(func):
-#        def wrapped(*args, **kwargs):
-#            if len(args) < (index + 1) and 'context' not in kwargs:
-#                kwargs['context'] = args[0].execute('res.users', 'context_get')
-#            return func(*args, **kwargs)
-#        return wrapped
-#    return wrapper
-
-#FIXME: deprecated
-#def check_logged_user(func):
-#    """Decorator function which check that a user is logged.
-#    Otherwise, an error is raised.
-#    """
-#    def wrapper(*args, **kwargs):
-#        if not args[0]._user:
-#            raise error.LoginError(
-#                u"Have to be logged to be able to execute queries")
-#        return func(*args, **kwargs)
-#    return wrapper
 
 
 class OERP(object):
@@ -115,8 +91,8 @@ class OERP(object):
             raise error.LoginError(u"No database specified")
         # Get the user's ID and generate the corresponding User record
         try:
-            user_id = self._connector.login(self._database, user, passwd)
-        except rpc.error.LoginError as exc:
+            user_id = self._connector.common.login(self._database, user, passwd)
+        except rpc.error.ConnectorError as exc:
             raise error.LoginError(unicode(exc))
         else:
             if user_id:
@@ -153,9 +129,10 @@ class OERP(object):
         self._check_logged_user()
         # Execute the query
         try:
-            return self._connector.execute(self._user.id, self._user.password,
-                                          osv_name, method, *args)
-        except rpc.error.ExecuteError as exc:
+            return self._connector.object.execute(self._database, self._user.id,
+                                                  self._user.password,
+                                                  osv_name, method, *args)
+        except rpc.error.ConnectorError as exc:
             raise error.ExecuteQueryError(unicode(exc))
 
     def exec_workflow(self, osv_name, signal, obj_id):
@@ -167,15 +144,16 @@ class OERP(object):
         `WARNING: not sufficiently tested.`
 
         """
+        #TODO NEED TEST
         self._check_logged_user()
         # Execute the workflow query
         try:
-            self._connector.exec_workflow(self._user.id, self._user.password,
-                                         osv_name, signal, obj_id)
-        except rpc.error.ExecWorkflowError as exc:
+            self._connector.object.exec_workflow(self._database, self._user.id,
+                                                 self._user.password,
+                                                 osv_name, signal, obj_id)
+        except rpc.error.ConnectorError as exc:
             raise error.WorkflowQueryError(unicode(exc))
 
-    #@context_auto(index=5)
     def report(self, report_name, osv_name, obj_id, report_type='pdf',
                context=None):
         """Download a report from the `OpenERP` server and return
@@ -195,12 +173,42 @@ class OERP(object):
         context = context or self.execute('res.users', 'context_get')
         # Execute the report query
         try:
-            pdf_data = self._connector.report(self.user.id, self.user.password,
-                                             report_name, osv_name,
-                                             obj_id, report_type, context)
-        except rpc.error.ExecReportError as exc:
+            pdf_data = self._get_report_data(report_name, osv_name, obj_id,
+                                             report_type, context)
+        except rpc.error.ConnectorError as exc:
             raise error.ReportError(unicode(exc))
         return self._print_file_data(pdf_data)
+
+    def _get_report_data(self, report_name, osv_name, obj_id,
+                         report_type='pdf', context=None):
+        """Download binary data of a report from the `OpenERP` server."""
+        if context is None:
+            context = {}
+        data = {'model': osv_name, 'id': obj_id, 'report_type': report_type}
+        try:
+            report_id = self._connector.report.report(
+                            self._database, self.user.id, self.user.password,
+                            report_name, [obj_id], data, context)
+        except rpc.error.ConnectorError as exc:
+            raise error.ExecReportError(unicode(exc))
+        state = False
+        attempt = 0
+        while not state:
+            try:
+                pdf_data = self._connector.report.report_get(
+                            self._database, self.user.id, self.user.password,
+                            report_id)
+            except rpc.error.ConnectorError as exc:
+                raise error.ExecReportError("Unknown error occurred during the "
+                                            "download of the report.")
+            state = pdf_data['state']
+            if not state:
+                time.sleep(1)
+                attempt += 1
+            if attempt > 200:
+                raise error.ExecReportError("Download time exceeded, "
+                                            "the operation has been canceled.")
+        return pdf_data
 
     @staticmethod
     def _print_file_data(data):
@@ -227,7 +235,6 @@ class OERP(object):
     # -- High Level methods  -- #
     # ------------------------- #
 
-    #@context_auto(index=3)
     def browse(self, osv_name, ids, context=None):
         """Return a browsable record (or a list of records if ``ids`` is a list)
         according to the model ``osv_name``.
@@ -248,7 +255,6 @@ class OERP(object):
         else:
             return self._pool.get(osv_name).browse(ids)
 
-    #@context_auto(index=6)
     def search(self, osv_name, args=None, offset=0, limit=None, order=None,
                context=None, count=False):
         """Return a list of IDs of records matching the given criteria in
@@ -267,7 +273,6 @@ class OERP(object):
         return self.execute(osv_name, 'search', args, offset, limit, order,
                             context, count)
 
-    #@context_auto(index=3)
     def create(self, osv_name, vals, context=None):
         """Create a new record with the specified values contained in the
         ``vals`` dictionary (e.g. ``{'name': 'John', ...}``).
@@ -280,7 +285,6 @@ class OERP(object):
         """
         return self.execute(osv_name, 'create', vals, context)
 
-    #@context_auto(index=4)
     def read(self, osv_name, ids, fields=None, context=None):
         """Return the ID of each record with the values
         of the requested fields ``fields`` from the OSV server class
@@ -297,7 +301,6 @@ class OERP(object):
             fields = []
         return self.execute(osv_name, 'read', ids, fields, context)
 
-    #@context_auto(index=4)
     def write(self, osv_name, ids, vals=None, context=None):
         """Update records with given `ids` (e.g. ``[1, 42, ...]``)
         with the given values contained in the ``vals`` dictionary
@@ -320,7 +323,6 @@ class OERP(object):
         #    return self._pool.get_by_class(osv_obj.__class__).write(osv_obj)
         return self.execute(osv_name, 'write', ids, vals, context)
 
-    #@context_auto(index=3)
     def unlink(self, osv_name, ids, context=None):
         """Delete records with the given ``ids`` (e.g. ``[1, 42, ...]``).
         ``osv_name`` parameter is the OSV server class name
@@ -392,14 +394,5 @@ class OERP(object):
         if not isinstance(browse_record, browse.BrowseRecord):
             raise ValueError(u"Value is not a browse browse_record.")
         return browse_record.__osv__['name']
-
-    #FIXME drop or not?
-    #def get_user_context(self):
-    #    """Generate a default user context parameter.
-
-    #    :raise: :class:`oerplib.error.ExecuteQueryError`
-
-    #    """
-    #    return self.execute('res.users', 'context_get')
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

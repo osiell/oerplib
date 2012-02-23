@@ -8,16 +8,13 @@ Here an example of using:
     >>> cnt = rpc.get_connector('localhost', 8070, 'netrpc')
 
     Login and retrieve ID of the user connected:
-    >>> uid = cnt.login('database', 'user', 'passwd')
+    >>> uid = cnt.common.login('database', 'user', 'passwd')
 
     Execute a query:
-    >>> res = cnt.execute(uid, 'passwd', 'res.partner', 'read', 42)
+    >>> res = cnt.object.execute('database', uid, 'passwd', 'res.partner', 'read', 42)
 
     Execute a workflow query:
-    >>> res = cnt.exec_workflow(uid, 'passwd', 'sale.order', 'order_confirm', 4)
-
-    Download the data of a report :
-    >>> data = cnt.report(uid, 'passwd', 'sale.order', 'sale.order', 4, 'pdf')
+    >>> res = cnt.object.exec_workflow('database', uid, 'passwd', 'sale.order', 'order_confirm', 4)
 
 """
 
