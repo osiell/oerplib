@@ -61,6 +61,8 @@ class OERP(object):
                     doc="The port used.")
     protocol = property(lambda self: self._protocol,
                         doc="The protocol used.")
+    database = property(lambda self: self._database,
+                        doc="The database currently used.")
 
     #NOTE: in the past this function was implemented as a decorator for other
     # methods needed to be checked, but Sphinx documentation generator is not
