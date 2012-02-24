@@ -38,7 +38,7 @@ class OERP(object):
         # Instanciate the OpenERP server connector
         try:
             self._connector = rpc.get_connector(self._server, self._port,
-                                                      self._protocol)
+                                                self._protocol)
         except rpc.error.ConnectorError as exc:
             raise error.InternalError(unicode(exc))
 
