@@ -7,7 +7,7 @@ import os
 import base64, zlib, tempfile
 import time
 
-from oerplib import rpc, error, pool, browse
+from oerplib import rpc, error, pool, browse, service_db
 
 
 class OERP(object):
@@ -35,6 +35,7 @@ class OERP(object):
         self._database = self._database_default = database
         self._pool = pool.OSVPool(self)
         self._user = None
+        self._db = service_db.DB(self)
         # Instanciate the OpenERP server connector
         try:
             self._connector = rpc.get_connector(self._server, self._port,
@@ -63,6 +64,8 @@ class OERP(object):
                         doc="The protocol used.")
     database = property(lambda self: self._database,
                         doc="The database currently used.")
+    db = property(lambda self: self._db,
+                  doc="The database management service.")
 
     #NOTE: in the past this function was implemented as a decorator for other
     # methods needed to be checked, but Sphinx documentation generator is not

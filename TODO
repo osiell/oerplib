@@ -83,7 +83,7 @@ RPC methods for 'url/db' :
         resource: db
         method: create
         args: ('admin', '20120220', True, 'fr_FR', 'admin')
-        res: 4
+        res: 4 # Database ID?
 
         url: socket://172.24.1.117:8070
         resource: db
