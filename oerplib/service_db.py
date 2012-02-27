@@ -8,12 +8,25 @@ from oerplib import rpc, error
 
 class DB(object):
     #TODO: documentation
-    """Database management service."""
+    """The `DB` class represents the database management service.
+    It provides functionalities to list, create, drop, dump
+    and restore databases.
+
+    """
     def __init__(self, oerp):
         self._oerp = oerp
 
-    def create(self, super_admin_pwd, database,
-               demo_data=False, lang='en_US', admin_pwd='admin'):
+    def create(self, super_admin_pwd, database, demo_data=False,
+               lang='en_US', admin_pwd='admin'):
+        """Create a new database `database` which will have `admin_pwd` as
+        administrator password and localized with the `lang` parameter.
+        You have to set the flag `demo_data` to `True` in order to insert
+        demonstration data.
+
+        The super administrator password `super_admin_pwd` of `OpenERP` is
+        required to perform this action.
+
+        """
         try:
             db_id = self._oerp._connector.db.create(super_admin_pwd, database,
                                                     demo_data, lang, admin_pwd)
@@ -26,9 +39,10 @@ class DB(object):
                 if progress < 1.0:
                     time.sleep(1)
                     attempt += 1
-                if attempt > 200:
-                    raise error.ExecuteQueryError("Time exceeded, the operation"
-                                                  " has been canceled.")
+                if attempt > 300:
+                    raise error.ExecuteQueryError(
+                            "Too many attempts, the operation"
+                            " has been canceled.")
             return result
 
         except rpc.error.ConnectorError as exc:
