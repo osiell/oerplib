@@ -65,7 +65,8 @@ class OERP(object):
     database = property(lambda self: self._database,
                         doc="The database currently used.")
     db = property(lambda self: self._db,
-                  doc="The database management service.")
+                  doc=("The database management service. It is an instance "
+                       "of the :class:`oerplib.service_db.DB` class."))
 
     #NOTE: in the past this function was implemented as a decorator for other
     # methods needed to be checked, but Sphinx documentation generator is not

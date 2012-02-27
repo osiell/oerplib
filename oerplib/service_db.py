@@ -9,32 +9,60 @@ from oerplib import rpc, error
 class DB(object):
     #TODO: documentation
     """The `DB` class represents the database management service.
-    It provides functionalities to list, create, drop, dump
+    It provides functionalities such as list, create, drop, dump
     and restore databases.
+
+    .. note::
+        This service have to be used through the :attr:`OERP.db`
+        property.
+
+    .. method:: DB.list()
+
+        TODO
+
+    .. method:: DB.list_lang()
+
+        TODO
+
+    .. method:: DB.server_version()
+
+        TODO
+
+    .. method:: DB.dump(admin_passwd, database)
+
+        TODO
+
+    .. method:: DB.restore(admin_passwd, ...)
+
+        TODO
+
+    .. method:: DB.drop(admin_passwd, database)
+
+        TODO
 
     """
     def __init__(self, oerp):
         self._oerp = oerp
 
-    def create(self, super_admin_pwd, database, demo_data=False,
-               lang='en_US', admin_pwd='admin'):
-        """Create a new database `database` which will have `admin_pwd` as
-        administrator password and localized with the `lang` parameter.
+    def create(self, super_admin_passwd, database, demo_data=False,
+               lang='en_US', admin_passwd='admin'):
+        """Create a new database named `database` which will have `admin_passwd`
+        as administrator password and localized with the `lang` parameter.
         You have to set the flag `demo_data` to `True` in order to insert
         demonstration data.
 
-        The super administrator password `super_admin_pwd` of `OpenERP` is
+        The super administrator password `super_admin_passwd` of `OpenERP` is
         required to perform this action.
 
         """
         try:
-            db_id = self._oerp._connector.db.create(super_admin_pwd, database,
-                                                    demo_data, lang, admin_pwd)
+            db_id = self._oerp._connector.db.create(
+                    super_admin_passwd, database, demo_data, lang, admin_passwd)
             progress = 0.0
             attempt = 0
             while progress < 1.0:
-                result = self._oerp._connector.db.get_progress(super_admin_pwd,
-                                                               db_id)
+                result = self._oerp._connector.db.get_progress(
+                                super_admin_passwd, db_id)
                 progress = result[0]
                 if progress < 1.0:
                     time.sleep(1)

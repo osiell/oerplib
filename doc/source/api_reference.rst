@@ -19,6 +19,13 @@ OERP Class
     :members:
 
 
+DB class
+--------
+
+.. autoclass:: oerplib.service_db.DB
+    :members:
+
+
 Field types
 -----------
 
