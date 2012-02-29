@@ -16,29 +16,57 @@ class DB(object):
         This service have to be used through the :attr:`OERP.db`
         property.
 
+    >>> import oerplib
+    >>> oerp = oerplib.OERP('localhost')
+    >>> oerp.db
+    <oerplib.service_db.DB object at 0xb75fb04c>
+
     .. method:: DB.list()
 
-        TODO
+        Return a list of the `OpenERP` databases:
+
+        >>> oerp.db.list()
+        >>> ['production_db', 'test_db']
 
     .. method:: DB.list_lang()
 
-        TODO
+        Return a list of codes and names of language supported by `OpenERP`:
+
+        >>> oerp.db.list_lang()
+        >>> [['sq_AL', u'Albanian / Shqipëri'], ['ar_AR', 'Arabic / الْعَرَبيّة'], ...]
 
     .. method:: DB.server_version()
 
+        Return the version of the `OpenERP Server`:
+
+        >>> oerp.db.server_version()
+        >>> '6.1'
+
+    .. method:: DB.dump(super_admin_passwd, database)
+
+        Return a dump of `database` in `base64`:
+
+        >>> binary_data = oerp.db.dump('super_admin_passwd', 'production_db')
+
+        The super administrator password `super_admin_passwd` of `OpenERP` is
+        required to perform this action.
+
+    .. method:: DB.restore(super_admin_passwd, ...)
+
         TODO
 
-    .. method:: DB.dump(admin_passwd, database)
-
-        TODO
-
-    .. method:: DB.restore(admin_passwd, ...)
-
-        TODO
+        The super administrator password `super_admin_passwd` of `OpenERP` is
+        required to perform this action.
 
     .. method:: DB.drop(admin_passwd, database)
 
-        TODO
+        Drop the `database` from `OpenERP`:
+
+        The super administrator password `super_admin_passwd` of `OpenERP` is
+        required to perform this action.
+
+        >>> oerp.db.drop('super_admin_passwd', 'test_db')
+        True
 
     """
     def __init__(self, oerp):
