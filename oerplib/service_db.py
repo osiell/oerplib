@@ -7,7 +7,6 @@ from oerplib import rpc, error
 
 
 class DB(object):
-    #TODO: documentation
     """The `DB` class represents the database management service.
     It provides functionalities such as list, create, drop, dump
     and restore databases.
@@ -22,6 +21,7 @@ class DB(object):
     <oerplib.service_db.DB object at 0xb75fb04c>
 
     .. warning::
+
         All methods documented below are not strictly implemented in `OERPLib`
         (except the
         :func:`create_and_wait <oerplib.service_db.DB.create_and_wait>` method).
@@ -37,6 +37,8 @@ class DB(object):
 
         >>> oerp.db.list()
         >>> ['production_db', 'test_db']
+
+        :return: a list of database names
 
     .. method:: DB.list_lang()
 
@@ -131,6 +133,7 @@ class DB(object):
                         lang='en_US', admin_passwd='admin'):
         """
         .. note::
+
             This method is not part of the official API of `OpenERP`. It's just
             a wrapper around the :func:`create <DB.create>` and
             :func:`get_process <DB.get_process>` methods.
