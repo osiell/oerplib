@@ -18,13 +18,13 @@ class DB(object):
     >>> import oerplib
     >>> oerp = oerplib.OERP('localhost')
     >>> oerp.db
-    <oerplib.service_db.DB object at 0xb75fb04c>
+    <oerplib.service.db.DB object at 0xb75fb04c>
 
     .. warning::
 
         All methods documented below are not strictly implemented in `OERPLib`
         (except the
-        :func:`create_and_wait <oerplib.service_db.DB.create_and_wait>` method).
+        :func:`create_and_wait <oerplib.service.db.DB.create_and_wait>` method).
 
         Method calls are purely dynamic, and the following documentation can be
         wrong if the API of `OpenERP` is changed between versions. Anyway, if

@@ -22,7 +22,7 @@ OERP Class
 DB class
 --------
 
-.. autoclass:: oerplib.service_db.DB
+.. autoclass:: oerplib.service.db.DB
     :members:
 
 
