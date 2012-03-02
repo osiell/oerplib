@@ -47,8 +47,8 @@ class DB(object):
         >>> oerp.db.list_lang()
         >>> [['sq_AL', u'Albanian / Shqipëri'], ['ar_AR', 'Arabic / الْعَرَبيّة'], ...]
 
-        :return: a list of list representing a language with its code and
-                 its name
+        :return: a list of pairs representing languages with their codes and
+                 names
 
     .. method:: DB.server_version()
 
