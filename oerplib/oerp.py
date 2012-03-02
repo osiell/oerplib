@@ -7,8 +7,9 @@ import os
 import base64, zlib, tempfile
 import time
 
-from oerplib import rpc, error, pool, browse
-from oerplib.service import db
+from oerplib import rpc
+from oerplib import error
+from oerplib.service import db, osv
 
 
 class OERP(object):
@@ -34,7 +35,7 @@ class OERP(object):
         self._port = port
         self._protocol = protocol
         self._database = self._database_default = database
-        self._pool = pool.OSVPool(self)
+        self._pool = osv.Pool(self)
         self._user = None
         self._db = db.DB(self)
         # Instanciate the OpenERP server connector
@@ -105,7 +106,7 @@ class OERP(object):
             if user_id:
                 #NOTE: create a fake User record just to execute the
                 # first query : browse the real User record
-                self._user = type('FakeUser', (browse.BrowseRecord,), {
+                self._user = type('FakeUser', (osv.BrowseRecord,), {
                                     'id': None,
                                     'login': None,
                                     'password': None,
@@ -326,7 +327,7 @@ class OERP(object):
         #    ids = []
         if vals is None:
             vals = {}
-        #if isinstance(osv_obj, browse.BrowseRecord):
+        #if isinstance(osv_obj, osv.BrowseRecord):
         #    return self._pool.get_by_class(osv_obj.__class__).write(osv_obj)
         return self.execute(osv_name, 'write', ids, vals, context)
 
@@ -343,7 +344,7 @@ class OERP(object):
         """
         #if ids is None:
         #    ids = []
-        #if isinstance(osv_obj, browse.BrowseRecord):
+        #if isinstance(osv_obj, osv.BrowseRecord):
         #    return self._pool.get(osv_obj.__osv__['name']).unlink(osv_obj)
         return self.execute(osv_name, 'unlink', ids, context)
 
@@ -356,14 +357,14 @@ class OERP(object):
         `OpenERP` server (only field values which have been changed).
 
         """
-        if not isinstance(browse_record, browse.BrowseRecord):
+        if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
         return self._pool.get_by_class(browse_record.__class__).write(
                 browse_record, context)
 
     def unlink_record(self, browse_record, context=None):
         """Delete the ``browse_record`` from the `OpenERP` server."""
-        if not isinstance(browse_record, browse.BrowseRecord):
+        if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
         return self._pool.get_by_class(browse_record.__class__).unlink(
                 browse_record, context)
@@ -398,8 +399,8 @@ class OERP(object):
         :return: the OSV server class name of the browsable record
 
         """
-        if not isinstance(browse_record, browse.BrowseRecord):
-            raise ValueError(u"Value is not a browse browse_record.")
+        if not isinstance(browse_record, osv.BrowseRecord):
+            raise ValueError(u"Value is not a browse_record.")
         return browse_record.__osv__['name']
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

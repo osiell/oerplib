@@ -4,7 +4,8 @@
 import collections
 import ast
 
-from oerplib import error, fields, browse
+from oerplib import error
+from oerplib.service.osv import fields, browse
 
 
 class OSV(collections.Mapping):

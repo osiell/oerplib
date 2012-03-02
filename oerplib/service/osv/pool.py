@@ -1,14 +1,14 @@
 # -*- coding: UTF-8 -*-
-"""This module contains the OSVPool class which manage OSV classes."""
+"""This module contains the Pool class which manage OSV classes."""
 
-from oerplib import osv
+from oerplib.service.osv import osv
 
 
-class OSVPool(object):
+class Pool(object):
     """Manage OSV classes."""
 
     def __init__(self, oerp):
-        super(OSVPool, self).__init__()
+        super(Pool, self).__init__()
         self.oerp = oerp
 
     def get(self, osv_name):

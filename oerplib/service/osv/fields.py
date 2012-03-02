@@ -5,7 +5,8 @@ its related attribute.
 """
 import datetime
 
-from oerplib import error, browse
+from oerplib import error
+from oerplib.service.osv import browse
 
 def is_int(value):
     try:
