@@ -3,14 +3,13 @@
 from distutils.core import setup
 
 name = 'OERPLib'
-version = '0.4'
-release = '0.4.0'
+version = '0.4.0'
 description = 'OpenERP client library which allows to easily interact with an OpenERP server.'
 keywords = "openerp client xml-rpc xml_rpc xmlrpc oerplib communication lib library python service web webservice"
 author = u"ABF Osiell - Sebastien Alix"
 author_email = 'sebastien.alix@osiell.com'
 url = 'http://www.osiell.com/'
-download_url = 'http://pypi.python.org/packages/source/O/OERPLib/OERPLib-%s.tar.gz' % release,
+download_url = 'http://pypi.python.org/packages/source/O/OERPLib/OERPLib-%s.tar.gz' % version,
 #download_url = 'https://bitbucket.org/SebAlix/python-oerplib/downloads'
 license = 'LGPL v3'
 
@@ -24,7 +23,7 @@ try:
         'build_sphinx': {
             #'project': ('setup.py', name),
             'version': ('setup.py', version),
-            'release': ('setup.py', release),
+            'release': ('setup.py', version),
             'source_dir': ('setup.py', 'doc/source'),
             'build_dir': ('setup.py', 'doc/'),
          }}
@@ -32,7 +31,7 @@ except Exception:
     print("No Sphinx module found. You have to install Sphinx to be able to generate the documentation.")
 
 setup(name=name,
-      version=release,
+      version=version,
       description=description,
       long_description=open('README.txt').read(),
       keywords=keywords,
