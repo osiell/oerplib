@@ -1,0 +1,64 @@
+/*
+ * nature.css_t
+ * ~~~~~~~~~~~~
+ *
+ * Sphinx stylesheet -- custom styles for the nature theme.
+ *
+ * :copyright: Copyright 2011-2012 by Sebastien Alix, see AUTHORS.
+ * :license: BSD, see LICENSE for details.
+ *
+ */
+
+@import url("nature.css");
+
+/* -- page layout ----------------------------------------------------------- */
+
+div.related {
+    background-color: #920000;      /*BACKUP: #6BA81E;*/
+}
+
+div.related a {
+    color: white;                   /*BACKUP: #E2F3CC;*/
+}
+
+/* -- body styles ----------------------------------------------------------- */
+
+a {
+    color: #920000;                 /*BACKUP: #005B81;*/
+}
+
+/*
+a:hover {
+    color: #E32E00;
+    text-decoration: underline;
+}
+*/
+
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6 {
+    background-color: #454545;      /*BACKUP: #BED4EB;*/
+    color: white;                   /*BACKUP: #212224;*/
+    padding: 2px 0 2px 10px;        /*BACKUP: 5px 0 5px 10px;*/
+    text-shadow: 0px 1px 0 black    /*BACKUP: 0px 1px 0 white*/
+}
+
+div.body h1 { border-top: 20px solid white; margin-top: 0; font-size: 200%; }
+div.body h2 { font-size: 150%; background-color: #666666; /*BACKUP: #C8D5E3;*/ }
+div.body h3 { font-size: 120%; background-color: #D8DEE3; /*BACKUP: #D8DEE3;*/ }
+div.body h4 { font-size: 110%; background-color: #D8DEE3; /*BACKUP: #D8DEE3;*/ }
+div.body h5 { font-size: 100%; background-color: #D8DEE3; /*BACKUP: #D8DEE3;*/ }
+div.body h6 { font-size: 100%; background-color: #D8DEE3; /*BACKUP: #D8DEE3;*/ }
+
+a.headerlink {
+    color: #B40000; /*BACKUP: #c60f0f;*/
+}
+
+a.headerlink:hover {
+    background-color: #B40000; /*BACKUP: #c60f0f;*/
+    color: white;
+}
+
