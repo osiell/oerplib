@@ -14,6 +14,6 @@ __version__ = '0.4.0'
 
 from oerplib.oerp import OERP
 #from oerplib.dms import DMS
-from oerplib import rpc, error
+from oerplib import error
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

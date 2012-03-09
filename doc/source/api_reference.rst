@@ -29,14 +29,15 @@ DB class
 Field types
 -----------
 
-The table below presents the Python types used for each `OpenERP` fields:
+The table below presents the Python types returned by `OERPLib`
+for each `OpenERP` fields:
 
 ================  ==============================
 `OpenERP` fields  Python types used in `OERPLib`
 ================  ==============================
-fields.binary     ?
+fields.binary     basestring (str or unicode)
 fields.boolean    bool
-fields.char       basestring
+fields.char       basestring (str or unicode)
 fields.date       datetime.date
 fields.datetime   datetime.datetime
 fields.float      float
@@ -47,13 +48,13 @@ fields.text       basestring (str or unicode)
 
 Exceptions made for relation fields:
 
-================  ===============================================
+================  ===========================================================
 `OpenERP` fields  Types used in `OERPLib`
-================  ===============================================
-fields.many2one   ``oerplib.browse.BrowseRecord`` object
-fields.one2many   list of ``oerplib.browse.BrowseRecord`` objects
-fields.many2many  list of ``oerplib.browse.BrowseRecord`` objects
-================  ===============================================
+================  ===========================================================
+fields.many2one   ``oerplib.service.osv.browse.BrowseRecord`` object
+fields.one2many   list of ``oerplib.service.osv.browse.BrowseRecord`` objects
+fields.many2many  list of ``oerplib.service.osv.browse.BrowseRecord`` objects
+================  ===========================================================
 
 Exceptions
 ----------
@@ -61,3 +62,8 @@ Exceptions
 .. automodule:: oerplib.error
     :members:
 
+RPC module
+----------
+
+.. automodule:: oerplib.rpc
+    :members:
