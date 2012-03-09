@@ -2,8 +2,9 @@
 """This module provides a `RPC` connector (via the
 :func:`get_connector <oerplib.rpc.get_connector>` method) which
 use the `XML-RPC` or `Net-RPC` protocol to communicate with an `OpenERP` server.
-This sub-module is used by `OERPLib` to execute all queries while abstracting
-the protocol used.
+
+Afterwards, `RPC` services (like `db`, `common` or `object`) and their methods
+associated can be accessed dynamically from the connector returned.
 
 Here is an example of how to use it:
 
@@ -23,6 +24,9 @@ Here is an example of how to use it:
     Execute a workflow query::
 
     >>> res = cnt.object.exec_workflow('database', uid, 'passwd', 'sale.order', 'order_confirm', 4)
+
+This sub-module is used by `OERPLib` to execute all queries while abstracting
+the protocol used.
 
 """
 

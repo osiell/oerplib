@@ -85,9 +85,9 @@ Outside relation fields, Python data types are used, like ``datetime.date`` and
 
     >>> order = oerp.browse('purchase.order', 42)
     >>> order.minimum_planned_date
-    datetime.datetime(2010, 5, 29, 0, 0)
+    datetime.datetime(2012, 3, 10, 0, 0)
     >>> order.date_order
-    datetime.date(2010, 5, 27)
+    datetime.date(2012, 3, 8)
 
 .. See the table of equivalents types with `OpenERP`.
 
