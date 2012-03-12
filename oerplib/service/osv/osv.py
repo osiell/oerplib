@@ -102,16 +102,16 @@ class OSV(collections.Mapping):
                     osv_name=obj.__class__.__osv__['name'], obj_id=obj.id))
         # Special field 'name' have to be filled with the value returned
         # by the 'name_get' method
-        try:
-            name = self.oerp.execute(obj.__osv__['name'], 'name_get', [obj.id])
-        except error.Error:
-            pass
-        else:
-            if name:
-                try:
-                    obj_data['raw_data']['name'] = ast.literal_eval(name[0][1])
-                except Exception:
-                    obj_data['raw_data']['name'] = name[0][1]
+        #try:
+        #    name = self.oerp.execute(obj.__osv__['name'], 'name_get', [obj.id])
+        #except error.Error:
+        #    pass
+        #else:
+        #    if name:
+        #        try:
+        #            obj_data['raw_data']['name'] = ast.literal_eval(name[0][1])
+        #        except Exception:
+        #            obj_data['raw_data']['name'] = name[0][1]
         self.reset(obj)
 
     def reset(self, obj):
