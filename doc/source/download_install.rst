@@ -6,10 +6,6 @@ Download and install instructions
 Python Package Index (PyPI)
 ---------------------------
 
-You can download the package from the
-`Python Package Index <http://pypi.python.org/pypi/OERPLib/>`_ or install the
-latest release this way::
-
 You can install OERPLib with the `easy_install` tool::
 
     $ easy_install oerplib

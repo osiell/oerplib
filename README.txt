@@ -12,7 +12,8 @@ Features supported:
       ``search`` (alongside ``execute`` to perform other methods),
     - browse records (``browse`` method implemented),
     - execute workflows,
-    - report downloading.
+    - manage databases,
+    - reports downloading.
 
 How does it work? See below::
 
@@ -51,6 +52,11 @@ Supported OpenERP versions
 --------------------------
 
 `OERPLib` is known to work with `OpenERP` server v5 and v6.
+
+Supported Python versions
+-------------------------
+
+`OERPLib` support Python versions 2.6 and 2.7.
 
 Generate the documentation
 --------------------------

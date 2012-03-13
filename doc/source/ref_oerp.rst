@@ -1,28 +1,7 @@
-Reference
-=========
+oerplib.OERP
+============
 
-.. automodule:: oerplib
-    :members:
-
-Here's a sample session using this module::
-
-    >>> import oerplib
-    >>> oerp = oerplib.OERP('localhost')                    # connect to localhost, default port
-    >>> user = oerp.login('admin', 'admin', 'my_database')  # login returns an user object
-    >>> user.name
-    'Administrator'
-
-OERP Class
-----------
-
-.. autoclass:: OERP
-    :members:
-
-
-DB class
---------
-
-.. autoclass:: oerplib.service.db.DB
+.. autoclass:: oerplib.OERP
     :members:
 
 
@@ -56,14 +35,3 @@ fields.one2many   list of ``oerplib.service.osv.browse.BrowseRecord`` objects
 fields.many2many  list of ``oerplib.service.osv.browse.BrowseRecord`` objects
 ================  ===========================================================
 
-Exceptions
-----------
-
-.. automodule:: oerplib.error
-    :members:
-
-RPC module
-----------
-
-.. automodule:: oerplib.rpc
-    :members:

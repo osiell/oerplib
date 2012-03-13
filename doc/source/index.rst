@@ -18,7 +18,8 @@ Features supported:
       ``search`` (alongside ``execute`` to perform other methods),
     - browse records (``browse`` method implemented),
     - execute workflows,
-    - report downloading.
+    - manage databases,
+    - reports downloading.
 
 Quick start
 -----------
@@ -63,11 +64,11 @@ Contents
 --------
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 2
 
     download_install
     tutorials
-    api_reference
+    reference
 
 Supported OpenERP versions
 --------------------------
