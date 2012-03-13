@@ -1,21 +1,24 @@
-v0.4.0, 2012-02-17:
-    - Net-RPC protocol support added,
+v0.4.0, 2012-03-13:
+    - Net-RPC protocol support added.
+    - Database management via the 'OERP.db' attribute.
     - Browse records are no longer stored in OERPLib, each call to the 'browse',
-      method will generate a new instance,
+      method will generate a new instance.
     - Methods which need a user connected raise an exception
       if it is not the case.
     - Browse records now store their own original data and fields updated in
-      the '__data__' attribute,
-    - Browse record classes now store their metadata (OSV name and columns) in
-      the '__osv__' attribute,
-    - Dictionary interface of the OERP class dropped.
-    - 'write' and 'unlink' methods don't handle browse records anymore.
+      the '__data__' attribute.
+    - Browse record classes now store their metadata (OSV class name and
+      columns) in the '__osv__' attribute.
+    - Dictionary interface of the 'OERP' class dropped.
+    - 'write' and 'unlink' methods don't handle browse records anymore,
       'write_record' and 'unlink_record' added for this purpose.
+    - A new design for the documentation.
 
     Bugfixes:
-    - 'name' attribute of a browse record fixed,
-    - 'OERP.report' method (previously called 'OERP.exec_report') works well,
-    - 'None' values can now be sent via the XML-RPC protocol,
+    - 'name' attribute of a browse record fixed (does not rely on the 'name_get'
+      OSV method anymore).
+    - 'OERP.report' method (previously called 'OERP.exec_report') works well.
+    - 'None' values can now be sent via the XML-RPC protocol.
 
 v0.3.0, 2011-10-11:
     - ID field of browsable objects is readonly
