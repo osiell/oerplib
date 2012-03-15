@@ -13,6 +13,11 @@ from test_db_drop import TestDBDrop
 
 if __name__ == '__main__':
     suite = unittest.TestSuite()
+
+    #---------------
+    #- First Tests -
+    #---------------
+
     # 1) Test OERP.__init__
     loader = unittest.TestLoader().loadTestsFromTestCase(TestInit)
     suite.addTest(loader)
@@ -25,10 +30,20 @@ if __name__ == '__main__':
     # 3) Test OERP.login
     loader = unittest.TestLoader().loadTestsFromTestCase(TestLogin)
     suite.addTest(loader)
+
+    #---------
+    #- Tests -
+    #---------
+
     # Test OERP.db
     loader = unittest.TestLoader().loadTestsFromTestCase(TestDB)
     suite.addTest(loader)
-    # End) Test OERP.db (drop the database)
+
+    #---------------
+    #- Final Tests -
+    #---------------
+
+    # Test OERP.db (drop the database)
     if ARGS.create_db and ARGS.drop_db:
         loader = unittest.TestLoader().loadTestsFromTestCase(TestDBDrop)
         suite.addTest(loader)
