@@ -10,7 +10,6 @@ author = u"ABF Osiell - Sebastien Alix"
 author_email = 'sebastien.alix@osiell.com'
 url = 'http://www.osiell.com/'
 download_url = 'http://pypi.python.org/packages/source/O/OERPLib/OERPLib-%s.tar.gz' % version,
-#download_url = 'https://bitbucket.org/SebAlix/python-oerplib/downloads'
 license = 'LGPL v3'
 
 cmdclass = {}
@@ -39,7 +38,10 @@ setup(name=name,
       author_email=author_email,
       url=url,
       download_url=download_url,
-      packages=['oerplib', 'oerplib.test'],
+      packages=['oerplib',
+                'oerplib.rpc',
+                'oerplib.service',
+                'oerplib.service.osv'],
       license=license,
       cmdclass=cmdclass,
       command_options=command_options,
