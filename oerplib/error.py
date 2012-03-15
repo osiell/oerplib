@@ -17,42 +17,13 @@ class Error(Exception):
         return u"{message}".format(message=self.message)
 
 
-class LoginError(Error):
-    """Exception raised when an error occurred during a login operation."""
-    pass
-
-
-class ExecuteQueryError(Error):
-    """Exception raised when an error occurred during an execute query."""
-    pass
-
-
-class WorkflowQueryError(Error):
-    """Exception raised when an error occurred during an workflow query."""
-    pass
-
-
-class ReportError(Error):
-    """Exception raised when an error occurred during a retrieval
-    report operation.
-    """
+class RPCError(Error):
+    """Exception raised when an error related to a RPC query occurs."""
     pass
 
 
 class InternalError(Error):
     """Exception raised when an error occurred during an internal operation."""
     pass
-
-
-class NotAllowedError(Error):
-    """Exception raised if a prohibited operation is made."""
-    def __init__(self, message):
-        super(NotAllowedError, self).__init__(message)
-
-
-class UnknownError(Error):
-    """Exception raised when an unknown error occurred."""
-    def __init__(self, message):
-        super(UnknownError, self).__init__(message)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

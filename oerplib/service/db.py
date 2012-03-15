@@ -151,6 +151,7 @@ class DB(object):
         required to perform this action.
 
         :return: a list of user accounts created
+        :raise: :class:`oerplib.error.RPCError`
 
         """
         try:
@@ -166,7 +167,7 @@ class DB(object):
                     time.sleep(1)
                     attempt += 1
                 if attempt > 300:
-                    raise error.ExecuteQueryError(
+                    raise error.RPCError(
                             "Too many attempts, the operation"
                             " has been canceled.")
             return result[1]
@@ -175,7 +176,7 @@ class DB(object):
             #FIXME handle the exception with the UnicodeEncodeError for
             # the error 'the database already exists'.
             #print dir(exc)
-            raise error.ExecuteQueryError(exc)
+            raise error.RPCError(exc)
 
     def __getattr__(self, method):
         def rpc_method(*args):
@@ -183,7 +184,7 @@ class DB(object):
                 meth = getattr(self._oerp._connector.db, method, False)
                 return meth(*args)
             except rpc.error.ConnectorError as exc:
-                raise error.ExecuteQueryError(exc)
+                raise error.RPCError(exc)
         return rpc_method
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

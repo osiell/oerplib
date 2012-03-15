@@ -14,7 +14,7 @@ v0.4.0, 2012-03-13:
       'write_record' and 'unlink_record' added for this purpose.
     - A new design for the documentation.
 
-    Bugfixes:
+    Bug fixes:
     - 'name' attribute of a browse record fixed (does not rely on the 'name_get'
       OSV method anymore).
     - 'OERP.report' method (previously called 'OERP.exec_report') works well.

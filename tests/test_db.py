@@ -33,7 +33,7 @@ class TestDB(unittest.TestCase):
     def test_db_restore_existing_database(self):
         dump = self.oerp.db.dump(ARGS.super_admin_passwd, ARGS.database)
         self.assertRaises(
-                oerplib.error.Error,
+                oerplib.error.RPCError,
                 self.oerp.db.restore,
                 ARGS.super_admin_passwd, ARGS.database, dump)
 

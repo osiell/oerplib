@@ -76,7 +76,7 @@ class OERP(object):
     def _check_logged_user(self):
         """Check if a user is logged. Otherwise, an error is raised."""
         if not self._user:
-            raise error.LoginError(
+            raise error.Error(
                 u"User login required.")
 
     def login(self, user, passwd, database=None):
@@ -90,18 +90,18 @@ class OERP(object):
         u'Administrator'
 
         :return: the user connected as a browsable record
-        :raise: :class:`oerplib.error.LoginError`
+        :raise: :class:`oerplib.error.RPCError`
 
         """
         # Raise an error if no database was given
         self._database = database or self._database_default
         if not self._database:
-            raise error.LoginError(u"No database specified")
+            raise error.Error(u"No database specified")
         # Get the user's ID and generate the corresponding User record
         try:
             user_id = self._connector.common.login(self._database, user, passwd)
         except rpc.error.ConnectorError as exc:
-            raise error.LoginError(unicode(exc))
+            raise error.RPCError(unicode(exc))
         else:
             if user_id:
                 #NOTE: create a fake User record just to execute the
@@ -117,7 +117,8 @@ class OERP(object):
                 self._user = self.browse('res.users', user_id)
                 return self._user
             else:
-                raise error.LoginError(u"Wrong login ID or password")
+                #FIXME: Raise an error?
+                raise error.RPCError(u"Wrong login ID or password")
 
     # ------------------------- #
     # -- Raw XML-RPC methods -- #
@@ -131,7 +132,7 @@ class OERP(object):
         [{'name': u'ASUStek', 'id': 2}, {'name': u'Your Company', 'id': 1}]
 
         :return: the result returned by the `method` called
-        :raise: :class:`oerplib.error.ExecuteQueryError`
+        :raise: :class:`oerplib.error.RPCError`
 
         """
         self._check_logged_user()
@@ -141,13 +142,13 @@ class OERP(object):
                                                   self._user.password,
                                                   osv_name, method, *args)
         except rpc.error.ConnectorError as exc:
-            raise error.ExecuteQueryError(unicode(exc))
+            raise error.RPCError(unicode(exc))
 
     def exec_workflow(self, osv_name, signal, obj_id):
         """`XML-RPC` Workflow query. Execute the workflow signal ``signal`` on
         the instance having the ID ``obj_id`` of OSV server class ``osv_name``.
 
-        :raise: :class:`oerplib.error.WorkflowQueryError`
+        :raise: :class:`oerplib.error.RPCError`
 
         `WARNING: not sufficiently tested.`
 
@@ -160,7 +161,7 @@ class OERP(object):
                                                  self._user.password,
                                                  osv_name, signal, obj_id)
         except rpc.error.ConnectorError as exc:
-            raise error.WorkflowQueryError(unicode(exc))
+            raise error.RPCError(unicode(exc))
 
     def report(self, report_name, osv_name, obj_id, report_type='pdf',
                context=None):
@@ -171,7 +172,7 @@ class OERP(object):
         '/tmp/oerplib_uJ8Iho.pdf'
 
         :return: the path to the generated temporary file
-        :raise: :class:`oerplib.error.ReportError`
+        :raise: :class:`oerplib.error.RPCError`
 
         """
         #TODO report_type: what it means exactly?
@@ -184,7 +185,7 @@ class OERP(object):
             pdf_data = self._get_report_data(report_name, osv_name, obj_id,
                                              report_type, context)
         except rpc.error.ConnectorError as exc:
-            raise error.ReportError(unicode(exc))
+            raise error.RPCError(unicode(exc))
         return self._print_file_data(pdf_data)
 
     def _get_report_data(self, report_name, osv_name, obj_id,
@@ -198,7 +199,7 @@ class OERP(object):
                             self._database, self.user.id, self.user.password,
                             report_name, [obj_id], data, context)
         except rpc.error.ConnectorError as exc:
-            raise error.ExecReportError(unicode(exc))
+            raise error.RPCError(unicode(exc))
         state = False
         attempt = 0
         while not state:
@@ -207,22 +208,22 @@ class OERP(object):
                             self._database, self.user.id, self.user.password,
                             report_id)
             except rpc.error.ConnectorError as exc:
-                raise error.ExecReportError("Unknown error occurred during the "
-                                            "download of the report.")
+                raise error.RPCError("Unknown error occurred during the "
+                                     "download of the report.")
             state = pdf_data['state']
             if not state:
                 time.sleep(1)
                 attempt += 1
             if attempt > 200:
-                raise error.ExecReportError("Download time exceeded, "
-                                            "the operation has been canceled.")
+                raise error.RPCError("Download time exceeded, "
+                                     "the operation has been canceled.")
         return pdf_data
 
     @staticmethod
     def _print_file_data(data):
         """Print data in a temporary file and return the path of this one."""
         if 'result' not in data:
-            raise error.ReportError(
+            raise error.InternalError(
                     u"Invalid data, the operation has been canceled.")
         content = base64.decodestring(data['result'])
         if data.get('code') == 'zlib':
@@ -254,7 +255,7 @@ class OERP(object):
         [u'Your Company', u'ASUStek']
 
         :return: a BrowseRecord instance
-        :raise: :class:`oerplib.error.ExecuteQueryError`
+        :raise: :class:`oerplib.error.RPCError`
 
         """
         if isinstance(ids, list):
@@ -273,7 +274,7 @@ class OERP(object):
         [3]
 
         :return: a list of IDs
-        :raise: :class:`oerplib.error.ExecuteQueryError`
+        :raise: :class:`oerplib.error.RPCError`
 
         """
         if args is None:
@@ -288,7 +289,7 @@ class OERP(object):
         >>> partner_id = oerp.create('res.partner', {'name': 'Jacky Bob', 'lang': 'fr_FR'})
 
         :return: the ID of the new record.
-        :raise: :class:`oerplib.error.ExecuteQueryError`
+        :raise: :class:`oerplib.error.RPCError`
 
         """
         return self.execute(osv_name, 'create', vals, context)
@@ -302,7 +303,7 @@ class OERP(object):
         >>> oerp.read('res.partner', [1, 2], ['name'])
         [{'name': u'ASUStek', 'id': 2}, {'name': u'Your Company', 'id': 1}]
 
-        :raise: :class:`oerplib.error.ExecuteQueryError`
+        :raise: :class:`oerplib.error.RPCError`
 
         """
         if fields is None:
@@ -320,7 +321,7 @@ class OERP(object):
         True
 
         :return: `True`
-        :raise: :class:`oerplib.error.ExecuteQueryError`
+        :raise: :class:`oerplib.error.RPCError`
 
         """
         #if ids is None:
@@ -339,7 +340,7 @@ class OERP(object):
         >>> oerp.unlink('res.partner', [1])
 
         :return: `True`
-        :raise: :class:`oerplib.error.ExecuteQueryError`
+        :raise: :class:`oerplib.error.RPCError`
 
         """
         #if ids is None:
@@ -374,7 +375,7 @@ class OERP(object):
         retrieved on the OpenERP server.
         Thus, all changes made locally on the record are canceled.
 
-        :raise: :class:`oerplib.error.ExecuteQueryError`
+        :raise: :class:`oerplib.error.RPCError`
 
         """
         return self._pool.get_by_class(browse_record.__class__).refresh(

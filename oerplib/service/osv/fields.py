@@ -55,7 +55,7 @@ class BaseField(object):
     def check_value(self, value):
         """Check the validity of a value for the field."""
         #if self.readonly:
-        #    raise error.NotAllowedError(
+        #    raise error.Error(
         #        u"'{field_name}' field is readonly".format(
         #            field_name=self.name))
         if self.size and len(value) > self.size:
@@ -111,7 +111,7 @@ class Many2ManyField(BaseField):
                 for o_id in instance.__data__['raw_data'][self.name]]
 
     def __set__(self, instance, value):
-        raise error.NotAllowedError(u"Not implemented yet")
+        raise error.InternalError(u"Not implemented yet")
 
     def check_value(self, value):
         #TODO Many2Many.check_value()
@@ -300,8 +300,8 @@ def generate_field(osv, name, data):
                           'boolean', 'text', 'binary']:
         field = ValueField(osv, name, data)
     else:
-        raise error.UnknownError(
-            u"Can't instanciate the field '{field_name}', type unknown".format(
+        raise error.InternalError(
+            u"Can't instanciate the field '{field_name}', unknown type.".format(
                 field_name=name))
     return field
 

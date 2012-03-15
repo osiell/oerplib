@@ -20,7 +20,7 @@ class TestLogin(unittest.TestCase):
         self.assertEqual(oerp.database, ARGS.database)
 
     def test_oerp_no_db_login_no_db(self):
-        # OERP no database + login no database
+        # OERP no database + login no database => Error
         oerp = oerplib.OERP(ARGS.server)
         self.assertRaises(
                 oerplib.error.Error,

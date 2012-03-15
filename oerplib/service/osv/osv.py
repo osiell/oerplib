@@ -29,10 +29,11 @@ class OSV(collections.Mapping):
 
         """
         # Retrieve server fields info and generate corresponding local fields
+        #FIXME try catch needed?
         try:
             fields_get = self.oerp.execute(osv_name, 'fields_get')
-        except error.ExecuteQueryError:
-            raise error.ExecuteQueryError(
+        except error.RPCError:
+            raise error.RPCError(
                 u"There is no OSV class named '{0}'.".format(osv_name))
         cls_name = osv_name.replace('.', '_')
         cls_fields = {}
@@ -97,7 +98,7 @@ class OSV(collections.Mapping):
         obj_data = obj.__data__
         obj_data['raw_data'] = self.oerp.read(obj.__osv__['name'], obj.id)
         if obj_data['raw_data'] is False:
-            raise error.ExecuteQueryError(
+            raise error.RPCError(
                 u"There is no '{osv_name}' record with ID {obj_id}.".format(
                     osv_name=obj.__class__.__osv__['name'], obj_id=obj.id))
         # Special field 'name' have to be filled with the value returned
