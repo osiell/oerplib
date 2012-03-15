@@ -17,10 +17,6 @@ class Error(Exception):
         return u"{message}".format(message=self.message)
 
 
-class DMSConnectionError(Error):
-    pass
-
-
 class LoginError(Error):
     """Exception raised when an error occurred during a login operation."""
     pass
