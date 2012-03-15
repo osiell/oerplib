@@ -40,9 +40,9 @@ classes from the `OpenERP` server.
 Execute queries
 ---------------
 
-The basic method to execute queries is ``execute``. It takes at least two
-parameters (OSV model name and the method name) following by variable parameters
-according to the method called. Example::
+The basic method to execute queries is :func:`execute <oerplib.OERP.execute>`.
+It takes at least two parameters (OSV model name and the method name)
+following by variable parameters according to the method called. Example::
 
     >>> order_data = oerp.execute('sale.order', 'read', 1)
 
@@ -65,7 +65,7 @@ Browse records
 
 The main functionality of `OERPLib` is its ability to generate objects that are
 similar to browsable records found on the `OpenERP` server. All this
-is possible using the ``browse`` method::
+is possible using the :func:`browse <oerplib.OERP.browse>` method::
 
     # fetch one record
     partner = oerp.browse('res.partner', 1) # Partner ID = 1
@@ -77,6 +77,7 @@ is possible using the ``browse`` method::
 From such objects, it is possible to easily explore relationships. The related
 records are generated on the fly::
 
+    partner = oerp.browse('res.partner', 3)
     for addr in partner.address:
         print(addr.name)
 
@@ -94,8 +95,9 @@ Outside relation fields, Python data types are used, like ``datetime.date`` and
 Update data through browsable records
 -------------------------------------
 
-Update data of a browsable record is workable with the ``write_record`` method
-of an :class:`OERP <oerplib.OERP>` instance. Let's update the first contact's
+Update data of a browsable record is workable with the
+:func:`write_record <oerplib.OERP.write_record>` method of an
+:class:`OERP <oerplib.OERP>` instance. Let's update the first contact's
 name of a partner::
 
     >>> partner.address[0].name = "Caporal Jones"
@@ -121,7 +123,7 @@ As see above, it's as simple as that::
 Selection
 '''''''''
 
-Same as above, except there is a check about the value assigned. For example,
+Same as above, except there is a check about the value assigned. For instance,
 the field ``type`` of the ``res.partner.address`` model accept values contains
 in ``['default', 'invoice', 'delivery', 'contact', 'other']``::
 
@@ -194,8 +196,9 @@ As always, a wrong type will raise an exception::
 Generate reports
 ----------------
 
-Another nice functionnality is the reports generation with the ``report``
-method. You have to supply the name of the report, the name of the OSV model and
+Another nice functionnality is the reports generation with the
+:func:`report <oerplib.OERP.report>` method.
+You have to supply the name of the report, the name of the OSV model and
 the ID of the record related::
 
     >>> oerp.report('sale.order', 'sale.order', 1)

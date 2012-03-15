@@ -1,9 +1,6 @@
 TODO:
     - Instantiate socket for each request?
 
-    - Find a better design to manage /object, /common, /db, /wizard,
-      and /report resources
-
 
 RPC methods for 'url/object' :
 
@@ -53,79 +50,6 @@ RPC methods for 'url/wizard' :
                'end2',
                {'lang': 'fr_FR', 'contact_display': 'partner', 'tz': False,
                 'active_ids': [260], 'active_id': 260})
-
-
-RPC methods for 'url/db' :
-
-    - list()
-        url: socket://localhost:8070
-        resource: db
-        method: list
-        args: ()
-        res: ['db_name1', 'db_name2', ...]
-
-    - server_version()
-        url: socket://172.24.1.117:8070
-        resource: db
-        method: server_version
-        args: ()
-        res: '5.0.16'
-
-    - list_lang()
-        url: socket://172.24.1.117:8070
-        resource: db
-        method: list_lang
-        args: ()
-        res: [('sq_AL', u'Albanian / Shqip\xebri'), ...]
-
-    - create(super_admin_pwd, db_name, True?, lang, admin_pwd)
-        url: socket://172.24.1.117:8070
-        resource: db
-        method: create
-        args: ('admin', '20120220', True, 'fr_FR', 'admin')
-        res: 4 # Database ID?
-
-        url: socket://172.24.1.117:8070
-        resource: db
-        method: get_progress
-        args: ('admin', 4)
-        res: (0, [])
-
-        url: socket://172.24.1.117:8070
-        resource: db
-        method: get_progress
-        args: ('admin', 4)
-        res: (0, [])            #NOTE: Progressing = 0%
-
-        ... (loop on 'get_process' to check progress)
-
-        url: socket://172.24.1.117:8070
-        resource: db
-        method: get_progress
-        args: ('admin', 4)
-        res: (1.0,              #NOTE: Progressing = 100%
-              [{'login': u'admin', 'password': u'admin', 'name': u'Administrator'},
-               {'login': u'demo', 'password': u'demo', 'name': u'Demo User'}])
-
-    - drop(admin_pwd, db_name)
-        url: socket://172.24.1.117:8070
-        resource: db
-        method: drop
-        args: ('admin', '20120220')
-        res: True
-
-    - dump(admin_pwd, db_name)
-        url: socket://172.24.1.117:8070
-        resource: db
-        method: dump
-        args: ('admin', '20120220_test2')
-        res: [binary data in base64]
-
-    - restore
-        url: socket://172.24.1.117:8070
-        resource: db
-        method: restore
-        args: ??
 
 
 RPC methods for 'url/common' :

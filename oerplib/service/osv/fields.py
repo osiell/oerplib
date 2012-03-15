@@ -300,9 +300,10 @@ def generate_field(osv, name, data):
                           'boolean', 'text', 'binary']:
         field = ValueField(osv, name, data)
     else:
+        txt = (u"Can't instanciate the field '{field_name}', "
+               u"'{field_type}' type unknown")
         raise error.InternalError(
-            u"Can't instanciate the field '{field_name}', unknown type.".format(
-                field_name=name))
+            txt.format(field_name=name, field_type=data['type']))
     return field
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

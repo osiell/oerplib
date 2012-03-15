@@ -1,6 +1,6 @@
-v0.4.0, 2012-03-13:
+v0.4.0, 2012-03-15:
     - Net-RPC protocol support added.
-    - Database management via the 'OERP.db' attribute.
+    - Database management (via the 'OERP.db' attribute).
     - Browse records are no longer stored in OERPLib, each call to the 'browse',
       method will generate a new instance.
     - Methods which need a user connected raise an exception
@@ -12,6 +12,7 @@ v0.4.0, 2012-03-13:
     - Dictionary interface of the 'OERP' class dropped.
     - 'write' and 'unlink' methods don't handle browse records anymore,
       'write_record' and 'unlink_record' added for this purpose.
+    - Unit tests added.
     - A new design for the documentation.
 
     Bug fixes:
