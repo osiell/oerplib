@@ -28,7 +28,7 @@ _parser.add_argument('--drop_db', action='store_true',
                      help="Drop the created database. "
                           "Works only with --create_db")
 
-_parser.add_argument('--verbosity', default=1, type=int,
+_parser.add_argument('--verbosity', default=2, type=int,
                      help="Output verbosity of unittest")
 
 ARGS = _parser.parse_args()
