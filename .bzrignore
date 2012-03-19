@@ -1,0 +1,4 @@
+*.pyc
+*.swp
+*.vim
+dev_*
