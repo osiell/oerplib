@@ -66,17 +66,17 @@ generator::
 
     easy_install -U sphinx
 
-Then, you can use the ``build_sphinx`` option of the ``setup.py``::
+Then, you can use the ``build_doc`` option of the ``setup.py``::
 
-    python setup.py build_sphinx
+    python setup.py build_doc
 
-The generated documentation will be in the ``./doc/html`` directory.
+The generated documentation will be in the ``./doc/build/html`` directory.
 
 Bugs or suggestions
 -------------------
 
 Please, feel free to report bugs or suggestions in the `Bug Tracker
-<https://bitbucket.org/SebAlix/python-oerplib/issues?status=new&status=open>`_!
+<https://bugs.launchpad.net/oerplib/+filebug>`_!
 
 Changes in this version
 -----------------------

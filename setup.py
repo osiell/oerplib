@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
+import os
 from distutils.core import setup
 
 name = 'OERPLib'
@@ -8,26 +9,32 @@ description = 'OpenERP client library which allows to easily interact with an Op
 keywords = "openerp client xml-rpc xml_rpc xmlrpc oerplib communication lib library python service web webservice"
 author = u"ABF Osiell - Sebastien Alix"
 author_email = 'sebastien.alix@osiell.com'
-url = 'http://www.osiell.com/'
+url = 'http://packages.python.org/OERPLib/'
 download_url = 'http://pypi.python.org/packages/source/O/OERPLib/OERPLib-%s.tar.gz' % version,
 license = 'LGPL v3'
+doc_build_dir = 'doc/build'
+doc_source_dir = 'doc/source'
 
 cmdclass = {}
 command_options = {}
-# 'build_sphinx' option
+# 'build_doc' option
 try:
     from sphinx.setup_command import BuildDoc
-    cmdclass = {'build_sphinx': BuildDoc}
-    command_options={
-        'build_sphinx': {
+    if not os.path.exists(doc_build_dir):
+        os.mkdir(doc_build_dir)
+    cmdclass = {'build_doc': BuildDoc}
+    command_options = {
+        'build_doc': {
             #'project': ('setup.py', name),
             'version': ('setup.py', version),
             'release': ('setup.py', version),
-            'source_dir': ('setup.py', 'doc/source'),
-            'build_dir': ('setup.py', 'doc/'),
+            'source_dir': ('setup.py', doc_source_dir),
+            'build_dir': ('setup.py', doc_build_dir),
+            'builder': ('setup.py', 'html'),
          }}
 except Exception:
-    print("No Sphinx module found. You have to install Sphinx to be able to generate the documentation.")
+    print("No Sphinx module found. You have to install Sphinx "
+          "to be able to generate the documentation.")
 
 setup(name=name,
       version=version,

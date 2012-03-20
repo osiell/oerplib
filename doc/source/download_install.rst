@@ -25,10 +25,15 @@ and install manually (replace `X.Y.Z` accordingly)::
 
 No dependency is required.
 
-Source code from the Mercurial repository
------------------------------------------
+Source code
+-----------
 
-The project is hosted in a BitBucket repository. To get the code, just type::
+The project is hosted on `Launchpad <https://launchpad.net/oerplib>`_.
+To get the current development branch, just type::
 
-    $ hg clone https://bitbucket.org/SebAlix/python-oerplib
+    $ bzr branch lp:oerplib
+
+For the last version of a stable branch (replace `X.Y.Z` accordingly)::
+
+    $ bzr branch lp:oerplib/X.Y
 

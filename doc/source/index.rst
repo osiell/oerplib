@@ -89,7 +89,7 @@ Bugs or suggestions
 -------------------
 
 Please, feel free to report bugs or suggestions in the `Bug Tracker
-<https://bitbucket.org/SebAlix/python-oerplib/issues?status=new&status=open>`_!
+<https://bugs.launchpad.net/oerplib/+filebug>`_!
 
 Indices and tables
 ==================
