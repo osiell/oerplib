@@ -74,7 +74,7 @@ class NetRPC(object):
 
         if isinstance(res[0], BaseException):
             if exception:
-                raise NetRPCError(str(res[0]), str(res[1]))
+                raise NetRPCError(res[0], res[1])
             raise res[0]
         else:
             return res[0]

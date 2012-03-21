@@ -10,6 +10,8 @@ from test_login import TestLogin
 from test_db_create import TestDBCreate
 from test_db import TestDB
 from test_db_drop import TestDBDrop
+from test_execute import TestExecute
+from test_browse import TestBrowse
 
 if __name__ == '__main__':
     suite = unittest.TestSuite()
@@ -39,6 +41,14 @@ if __name__ == '__main__':
     loader = unittest.TestLoader().loadTestsFromTestCase(TestDB)
     suite.addTest(loader)
 
+    # Test OERP.execute
+    loader = unittest.TestLoader().loadTestsFromTestCase(TestExecute)
+    suite.addTest(loader)
+
+    # Test OERP.browse
+    loader = unittest.TestLoader().loadTestsFromTestCase(TestBrowse)
+    suite.addTest(loader)
+
     #---------------
     #- Final Tests -
     #---------------
@@ -51,6 +61,13 @@ if __name__ == '__main__':
         print("-- TestDBDrop skipped --")
 
     # Run all tests
-    unittest.TextTestRunner(verbosity=ARGS.verbosity).run(suite)
+    if ARGS.test_xmlrpc:
+        ARGS.protocol = 'xmlrpc'
+        ARGS.port = ARGS.xmlrpc_port
+        unittest.TextTestRunner(verbosity=ARGS.verbosity).run(suite)
+    elif ARGS.test_netrpc:
+        ARGS.protocol = 'netrpc'
+        ARGS.port = ARGS.netrpc_port
+        unittest.TextTestRunner(verbosity=ARGS.verbosity).run(suite)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
