@@ -7,7 +7,9 @@ from oerplib import rpc, error
 
 
 class DB(object):
-    """The `DB` class represents the database management service.
+    """.. versionadded:: 0.4.0
+
+    The `DB` class represents the database management service.
     It provides functionalities such as list, create, drop, dump
     and restore databases.
 

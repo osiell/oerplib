@@ -67,8 +67,10 @@ class OERP(object):
     database = property(lambda self: self._database,
                         doc="The database currently used.")
     db = property(lambda self: self._db,
-                  doc=("The database management service. "
-                       "See the :class:`oerplib.service.db.DB` class."))
+                  doc=(""".. versionadded:: 0.4.0
+
+                       The database management service.
+                       See the :class:`oerplib.service.db.DB` class."""))
 
     #NOTE: in the past this function was implemented as a decorator for other
     # methods needed to be checked, but Sphinx documentation generator is not
@@ -354,7 +356,9 @@ class OERP(object):
     # ---------------------- #
 
     def write_record(self, browse_record, context=None):
-        """Update the field values of ``browse_record`` by sending them to the
+        """.. versionadded:: 0.4.0
+
+        Update the field values of ``browse_record`` by sending them to the
         `OpenERP` server (only field values which have been changed).
 
         """
@@ -364,7 +368,11 @@ class OERP(object):
                 browse_record, context)
 
     def unlink_record(self, browse_record, context=None):
-        """Delete the ``browse_record`` from the `OpenERP` server."""
+        """.. versionadded:: 0.4.0
+
+        Delete the ``browse_record`` from the `OpenERP` server.
+
+        """
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
         return self._pool.get_by_class(browse_record.__class__).unlink(
