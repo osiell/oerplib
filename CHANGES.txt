@@ -1,4 +1,4 @@
-v0.4.0, 2012-03-15:
+v0.4.0, 2012-03-23:
     - Net-RPC protocol support added
     - Database management (via the 'OERP.db' attribute)
     - Browse records are no longer stored in OERPLib, each call to the 'browse',
