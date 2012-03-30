@@ -1,13 +1,11 @@
 TODO:
-    - browse method: use a generator
-    - improve OSV ('/object') service with a dynamic access to all
-      OSV methods (e.g.: "oerp.get('res.users').context_get()" )
     - implement some others convenient methods such as 'search_count',
       'search_read', 'name_search'...?
     - move 'OERP.report' method to a 'report' service/attribute as 'db',
       with a custom method 'download' which will be a wrapper around the
       'report' and 'report_get' methods.
     - 'wizard' service
+    - Dictionary interface for the BrowseRecord class (like OpenERP server)
 
 
 RPC methods for 'url/object' :
