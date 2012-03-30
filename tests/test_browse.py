@@ -43,4 +43,26 @@ class TestBrowse(unittest.TestCase):
                 'res.users',
                 False) # Wrong arg
 
+    def test_write_record(self):
+        # Check the result returned
+        backup_name = self.user.name
+        self.user.name = "Charly"
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.name, "Charly")
+        self.user.name = backup_name
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.name, backup_name)
+
+    def test_reset(self):
+        # Check the result returned
+        self.user.name = "Charly"
+        self.oerp.reset(self.user)
+        self.assertEqual(self.user.name, "Administrator")
+
+    def test_refresh(self):
+        # Check the result returned
+        self.user.name = "Charly"
+        self.oerp.refresh(self.user)
+        self.assertEqual(self.user.name, "Administrator")
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

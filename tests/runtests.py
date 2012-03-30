@@ -12,6 +12,7 @@ from test_db import TestDB
 from test_db_drop import TestDBDrop
 from test_execute import TestExecute
 from test_browse import TestBrowse
+from test_osv import TestOSV
 
 if __name__ == '__main__':
     suite = unittest.TestSuite()
@@ -47,6 +48,10 @@ if __name__ == '__main__':
 
     # Test OERP.browse
     loader = unittest.TestLoader().loadTestsFromTestCase(TestBrowse)
+    suite.addTest(loader)
+
+    # Test OERP.get
+    loader = unittest.TestLoader().loadTestsFromTestCase(TestOSV)
     suite.addTest(loader)
 
     #---------------
