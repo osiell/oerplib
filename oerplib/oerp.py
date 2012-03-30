@@ -249,7 +249,7 @@ class OERP(object):
     def _browse_generator(self, osv_name, ids, context=None):
         """Generator used by the :func:`browse <oerplib.OERP.browse>` method."""
         for o_id in ids:
-            yield self.browse(osv_name, o_id)
+            yield self.browse(osv_name, o_id, context)
 
     def browse(self, osv_name, ids, context=None):
         """Return a browsable record (or a generator to iterate on records
@@ -268,7 +268,7 @@ class OERP(object):
         if isinstance(ids, list):
             return self._browse_generator(osv_name, ids, context)
         else:
-            return self._pool.get(osv_name).browse(ids)
+            return self._pool.get(osv_name).browse(ids, context)
 
     def search(self, osv_name, args=None, offset=0, limit=None, order=None,
                context=None, count=False):
@@ -368,7 +368,7 @@ class OERP(object):
         """
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
-        return self._pool.get_by_class(browse_record.__class__).write(
+        return self._pool.get_by_class(browse_record.__class__)._write_record(
                 browse_record, context)
 
     def unlink_record(self, browse_record, context=None):
@@ -379,10 +379,10 @@ class OERP(object):
         """
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
-        return self._pool.get_by_class(browse_record.__class__).unlink(
+        return self._pool.get_by_class(browse_record.__class__)._unlink_record(
                 browse_record, context)
 
-    def refresh(self, browse_record):
+    def refresh(self, browse_record, context=None):
         """Restore original values of the ``browse_record`` from data
         retrieved on the OpenERP server.
         Thus, all changes made locally on the record are canceled.
@@ -390,8 +390,8 @@ class OERP(object):
         :raise: :class:`oerplib.error.RPCError`
 
         """
-        return self._pool.get_by_class(browse_record.__class__).refresh(
-                browse_record)
+        return self._pool.get_by_class(browse_record.__class__)._refresh(
+                browse_record, context)
 
     def reset(self, browse_record):
         """Cancel all changes made locally on the ``browse_record``.
@@ -399,7 +399,7 @@ class OERP(object):
         Therefore, values restored may be outdated.
 
         """
-        return self._pool.get_by_class(browse_record.__class__).reset(
+        return self._pool.get_by_class(browse_record.__class__)._reset(
                 browse_record)
 
     def get_osv_name(self, browse_record):
@@ -415,5 +415,14 @@ class OERP(object):
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"Value is not a browse_record.")
         return browse_record.__osv__['name']
+
+    def get(self, osv_name):
+        """.. versionadded:: 0.5.0
+
+        Return an OSV class `osv_name` built from the `OpenERP` server.
+        See <TODO>.
+
+        """
+        return self._pool.get(osv_name)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

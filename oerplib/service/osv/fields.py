@@ -173,7 +173,7 @@ class One2ManyField(BaseField):
 
     #def check_value(self, value):
     #    super(One2ManyField, self).check_value(value)
-    #    oerp = self.osv.oerp
+    #    oerp = self.osv._oerp
     #    value_osv = oerp.pool.get_by_class(value.__class__)
     #    if value_osv.osv['name'] != self.relation:
     #        raise ValueError(

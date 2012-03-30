@@ -14,13 +14,13 @@ class OSV(collections.Mapping):
     fields_reserved = ['id', '__oerp__', '__osv__', '__data__']
     def __init__(self, oerp, osv_name):
         super(OSV, self).__init__()
-        self.oerp = oerp
-        self.browse_class = self._generate_browse_class(osv_name)
+        self._oerp = oerp
+        self._browse_class = self._generate_browse_class(osv_name)
 
-    def browse(self, obj_id):
+    def browse(self, obj_id, context=None):
         """Generate an instance of the OSV class (called 'browse_record')."""
-        obj = self.browse_class(obj_id)
-        self.refresh(obj)
+        obj = self._browse_class(obj_id)
+        self._refresh(obj, context)
         return obj
 
     def _generate_browse_class(self, osv_name):
@@ -31,7 +31,7 @@ class OSV(collections.Mapping):
         # Retrieve server fields info and generate corresponding local fields
         #FIXME try catch needed?
         try:
-            fields_get = self.oerp.execute(osv_name, 'fields_get')
+            fields_get = self._oerp.execute(osv_name, 'fields_get')
         except error.RPCError:
             raise error.RPCError(
                 u"There is no OSV class named '{0}'.".format(osv_name))
@@ -49,20 +49,20 @@ class OSV(collections.Mapping):
             cls_fields['name'] = fields.generate_field(self, 'name', field_data)
 
         cls = type(cls_name, (browse.BrowseRecord,), {})
-        cls.__oerp__ = self.oerp
+        cls.__oerp__ = self._oerp
         cls.__osv__ = {'name': osv_name, 'columns': cls_fields}
         slots = ['__oerp__', '__osv__', '__dict__', '__data__']
         slots.extend(cls_fields.keys())
         cls.__slots__ = slots
         return cls
 
-    def write(self, obj, context=None):
+    def _write_record(self, obj, context=None):
         """Send values of fields updated to the OpenERP server."""
         obj_data = obj.__data__
         vals = {}
         for field_name in obj_data['fields_updated']:
             if field_name in obj_data['raw_data']:
-                field = self.browse_class.__osv__['columns'][field_name]
+                field = self._browse_class.__osv__['columns'][field_name]
                 # Many2One fields
                 if isinstance(field, fields.Many2OneField):
                     vals[field_name] = getattr(obj,
@@ -71,7 +71,7 @@ class OSV(collections.Mapping):
                 #elif isinstance(field, fields.One2ManyField):
                 #    print field.relation
                 #    for rel_id in getattr(obj, "_{0}".format(field_name)):
-                #        self.oerp.write(field.relation, rel_id,
+                #        self._oerp.write(field.relation, rel_id,
                 #                        {'??FIELD??': obj.id})
                 #    #vals[field_name] = getattr(obj, "_{0}".format(field_name))
                 # Many2Many fields
@@ -81,22 +81,22 @@ class OSV(collections.Mapping):
                 else:
                     vals[field_name] = getattr(obj, "_{0}".format(field_name))
         try:
-            res = self.oerp.write(obj.__osv__['name'], [obj.id], vals, context)
+            res = self._oerp.write(obj.__osv__['name'], [obj.id], vals, context)
         except error.Error as exc:
             raise exc
         else:
             # Update raw_data dictionary
-            self.refresh(obj)
+            self._refresh(obj, context) #FIXME delete to avoid a RPC request?
             return res
 
-    def refresh(self, obj):
+    def _refresh(self, obj, context=None):
         """Retrieve field values from OpenERP server.
         May be used to restore the original values
         in the purpose to cancel all changes made.
 
         """
         obj_data = obj.__data__
-        obj_data['raw_data'] = self.oerp.read(obj.__osv__['name'], obj.id)
+        obj_data['raw_data'] = self._oerp.read(obj.__osv__['name'], obj.id)
         if obj_data['raw_data'] is False:
             raise error.RPCError(
                 u"There is no '{osv_name}' record with ID {obj_id}.".format(
@@ -104,7 +104,7 @@ class OSV(collections.Mapping):
         # Special field 'name' have to be filled with the value returned
         # by the 'name_get' method
         #try:
-        #    name = self.oerp.execute(obj.__osv__['name'], 'name_get', [obj.id])
+        #    name = self._oerp.execute(obj.__osv__['name'], 'name_get', [obj.id])
         #except error.Error:
         #    pass
         #else:
@@ -113,27 +113,34 @@ class OSV(collections.Mapping):
         #            obj_data['raw_data']['name'] = ast.literal_eval(name[0][1])
         #        except Exception:
         #            obj_data['raw_data']['name'] = name[0][1]
-        self.reset(obj)
+        self._reset(obj)
 
-    def reset(self, obj):
+    def _reset(self, obj):
         """Cancel all changes by restoring field values with original values
         obtained during the last refresh (object instanciation or
-        last call to refresh(obj) method).
+        last call to _refresh() method).
 
         """
         obj_data = obj.__data__
         obj_data['fields_updated'] = []
         # Load fields and their values
-        for field in self.browse_class.__osv__['columns'].values():
+        for field in self._browse_class.__osv__['columns'].values():
             if field.name in obj_data['raw_data']:
                 setattr(obj, "_{0}".format(field.name),
                         obj_data['raw_data'][field.name])
                 setattr(obj.__class__, field.name,
                         field)
 
-    def unlink(self, obj, context=None):
-        """Delete the object locally and from the server."""
-        return self.oerp.unlink(obj.__osv__, [obj.id], context)
+    def _unlink_record(self, obj, context=None):
+        """Delete the object from the OpenERP server."""
+        return self._oerp.unlink(obj.__osv__, [obj.id], context)
+
+    def __getattr__(self, method):
+        def rpc_method(*args):
+            result = self._oerp.execute(self._browse_class.__osv__['name'],
+                                        method, *args)
+            return result
+        return rpc_method
 
     # ---------------------------- #
     # -- MutableMapping methods -- #
@@ -143,11 +150,11 @@ class OSV(collections.Mapping):
         return self.browse(obj_id)
 
     def __iter__(self):
-        ids = self.oerp.search(self.browse_class.__osv__['name'])
+        ids = self._oerp.search(self._browse_class.__osv__['name'])
         for obj_id in ids:
             yield self.browse(obj_id)
 
     def __len__(self):
-        return self.oerp.search(self.browse_class.__osv__['name'], count=True)
+        return self._oerp.search(self._browse_class.__osv__['name'], count=True)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
