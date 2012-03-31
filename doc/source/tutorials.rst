@@ -40,7 +40,8 @@ classes from the `OpenERP` server.
 Execute queries
 ---------------
 
-The basic method to execute queries is :func:`execute <oerplib.OERP.execute>`.
+The basic method to execute queries related to the ``object`` RPC service is
+:func:`execute <oerplib.OERP.execute>`.
 It takes at least two parameters (OSV model name and the method name)
 following by variable parameters according to the method called. Example::
 
@@ -49,8 +50,9 @@ following by variable parameters according to the method called. Example::
 This instruction will call the ``read`` method of the OSV model ``sale.order``
 with the parameter ``1`` (the record ID asked by ``read``).
 
-For standard OSV methods suscribed to the `XML-RPC` service like ``create``,
-``read``, ``write``, ``unlink`` and ``search``, convenient methods exist::
+However, for usual methods such as ``create``, ``read``, ``write``, ``unlink``
+and ``search`` there are convenient shortcuts available (see
+:class:`oerplib.OERP`)::
 
     >>> partner_id = oerp.create('res.partner', {'name': 'Jacky Bob', 'lang': 'fr_FR'})
     >>> partner_data = oerp.read('res.partner', partner_id)
@@ -58,12 +60,27 @@ For standard OSV methods suscribed to the `XML-RPC` service like ``create``,
     >>> partner_ids = oerp.search('res.partner', [('name', 'ilike', 'Bob')])
     >>> oerp.unlink('res.partner', [partner_id])
 
+There is another way to access all methods of an OSV class, with the
+:func:`get <oerplib.OERP.get>` method, which provide an API
+almost syntactically identical to the `OpenERP` server side API::
+
+    >>> user_obj = oerp.get('res.users')
+    >>> user_obj.write([1], {'name': "Dupont D."})
+    >>> context = user_obj.context_get()
+    >>> product_obj = oerp.get('product.product')
+    >>> product_obj.name_get([1, 2, 3], context)
+
+.. note::
+    Signature of methods are identicals except the fact that there is no need
+    of the database cursor (`cr`) and user ID (`uid`) arguments as it is an
+    RPC access.
+
 .. _browse-records:
 
 Browse records
 --------------
 
-The main functionality of `OERPLib` is its ability to generate objects that are
+A great functionality of `OERPLib` is its ability to generate objects that are
 similar to browsable records found on the `OpenERP` server. All this
 is possible using the :func:`browse <oerplib.OERP.browse>` method::
 
