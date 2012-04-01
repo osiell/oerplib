@@ -38,11 +38,25 @@ class TestOSV(unittest.TestCase):
                 osv_class.search,
                 False) # Wrong arg
 
-    def test_osv_browse(self):
+    def test_osv_browse_with_one_id(self):
         # Check the result returned
         osv_class = self.oerp.get('res.users')
         user = osv_class.browse(self.user.id)
         self.assertEqual(user, self.user)
+
+    def test_osv_browse_with_ids(self):
+        # Iteration
+        for result in self.oerp.get('res.users').browse([self.user.id]):
+            self.assertEqual(self.user, result)
+        user_ids = self.oerp.search('res.users', [])
+        for result in self.oerp.get('res.users').browse(user_ids):
+            self.assertIsInstance(
+                    result, oerplib.service.osv.browse.BrowseRecord)
+        # With context
+        context = self.oerp.execute('res.users', 'context_get')
+        for result in self.oerp.get('res.users').browse(user_ids, context):
+            self.assertIsInstance(
+                    result, oerplib.service.osv.browse.BrowseRecord)
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

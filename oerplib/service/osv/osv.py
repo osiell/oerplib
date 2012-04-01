@@ -17,11 +17,36 @@ class OSV(collections.Mapping):
         self._oerp = oerp
         self._browse_class = self._generate_browse_class(osv_name)
 
-    def browse(self, obj_id, context=None):
-        """Generate an instance of the OSV class (called 'browse_record')."""
-        obj = self._browse_class(obj_id)
-        self._refresh(obj, context)
-        return obj
+    def _browse_generator(self, ids, context=None):
+        """Generator used by the
+        :func:`browse <oerplib.OERP.service.osv.osv.OSV.browse>` method.
+
+        """
+        for o_id in ids:
+            yield self.browse(o_id, context)
+
+    def browse(self, ids, context=None):
+        """Browse one record or several records (if ``ids`` is a list of IDs).
+        according to the model ``osv_name``.
+
+        >>> oerp.get('res.partner').browse(1)
+        browse_record(res.partner, 1)
+
+        >>> [partner.name for partner in oerp.get('res.partner').browse([1, 2])]
+        [u'Your Company', u'ASUStek']
+
+        :return: a BrowseRecord instance
+        :return: a generator to iterate on BrowseRecord instances
+        :raise: :class:`oerplib.error.RPCError`
+
+        """
+        if isinstance(ids, list):
+            return self._browse_generator(ids, context)
+        else:
+            obj = self._browse_class(ids)
+            self._refresh(obj, context)
+            return obj
+            #return self.browse(ids, context)
 
     def _generate_browse_class(self, osv_name):
         """Generate a class with all its fields corresponding to

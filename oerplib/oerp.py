@@ -246,14 +246,9 @@ class OERP(object):
     # -- High Level methods  -- #
     # ------------------------- #
 
-    def _browse_generator(self, osv_name, ids, context=None):
-        """Generator used by the :func:`browse <oerplib.OERP.browse>` method."""
-        for o_id in ids:
-            yield self.browse(osv_name, o_id, context)
-
     def browse(self, osv_name, ids, context=None):
-        """Return a browsable record (or a generator to iterate on records
-        if ``ids`` is a list) according to the model ``osv_name``.
+        """Browse one record or several records (if ``ids`` is a list of IDs)
+        according to the model ``osv_name``.
 
         >>> oerp.browse('res.partner', 1)
         browse_record(res.partner, 1)
@@ -262,13 +257,11 @@ class OERP(object):
         [u'Your Company', u'ASUStek']
 
         :return: a BrowseRecord instance
+        :return: a generator to iterate on BrowseRecord instances
         :raise: :class:`oerplib.error.RPCError`
 
         """
-        if isinstance(ids, list):
-            return self._browse_generator(osv_name, ids, context)
-        else:
-            return self._pool.get(osv_name).browse(ids, context)
+        return self.get(osv_name).browse(ids, context)
 
     def search(self, osv_name, args=None, offset=0, limit=None, order=None,
                context=None, count=False):
