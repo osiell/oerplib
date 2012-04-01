@@ -4,7 +4,7 @@ import os
 from distutils.core import setup
 
 name = 'OERPLib'
-version = '0.4.0'
+version = '0.5.0'
 description = 'OpenERP client library which allows to easily interact with an OpenERP server.'
 keywords = "openerp client xml-rpc xml_rpc xmlrpc oerplib communication lib library python service web webservice"
 author = u"ABF Osiell - Sebastien Alix"
