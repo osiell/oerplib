@@ -1,5 +1,9 @@
-v0.5.0, 2012-04-01:
-    - TODO
+v0.5.0, 2012-04-03:
+    - Access to all methods proposed by an OSV class (even ``browse``) with an
+      API similar to that can be found in OpenERP server,
+    - Access to several browse records improved (no need to wait the
+      instanciation of all records to iterate on them),
+    - Documentation updated.
 
 v0.4.0, 2012-03-23:
     - Net-RPC protocol support added
