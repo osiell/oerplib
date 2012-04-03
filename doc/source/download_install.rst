@@ -33,7 +33,7 @@ To get the current development branch, just type::
 
     $ bzr branch lp:oerplib
 
-For the last version of a stable branch (replace `X.Y.Z` accordingly)::
+For the last version of a stable branch (replace `X.Y` accordingly)::
 
     $ bzr branch lp:oerplib/X.Y
 

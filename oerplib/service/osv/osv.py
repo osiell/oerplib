@@ -1,15 +1,36 @@
 # -*- coding: UTF-8 -*-
-"""This module provides the OSV class."""
+"""Provide the :class:`OSV` class which allow to access dynamically to all methods
+proposed by an OSV model of the `OpenERP` server."""
 
 import collections
-import ast
 
 from oerplib import error
 from oerplib.service.osv import fields, browse
 
 
 class OSV(collections.Mapping):
-    """Represent a data model from the `OpenERP` server."""
+    """.. versionadded:: 0.5.0
+
+    Represent a data model from the `OpenERP` server.
+
+    .. note::
+        This class have to be used through the :func:`oerplib.OERP.get`
+        method.
+
+    >>> import oerplib
+    >>> oerp = oerplib.OERP('localhost')
+    >>> user = oerp.login('admin', 'passwd', 'database')
+    >>> oerp.get('res.users')
+    <oerplib.service.osv.osv.OSV object at 0x865f10c>
+
+    .. warning::
+
+        The only method implemented in this class is ``browse``. Except this
+        one, method calls are purely dynamic. As long as you know the signature
+        of the OSV method targeted, you will be able to use it.
+        (see the tutorial `<REF NEEDED>`)
+
+    """
 
     fields_reserved = ['id', '__oerp__', '__osv__', '__data__']
     def __init__(self, oerp, osv_name):
@@ -26,7 +47,7 @@ class OSV(collections.Mapping):
             yield self.browse(o_id, context)
 
     def browse(self, ids, context=None):
-        """Browse one record or several records (if ``ids`` is a list of IDs).
+        """Browse one record or several records (if ``ids`` is a list of IDs)
         according to the model ``osv_name``.
 
         >>> oerp.get('res.partner').browse(1)

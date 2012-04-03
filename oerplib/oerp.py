@@ -412,8 +412,8 @@ class OERP(object):
     def get(self, osv_name):
         """.. versionadded:: 0.5.0
 
-        Return an OSV class `osv_name` built from the `OpenERP` server.
-        See <TODO>.
+        Return a proxy of the OSV class `osv_name` built from the `OpenERP`
+        server. See <TODO>.
 
         """
         return self._pool.get(osv_name)

@@ -18,6 +18,12 @@ You can also specify the default database to use with the `database` parameter::
 
     >>> oerp = oerplib.OERP(server='localhost', database='db_name', protocol='xmlrpc', port=8071)
 
+To check databases available, use the :attr:`oerp.db <oerplib.OERP.db>`
+attribute with the **list** method::
+
+    >>> oerp.db.list()
+    ['db_name', 'db_name2', ...]
+
 The connection is ready, you can now login to the server with the account of
 your choice::
 
@@ -62,7 +68,8 @@ and ``search`` there are convenient shortcuts available (see
 
 There is another way to access all methods of an OSV class, with the
 :func:`get <oerplib.OERP.get>` method, which provide an API
-almost syntactically identical to the `OpenERP` server side API::
+almost syntactically identical to the `OpenERP` server side API
+(see :class:`oerplib.service.osv.osv.OSV`)::
 
     >>> user_obj = oerp.get('res.users')
     >>> user_obj.write([1], {'name': "Dupont D."})
@@ -70,7 +77,7 @@ almost syntactically identical to the `OpenERP` server side API::
     >>> product_obj = oerp.get('product.product')
     >>> product_obj.name_get([1, 2, 3], context)
 
-.. note::
+.. .. note::
     Signature of methods are identicals except the fact that there is no need
     of the database cursor (`cr`) and user ID (`uid`) arguments as it is an
     RPC access.
@@ -98,6 +105,16 @@ records are generated on the fly::
     for addr in partner.address:
         print(addr.name)
 
+You can browse objects through an OSV class too. In fact, both methods are
+strictly identical, :func:`oerplib.OERP.browse` is simply a shortcut
+to the other::
+
+    >>> partner1 = oerp.browse('res.partner', 3)
+    >>> partner2 = oerp.get('res.partner').browse(3)
+    >>> partner1 == partner2
+    True
+
+
 Outside relation fields, Python data types are used, like ``datetime.date`` and
 ``datetime.datetime``::
 
@@ -124,7 +141,7 @@ This is equivalent to::
 
     >>> addr_osv_name = oerp.get_osv_name(partner.address[0]) # 'res.partner.address'
     >>> addr_id = partner.address[0].id
-    >>> oerp.write_record(addr_osv_name, [addr_id], {'name': "Caporal Jones"})
+    >>> oerp.write(addr_osv_name, [addr_id], {'name': "Caporal Jones"})
 
 Update operation through browsable records doesn't support
 ``one2many`` and ``many2many`` fields.
