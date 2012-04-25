@@ -9,9 +9,8 @@ from oerplib import rpc, error
 class Common(object):
     r""".. versionadded:: 0.6.0
 
-    The `Common` class represents the '/common' RPC service.
-    It provides functionalities such as login on the server, get the timezone,
-    informations on the server environment, etc.
+    The `Common` class represents the ``/common`` RPC service.
+    Lets you log in on `OpenERP`, and provides various utility functions.
 
     .. note::
         This service have to be used through the :attr:`oerplib.OERP.common`

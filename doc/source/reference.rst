@@ -9,6 +9,7 @@ Reference
     ref_osv
     ref_common
     ref_db
+    ref_wizard
     ref_rpc
     ref_error
 

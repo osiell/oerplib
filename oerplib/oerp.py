@@ -9,7 +9,7 @@ import time
 
 from oerplib import rpc
 from oerplib import error
-from oerplib.service import common, db, osv
+from oerplib.service import common, db, wizard, osv
 
 
 class OERP(object):
@@ -39,6 +39,7 @@ class OERP(object):
         self._user = None
         self._common = common.Common(self)
         self._db = db.DB(self)
+        self._wizard = wizard.Wizard(self)
         # Instanciate the OpenERP server connector
         try:
             self._connector = rpc.get_connector(self._server, self._port,
@@ -67,16 +68,21 @@ class OERP(object):
                         doc="The protocol used.")
     database = property(lambda self: self._database,
                         doc="The database currently used.")
-    db = property(lambda self: self._db,
-                  doc=(""".. versionadded:: 0.4.0
-
-                       The database management service (``/db`` RPC service).
-                       See the :class:`oerplib.service.db.DB` class."""))
     common = property(lambda self: self._common,
                   doc=(""".. versionadded:: 0.6.0
 
                        The common service (``/common`` RPC service).
                        See the :class:`oerplib.service.common.Common` class."""))
+    db = property(lambda self: self._db,
+                  doc=(""".. versionadded:: 0.4.0
+
+                       The database management service (``/db`` RPC service).
+                       See the :class:`oerplib.service.db.DB` class."""))
+    wizard = property(lambda self: self._wizard,
+                  doc=(""".. versionadded:: 0.6.0
+
+                       The wizard service (``/wizard`` RPC service).
+                       See the :class:`oerplib.service.wizard.Wizard` class."""))
 
     #NOTE: in the past this function was implemented as a decorator for other
     # methods needed to be checked, but Sphinx documentation generator is not
