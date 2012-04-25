@@ -31,6 +31,18 @@ RPC methods for 'url/object' :
     - execute ('ir.attachment', 'search_count',
                [('res_model', '=', u'res.partner.address'), ('res_id', '=', 1)])
 
+    - execute_kw ('test', 1, 'admin', 'ir.module.module', 'button_install',
+                ([204],
+                 {'lang': 'fr_FR', 'tz': False, 'uid': 1,
+                  'active_model': 'base.module.update',
+                  'section_id': False, 'active_ids': [1],
+                  'active_id': 1}),
+                {})
+
+    - execute_kw ('test', 1, 'admin', 'ir.module.module',
+                  'button_immediate_install',
+                ([48], {'lang': 'fr_FR', 'tz': False, 'uid': 1}), {})
+
 
 RPC methods for 'url/wizard' :
 

@@ -9,7 +9,7 @@ import time
 
 from oerplib import rpc
 from oerplib import error
-from oerplib.service import db, osv
+from oerplib.service import common, db, osv
 
 
 class OERP(object):
@@ -37,6 +37,7 @@ class OERP(object):
         self._database = self._database_default = database
         self._pool = osv.Pool(self)
         self._user = None
+        self._common = common.Common(self)
         self._db = db.DB(self)
         # Instanciate the OpenERP server connector
         try:
@@ -69,8 +70,13 @@ class OERP(object):
     db = property(lambda self: self._db,
                   doc=(""".. versionadded:: 0.4.0
 
-                       The database management service.
+                       The database management service (``/db`` RPC service).
                        See the :class:`oerplib.service.db.DB` class."""))
+    common = property(lambda self: self._common,
+                  doc=(""".. versionadded:: 0.6.0
+
+                       The common service (``/common`` RPC service).
+                       See the :class:`oerplib.service.common.Common` class."""))
 
     #NOTE: in the past this function was implemented as a decorator for other
     # methods needed to be checked, but Sphinx documentation generator is not
@@ -101,7 +107,7 @@ class OERP(object):
             raise error.Error(u"No database specified")
         # Get the user's ID and generate the corresponding User record
         try:
-            user_id = self._connector.common.login(self._database, user, passwd)
+            user_id = self.common.login(self._database, user, passwd)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(unicode(exc))
         else:
