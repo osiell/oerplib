@@ -1,3 +1,8 @@
+v0.6.0, 2012-04-26:
+    - Dynamic access to the '/common' RPC service ('OERP.common' attribute)
+    - Dynamic access to the '/wizard' RPC service ('OERP.wizard' attribute)
+    - Documentation updated.
+
 v0.5.0, 2012-04-03:
     - Access to all methods proposed by an OSV class (even ``browse``) with an
       API similar to that can be found in OpenERP server,

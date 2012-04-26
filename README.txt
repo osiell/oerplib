@@ -13,6 +13,7 @@ Features supported:
     - browse records,
     - execute workflows,
     - manage databases,
+    - manage old-style wizards,
     - reports downloading.
 
 How does it work? See below::

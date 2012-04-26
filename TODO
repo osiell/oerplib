@@ -69,13 +69,3 @@ RPC methods for 'url/wizard' :
                {'lang': 'fr_FR', 'contact_display': 'partner', 'tz': False,
                 'active_ids': [260], 'active_id': 260})
 
-
-RPC methods for 'url/common' :
-
-    - login_message()
-        url: socket://172.24.1.117:8070
-        resource: common
-        method: login_message
-        args: ()
-        res: False
-
