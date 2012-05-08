@@ -1,5 +1,5 @@
-oerplib.OERP.common
-===================
+oerplib.service.common
+======================
 
 .. autoclass:: oerplib.service.common.Common
     :members:

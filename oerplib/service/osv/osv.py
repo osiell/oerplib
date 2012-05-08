@@ -47,8 +47,7 @@ class OSV(collections.Mapping):
             yield self.browse(o_id, context)
 
     def browse(self, ids, context=None):
-        """Browse one record or several records (if ``ids`` is a list of IDs)
-        according to the model ``osv_name``.
+        """Browse one record or several records (if ``ids`` is a list of IDs).
 
         >>> oerp.get('res.partner').browse(1)
         browse_record(res.partner, 1)

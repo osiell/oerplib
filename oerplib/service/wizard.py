@@ -17,6 +17,7 @@ class Wizard(object):
 
     >>> import oerplib
     >>> oerp = oerplib.OERP('localhost')
+    >>> user = oerp.login('admin', 'passwd', 'database')
     >>> oerp.wizard
     <oerplib.service.wizard.Wizard object at 0xb76266ac>
 
@@ -31,7 +32,7 @@ class Wizard(object):
 
     .. method:: Wizard.create(wiz_name, datas=None)
 
-        >>> oerp.wizard.create('wiz_name', {'name': u"Cool name"})
+        >>> oerp.wizard.create('wiz_name')
         1
 
         :return: the wizard's instance ID
