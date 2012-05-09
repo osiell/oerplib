@@ -58,7 +58,7 @@ class BaseField(object):
         #    raise error.Error(
         #        u"'{field_name}' field is readonly".format(
         #            field_name=self.name))
-        if self.size and len(value) > self.size:
+        if value and self.size and len(value) > self.size:
             raise ValueError(
                 u"Lenght of the '{field_name}' is limited to {size}".format(
                     field_name=self.name,
