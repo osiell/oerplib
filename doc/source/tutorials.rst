@@ -24,12 +24,12 @@ attribute with the **list** method::
     >>> oerp.db.list()
     ['db_name', 'db_name2', ...]
 
-The connection is ready, you can now login to the server with the account of
-your choice::
+The connection is ready, you are able to log in on the server with the account
+of your choice::
 
     >>> user = oerp.login(user='admin', passwd='admin')
 
-Or, if no default database was specified::
+Or, if no default database was specified before::
 
     >>> user = oerp.login(user='admin', passwd='admin', database='db_name')
 
@@ -40,14 +40,17 @@ informations are accessible (see :ref:`browse-records` section)::
     >>> print(user.name)            # print the full name of the user
     >>> print(user.company_id.name) # print the name of its company
 
-Now you are connected, you can easily execute `XML-RPC` queries and handle all OSV
-classes from the `OpenERP` server.
+Now you are connected, you can easily execute any kind of `RPC` queries on the
+the `OpenERP` server (execute `OSV` class methods, download reports,
+and handle wizards).
+
+.. _tutorials-execute-queries:
 
 Execute queries
 ---------------
 
-The basic method to execute queries related to the ``object`` RPC service is
-:func:`execute <oerplib.OERP.execute>`.
+The basic method to execute queries (related to the ``/object`` `RPC` service)
+is :func:`execute <oerplib.OERP.execute>`.
 It takes at least two parameters (OSV model name and the method name)
 following by variable parameters according to the method called. Example::
 
@@ -63,24 +66,27 @@ and ``search`` there are convenient shortcuts available (see
     >>> partner_id = oerp.create('res.partner', {'name': 'Jacky Bob', 'lang': 'fr_FR'})
     >>> partner_data = oerp.read('res.partner', partner_id)
     >>> oerp.write('res.partner', [partner_id], {'name': 'Charly Bob'})
+    True
     >>> partner_ids = oerp.search('res.partner', [('name', 'ilike', 'Bob')])
     >>> oerp.unlink('res.partner', [partner_id])
+    True
 
 There is another way to access all methods of an OSV class, with the
 :func:`get <oerplib.OERP.get>` method, which provide an API
 almost syntactically identical to the `OpenERP` server side API
 (see :class:`oerplib.service.osv.osv.OSV`)::
 
-    >>> user_obj = oerp.get('res.users')
-    >>> user_obj.write([1], {'name': "Dupont D."})
-    >>> context = user_obj.context_get()
-    >>> product_obj = oerp.get('product.product')
-    >>> product_obj.name_get([1, 2, 3], context)
-
-.. .. note::
-    Signature of methods are identicals except the fact that there is no need
-    of the database cursor (`cr`) and user ID (`uid`) arguments as it is an
-    RPC access.
+    >>> user_osv = oerp.get('res.users')
+    >>> user_osv.write([1], {'name': "Dupont D."})
+    True
+    >>> context = user_osv.context_get()
+    >>> context
+    {'lang': 'fr_FR', 'tz': False}
+    >>> product_osv = oerp.get('product.product')
+    >>> product_osv.name_get([3, 4])
+    [[3, '[PC1] Basic PC'], [4, '[PC2] Basic+ PC (assembly on order)']]
+    >>> product_osv.name_get([3, 4], context)
+    [[3, '[PC1] PC Basic'], [4, u'[PC2] Basic+ PC (assembl\xe9 sur commande)']]
 
 .. _browse-records:
 
@@ -105,9 +111,9 @@ records are generated on the fly::
     for addr in partner.address:
         print(addr.name)
 
-You can browse objects through an OSV class too. In fact, both methods are
-strictly identical, :func:`oerplib.OERP.browse` is simply a shortcut
-to the other::
+You can browse objects through an :class:`OSV <oerplib.service.osv.osv.OSV>`
+class too. In fact, both methods are strictly identical,
+:func:`oerplib.OERP.browse` is simply a shortcut to the other::
 
     >>> partner1 = oerp.browse('res.partner', 3)
     >>> partner2 = oerp.get('res.partner').browse(3)
@@ -230,8 +236,8 @@ As always, a wrong type will raise an exception::
 Generate reports
 ----------------
 
-Another nice functionnality is the reports generation with the
-:func:`report <oerplib.OERP.report>` method.
+Another nice functionnality is the reports generation (related to the
+``/report`` `RPC` service) with the :func:`report <oerplib.OERP.report>` method.
 You have to supply the name of the report, the name of the OSV model and
 the ID of the record related::
 

@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
-"""Provide the :class:`OSV` class which allow to access dynamically to all methods
-proposed by an OSV model of the `OpenERP` server."""
+"""Provide the :class:`OSV` class which allow to access dynamically to all
+methods proposed by an OSV model of the `OpenERP` server."""
 
 import collections
 
@@ -20,15 +20,18 @@ class OSV(collections.Mapping):
     >>> import oerplib
     >>> oerp = oerplib.OERP('localhost')
     >>> user = oerp.login('admin', 'passwd', 'database')
-    >>> oerp.get('res.users')
-    <oerplib.service.osv.osv.OSV object at 0x865f10c>
+    >>> user_osv = oerp.get('res.users')
+    >>> user_osv
+    <oerplib.service.osv.osv.OSV object at 0xb75ba4ac>
+    >>> user_osv.name_get(user.id) # Use any methods from the OSV instance
+    [[1, 'Administrator']]
 
     .. warning::
 
         The only method implemented in this class is ``browse``. Except this
         one, method calls are purely dynamic. As long as you know the signature
-        of the OSV method targeted, you will be able to use it.
-        (see the tutorial `<REF NEEDED>`)
+        of the OSV method targeted, you will be able to use it
+        (see the :ref:`tutorial <tutorials-execute-queries>`).
 
     """
 
