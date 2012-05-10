@@ -71,7 +71,7 @@ and ``search`` there are convenient shortcuts available (see
     >>> oerp.unlink('res.partner', [partner_id])
     True
 
-There is another way to access all methods of an OSV class, with the
+There is another way to perform all methods of an OSV class, with the
 :func:`get <oerplib.OERP.get>` method, which provide an API
 almost syntactically identical to the `OpenERP` server side API
 (see :class:`oerplib.service.osv.osv.OSV`)::
@@ -87,6 +87,14 @@ almost syntactically identical to the `OpenERP` server side API
     [[3, '[PC1] Basic PC'], [4, '[PC2] Basic+ PC (assembly on order)']]
     >>> product_osv.name_get([3, 4], context)
     [[3, '[PC1] PC Basic'], [4, u'[PC2] Basic+ PC (assembl\xe9 sur commande)']]
+
+Here is another example of how to install a module (you have to be logged
+as an administrator to perform this task). The ``button_immediate_install`` used
+here is available since `OpenERP v6.1`::
+
+    >>> module_osv = oerp.get('ir.module.module')
+    >>> module_id = module_osv.search([('name', '=', 'purchase')])
+    >>> module_osv.button_immediate_install(module_id)
 
 .. _browse-records:
 

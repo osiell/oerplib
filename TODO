@@ -10,27 +10,6 @@ TODO:
 
 RPC methods for 'url/object' :
 
-    - execute ('res.request', 'request_get')
-
-    - execute ('ir.ui.view_sc', 'get_sc', 1, 'ir.ui.menu',
-               {'lang': u'fr_FR', 'tz': False})
-
-    - execute ('ir.ui.menu', 'fields_get', False,
-               {'lang': u'fr_FR', 'tz': False, 'active_ids': [],
-                'active_id': False})
-
-    - execute (u'ir.ui.menu', 'fields_view_get', 1, u'tree',
-               {'lang': u'fr_FR', 'active_ids': [], 'tz': False,
-                'active_id': False})
-
-    - execute ('ir.values', 'get', 'action', 'tree_but_open',
-               [('ir.ui.menu', 80)], False, {'lang': u'fr_FR', 'tz': False})
-
-    - execute ('res.country', 'name_search', '', [], 'ilike', {})
-
-    - execute ('ir.attachment', 'search_count',
-               [('res_model', '=', u'res.partner.address'), ('res_id', '=', 1)])
-
     - execute_kw ('test', 1, 'admin', 'ir.module.module', 'button_install',
                 ([204],
                  {'lang': 'fr_FR', 'tz': False, 'uid': 1,
@@ -42,6 +21,14 @@ RPC methods for 'url/object' :
     - execute_kw ('test', 1, 'admin', 'ir.module.module',
                   'button_immediate_install',
                 ([48], {'lang': 'fr_FR', 'tz': False, 'uid': 1}), {})
+
+
+    Install a module:
+        oerp.get('ir.module.module').button_install([192]) # Module 'purchase'
+        oerp.get('base.upgrade.module').upgrade_module([]) # Argument 'ids' not used in the function
+
+    Or, since v6.1:
+        oerp.get('ir.module.module').button_immediate_install([192])
 
 
 RPC methods for 'url/wizard' :
@@ -68,4 +55,3 @@ RPC methods for 'url/wizard' :
                'end2',
                {'lang': 'fr_FR', 'contact_display': 'partner', 'tz': False,
                 'active_ids': [260], 'active_id': 260})
-
