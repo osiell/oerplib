@@ -4,11 +4,7 @@ import os
 from distutils.core import setup
 
 name = 'OERPLib'
-<<<<<<< TREE
 version = '0.6.0'
-=======
-version = '0.5.1'
->>>>>>> MERGE-SOURCE
 description = 'OpenERP client library which allows to easily interact with an OpenERP server.'
 keywords = "openerp client xml-rpc xml_rpc xmlrpc net-rpc net_rpc netrpc oerplib communication lib library python service web webservice"
 author = u"ABF Osiell - Sebastien Alix"

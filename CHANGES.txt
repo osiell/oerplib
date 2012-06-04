@@ -1,11 +1,13 @@
-<<<<<<< TREE
 v0.6.0, 2012-05-09:
     - Dynamic access to the '/common' RPC service ('OERP.common' attribute)
     - Dynamic access to the '/wizard' RPC service ('OERP.wizard' attribute)
     - Documentation updated.
 
-=======
->>>>>>> MERGE-SOURCE
+v0.5.2, 2012-06-04:
+    Bug fixes:
+    - Able to get the 'False' value from a field of type 'date' or 'datetime'
+      for a browse record. 
+
 v0.5.1, 2012-05-09:
     Bug fixes:
     - Able to assign the 'False' value to a field of type 'char' for
