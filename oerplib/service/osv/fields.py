@@ -195,7 +195,7 @@ class DateField(BaseField):
         value = getattr(instance, "_{0}".format(self.name))
         try:
             res = datetime.datetime.strptime(value, self.pattern).date()
-        except ValueError:
+        except Exception: # ValueError, TypeError
             res = value
         return res
 
@@ -215,8 +215,11 @@ class DateField(BaseField):
                 raise ValueError(
                     "String not well formatted, expecting '{0}' format".format(
                         self.pattern))
+        elif isinstance(value, bool):
+            return value
         else:
-            raise ValueError("Expecting a datetime.date object or basestring")
+            raise ValueError(
+                    "Expecting a datetime.date object or basestring")
         return value
 
 
@@ -230,7 +233,7 @@ class DateTimeField(BaseField):
         value = getattr(instance, "_{0}".format(self.name))
         try:
             res = datetime.datetime.strptime(value, self.pattern)
-        except ValueError:
+        except Exception: # ValueError, TypeError
             res = value
         return res
 
@@ -250,9 +253,11 @@ class DateTimeField(BaseField):
                 raise ValueError(
                     "Value not well formatted, expecting '{0}' format".format(
                         self.pattern))
+        elif isinstance(value, bool):
+            return value
         else:
             raise ValueError(
-                "Expecting a datetime.datetime object or basestring")
+                    "Expecting a datetime.datetime object or basestring")
         return value
 
 
