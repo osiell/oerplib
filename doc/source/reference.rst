@@ -4,6 +4,7 @@ Reference
 .. toctree::
     :maxdepth: 1
 
+    ref_fields
     ref_oerplib
     ref_oerp
     ref_osv

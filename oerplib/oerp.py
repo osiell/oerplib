@@ -268,6 +268,9 @@ class OERP(object):
         >>> [partner.name for partner in oerp.browse('res.partner', [1, 2])]
         [u'Your Company', u'ASUStek']
 
+        A list of data types used by ``browse_record`` fields are
+        available :ref:`here <fields>`.
+
         :return: a BrowseRecord instance
         :return: a generator to iterate on BrowseRecord instances
         :raise: :class:`oerplib.error.RPCError`
