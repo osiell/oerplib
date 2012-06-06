@@ -209,10 +209,11 @@ class ReferenceField(BaseField):
         instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
-        super(ReferenceField, self).check_value(value)
         if isinstance(value, browse.BrowseRecord):
-            value = "%s, %s" % (value.__class__.__osv__['name'], value.id)
+            value = "%s,%s" % (value.__class__.__osv__['name'], value.id)
+            super(ReferenceField, self).check_value(value)
         elif isinstance(value, basestring):
+            super(ReferenceField, self).check_value(value)
             relation, sep, o_id = value.rpartition(',')
             relation = relation.strip()
             o_id = o_id.strip()
