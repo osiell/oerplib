@@ -50,7 +50,9 @@ class OSV(collections.Mapping):
             yield self.browse(o_id, context)
 
     def browse(self, ids, context=None):
-        """Browse one record or several records (if ``ids`` is a list of IDs).
+        """Browse one record or several records (if ``ids`` is a list of IDs)
+        according to the model ``osv_name``. The fields and values for such
+        objects are generated dynamically.
 
         >>> oerp.get('res.partner').browse(1)
         browse_record(res.partner, 1)
@@ -61,8 +63,8 @@ class OSV(collections.Mapping):
         A list of data types used by ``browse_record`` fields are
         available :ref:`here <fields>`.
 
-        :return: a BrowseRecord instance
-        :return: a generator to iterate on BrowseRecord instances
+        :return: a ``browse_record`` instance
+        :return: a generator to iterate on ``browse_record`` instances
         :raise: :class:`oerplib.error.RPCError`
 
         """

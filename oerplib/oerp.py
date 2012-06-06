@@ -260,7 +260,8 @@ class OERP(object):
 
     def browse(self, osv_name, ids, context=None):
         """Browse one record or several records (if ``ids`` is a list of IDs)
-        according to the model ``osv_name``.
+        according to the model ``osv_name``. The fields and values for such
+        objects are generated dynamically.
 
         >>> oerp.browse('res.partner', 1)
         browse_record(res.partner, 1)
@@ -271,8 +272,8 @@ class OERP(object):
         A list of data types used by ``browse_record`` fields are
         available :ref:`here <fields>`.
 
-        :return: a BrowseRecord instance
-        :return: a generator to iterate on BrowseRecord instances
+        :return: a ``browse_record`` instance
+        :return: a generator to iterate on ``browse_record`` instances
         :raise: :class:`oerplib.error.RPCError`
 
         """
