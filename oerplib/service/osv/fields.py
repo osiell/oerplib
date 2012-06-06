@@ -58,11 +58,14 @@ class BaseField(object):
         #    raise error.Error(
         #        u"'{field_name}' field is readonly".format(
         #            field_name=self.name))
-        if value and self.size and len(value) > self.size:
-            raise ValueError(
-                u"Lenght of the '{field_name}' is limited to {size}".format(
-                    field_name=self.name,
-                    size=self.size))
+        if value and self.size:
+            if not isinstance(value, basestring):
+                raise ValueError(u"Value supplied has to be a string")
+            if len(value) > self.size:
+                raise ValueError(
+                    u"Lenght of the '{field_name}' is limited to {size}".format(
+                        field_name=self.name,
+                        size=self.size))
         if not value and self.required:
             raise ValueError(
                 u"'{field_name}' field require a value".format(
@@ -150,7 +153,7 @@ class Many2OneField(BaseField):
         if value.__osv__['name'] != self.relation:
             raise ValueError(
                 (u"Instance of '{osv_name}' supplied doesn't match with the " +\
-                u"relation '{relation}' of the '{field_name}' field.").format(
+                 u"relation '{relation}' of the '{field_name}' field.").format(
                     osv_name=value.__osv__['name'],
                     relation=self.relation,
                     field_name=self.name))
