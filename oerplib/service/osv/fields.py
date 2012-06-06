@@ -185,6 +185,47 @@ class One2ManyField(BaseField):
     #    return value
 
 
+class ReferenceField(BaseField):
+    """Represent the OpenObject 'fields.reference'"""
+    def __init__(self, osv, name, data):
+        super(ReferenceField, self).__init__(osv, name, data)
+        self.context = 'context' in data and data['context'] or False
+        self.domain = 'domain' in data and data['domain'] or False
+
+    def __get__(self, instance, owner):
+        if getattr(instance, "_{0}".format(self.name)):
+            value = getattr(instance, "_{0}".format(self.name))
+            relation, sep, o_id = value.rpartition(',')
+            relation = relation.strip()
+            o_id = int(o_id.strip())
+            if relation and o_id:
+                return instance.__class__.__oerp__.browse(
+                        relation, o_id)
+        return False
+
+    def __set__(self, instance, value):
+        value = self.check_value(value)
+        setattr(instance, "_{0}".format(self.name), value)
+        instance.__data__['fields_updated'].append(self.name)
+
+    def check_value(self, value):
+        super(ReferenceField, self).check_value(value)
+        if isinstance(value, browse.BrowseRecord):
+            value = "%s, %s" % (value.__class__.__osv__['name'], value.id)
+        elif isinstance(value, basestring):
+            relation, sep, o_id = value.rpartition(',')
+            relation = relation.strip()
+            o_id = o_id.strip()
+            #o_rel = instance.__class__.__oerp__.browse(relation, o_id)
+            if not relation or not is_int(o_id):
+                raise ValueError(u"String not well formatted, expecting "
+                                 u"'{relation},{id}' format")
+        else:
+            raise ValueError(u"Value supplied has to be a string or"
+                             u" a browse_record object.")
+        return value
+
+
 class DateField(BaseField):
     """Represent the OpenObject 'fields.data'"""
     pattern = "%Y-%m-%d"
@@ -297,6 +338,8 @@ def generate_field(osv, name, data):
         field = Many2OneField(osv, name, data)
     elif data['type'] == 'one2many':
         field = One2ManyField(osv, name, data)
+    elif data['type'] == 'reference':
+        field = ReferenceField(osv, name, data)
     elif data['type'] == 'date':
         field = DateField(osv, name, data)
     elif data['type'] == 'datetime':
