@@ -138,7 +138,8 @@ Outside relation fields, Python data types are used, like ``datetime.date`` and
     >>> order.date_order
     datetime.date(2012, 3, 8)
 
-.. See the table of equivalents types with `OpenERP`.
+A list of data types used by ``browse_record`` fields are
+available :ref:`here <fields>`.
 
 Update data through browsable records
 -------------------------------------
@@ -211,6 +212,34 @@ to ensure data integrity::
         field_name=self.name))
     ValueError: Instance of 'res.users' supplied doesn't match with the relation 'res.partner' of the 'partner_id' field.
 
+Reference
+'''''''''
+
+.. versionadded:: 0.6.0
+
+To update a ``reference`` field, you have to use either a string or a browsable
+record as below::
+
+    >>> helpdesk = oerp.browse('crm.helpdesk', 1)
+    >>> helpdesk.ref = 'res.partner,1' # with a string with the format '{relation},{id}'
+    >>> oerp.write_record(helpdesk)
+    >>> partner = oerp.browse('res.partner', 1) # with a browsable record
+    >>> helpdesk.ref = partner
+    >>> oerp.write_record(helpdesk)
+
+A check is made on the relation name::
+
+    >>> c.ref = 'foo.bar,42'
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "oerplib/service/osv/fields.py", line 213, in __set__
+        value = self.check_value(value)
+      File "oerplib/service/osv/fields.py", line 244, in check_value
+        self._check_relation(relation)
+      File "oerplib/service/osv/fields.py", line 225, in _check_relation
+        field_name=self.name,
+    ValueError: The value 'foo.bar' supplied doesn't match with the possible values '['res.partner', 'calendar.event', 'crm.meeting']' for the 'ref' field
+
 Date and Datetime
 '''''''''''''''''
 
@@ -255,4 +284,49 @@ the ID of the record related::
     '/tmp/oerplib_r1W9jG.pdf'
 
 The method will return the path to the generated temporary report file.
+
+Manage databases
+----------------
+
+You can manage ``OpenERP`` databases with the :attr:`oerplib.OERP.db` property.
+It offers you a dynamic access to all methods of the ``/db`` RPC service in
+order to list, create, drop, dump and restore databases.
+
+.. note::
+    You have not to be logged in to perform database management tasks.
+    Instead, you have to use the "super admin" password.
+
+Prepare a connection::
+
+    >>> import oerplib
+    >>> oerp = oerplib.OERP(server='localhost')
+
+At this point, you are able to list databases of this server::
+
+    >>> oerp.db.list()
+    []
+
+Let's create a new database::
+
+    >>> database_id = oerp.db.create('super_admin_passwd', 'test_db', False, 'fr_FR', 'admin')
+
+The creation process may take some time on the ``OpenERP`` server, and you have
+to wait before using the new database. The state of the creation process is
+returned by the
+:func:`get_progress <oerplib.service.db.DB.get_progress>` method::
+
+    >>> database_id = oerp.db.create('super_admin_passwd', 'test_db', False, 'fr_FR', 'admin')
+    >>> while not oerp.db.get_progress('super_admin_passwd', database_id)[0]
+    ...     pass
+    >>> oerp.login('admin', 'admin', 'test_db')
+
+However, `OERPLib` simplifies this by providing the
+:func:`create_and_wait <oerplib.service.db.DB.create_and_wait>` method::
+
+    >>> oerp.db.create_and_wait('super_admin_passwd', 'test_db', False, 'fr_FR', 'admin')
+    [{'login': u'admin', 'password': u'admin', 'name': u'Administrator'},
+     {'login': u'demo', 'password': u'demo', 'name': u'Demo User'}]
+
+Some documentation about methods offered by the `OpenERP` ``/db`` RPC service
+is available :class:`here <oerplib.service.db.DB>`.
 
