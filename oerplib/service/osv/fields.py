@@ -176,23 +176,22 @@ class One2ManyField(BaseField):
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
-        return [instance.__oerp__.browse(self.relation, o_id)
-                for o_id in instance.__data__['raw_data'][self.name]]
+        if getattr(instance, "_{0}".format(self.name)):
+            return [instance.__oerp__.browse(self.relation, o_id)
+                    for o_id in getattr(instance, "_{0}".format(self.name))]
+        return []
 
-    #def __set__(self, instance, value):
+    def __set__(self, instance, value):
+        value = self.check_value(value)
+        setattr(instance, "_{0}".format(self.name), value)
+        instance.__data__['fields_updated'].append(self.name)
 
-    #def check_value(self, value):
-    #    super(One2ManyField, self).check_value(value)
-    #    oerp = self.osv._oerp
-    #    value_osv = oerp.pool.get_by_class(value.__class__)
-    #    if value_osv.osv['name'] != self.relation:
-    #        raise ValueError(
-    #            (u"Instance of '{osv_name}' supplied doesn't match with the "+\
-    #            u"relation '{relation}' of the '{field_name}' field.").format(
-    #                osv_name=value_osv.osv['name'],
-    #                relation=self.relation,
-    #                field_name=self.name))
-    #    return value
+    def check_value(self, value):
+        if value:
+            if not isinstance(value, list):
+                raise ValueError(
+                        u"The value supplied has to be a list or 'False'")
+        return super(One2ManyField, self).check_value(value)
 
 
 class ReferenceField(BaseField):

@@ -120,15 +120,9 @@ class OSV(collections.Mapping):
                 if isinstance(field, fields.Many2OneField):
                     vals[field_name] = getattr(obj,
                                                "_{0}".format(field_name))[0]
-                # One2Many fields
-                #elif isinstance(field, fields.One2ManyField):
-                #    print field.relation
-                #    for rel_id in getattr(obj, "_{0}".format(field_name)):
-                #        self._oerp.write(field.relation, rel_id,
-                #                        {'??FIELD??': obj.id})
-                #    #vals[field_name] = getattr(obj, "_{0}".format(field_name))
-                # Many2Many fields
-                elif isinstance(field, fields.Many2ManyField):
+                # One2Many and Many2Many fields
+                elif isinstance(field, fields.One2ManyField) \
+                        or isinstance(field, fields.Many2ManyField):
                     vals[field_name] = \
                             [(6, 0, getattr(obj, "_{0}".format(field_name)))]
                 # All other fields
