@@ -1,6 +1,7 @@
 v0.6.0, 2012-05-09:
     - Dynamic access to the '/common' RPC service ('OERP.common' attribute)
     - Dynamic access to the '/wizard' RPC service ('OERP.wizard' attribute)
+    - Support for the OpenERP 'fields.reference' added
     - Documentation updated.
 
 v0.5.2, 2012-06-04:
