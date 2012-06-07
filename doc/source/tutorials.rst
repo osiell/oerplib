@@ -158,9 +158,6 @@ This is equivalent to::
     >>> addr_id = partner.address[0].id
     >>> oerp.write(addr_osv_name, [addr_id], {'name': "Caporal Jones"})
 
-Update operation through browsable records doesn't support
-``one2many`` and ``many2many`` fields.
-
 Char, Float, Integer, Boolean, Text and Binary
 ''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -211,6 +208,26 @@ to ensure data integrity::
       File "oerplib/fields.py", line 144, in check_value
         field_name=self.name))
     ValueError: Instance of 'res.users' supplied doesn't match with the relation 'res.partner' of the 'partner_id' field.
+
+One2Many and Many2Many
+''''''''''''''''''''''
+
+.. versionadded:: 0.6.0
+
+``one2many`` and ``many2many`` fields can be updated by providing
+a list of IDs::
+
+    >>> user = oerp.browse('res.users', 1)
+    >>> user.groups_id = [42]
+    >>> oerp.write_record(user)
+
+Or keep previous IDs before adding yours::
+
+    >>> user = oerp.browse('res.users', 1)
+    >>> ids = [g.id for g in user.groups_id]
+    >>> ids.append(42)
+    >>> user.groups_id = ids
+    >>> oerp.write_record(user)
 
 Reference
 '''''''''
@@ -287,6 +304,8 @@ The method will return the path to the generated temporary report file.
 
 Manage databases
 ----------------
+
+.. versionadded:: 0.4.0
 
 You can manage ``OpenERP`` databases with the :attr:`oerplib.OERP.db` property.
 It offers you a dynamic access to all methods of the ``/db`` RPC service in
