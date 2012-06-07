@@ -29,7 +29,7 @@ Source code
 -----------
 
 The project is hosted on `Launchpad <https://launchpad.net/oerplib>`_.
-To get the current development branch, just type::
+To get the current development branch (the ``trunk``), just type::
 
     $ bzr branch lp:oerplib
 
