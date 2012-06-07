@@ -129,7 +129,8 @@ class OSV(collections.Mapping):
                 #    #vals[field_name] = getattr(obj, "_{0}".format(field_name))
                 # Many2Many fields
                 elif isinstance(field, fields.Many2ManyField):
-                    pass #TODO write Many2Many value
+                    vals[field_name] = \
+                            [(6, 0, getattr(obj, "_{0}".format(field_name)))]
                 # All other fields
                 else:
                     vals[field_name] = getattr(obj, "_{0}".format(field_name))

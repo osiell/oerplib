@@ -50,7 +50,7 @@ class BaseField(object):
                     else:
                         attrs_rep.append("{0}={1}".format(attr, value))
         attrs_rep = ", ".join(attrs_rep)
-        return "{0}({1})".format(self.type.upper(), attrs_rep)
+        return "{0}({1})".format(self.type, attrs_rep)
 
     def check_value(self, value):
         """Check the validity of a value for the field."""
@@ -110,15 +110,22 @@ class Many2ManyField(BaseField):
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
-        return [instance.__oerp__.browse(self.relation, o_id)
-                for o_id in instance.__data__['raw_data'][self.name]]
+        if getattr(instance, "_{0}".format(self.name)):
+            return [instance.__oerp__.browse(self.relation, o_id)
+                    for o_id in getattr(instance, "_{0}".format(self.name))]
+        return []
 
     def __set__(self, instance, value):
-        raise error.InternalError(u"Not implemented yet")
+        value = self.check_value(value)
+        setattr(instance, "_{0}".format(self.name), value)
+        instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
-        #TODO Many2Many.check_value()
-        super(Many2ManyField, self).check_value(value)
+        if value:
+            if not isinstance(value, list):
+                raise ValueError(
+                        u"The value supplied has to be a list or 'False'")
+        return super(Many2ManyField, self).check_value(value)
 
 
 class Many2OneField(BaseField):
