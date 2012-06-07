@@ -103,7 +103,7 @@ class DB(object):
         demonstration data.
 
         As the creating process may take some time, you can execute the
-        :func:`get_process <DB.get_process>` method with the database ID
+        :func:`get_progress <DB.get_progress>` method with the database ID
         returned to know its current state.
 
         >>> database_id = oerp.db.create('super_admin_passwd', 'test_db', False, 'fr_FR', 'my_admin_passwd')
@@ -113,14 +113,14 @@ class DB(object):
 
         :return: the ID of the new database
 
-    .. method:: DB.get_process(super_admin_passwd, database_id)
+    .. method:: DB.get_progress(super_admin_passwd, database_id)
 
         Check the state of the creating process for the database identified by
         the `database_id` parameter.
 
-        >>> oerp.db.get_process('super_admin_passwd', database_id) # Just after the call to the 'create' method
+        >>> oerp.db.get_progress('super_admin_passwd', database_id) # Just after the call to the 'create' method
         (0, [])
-        >>> oerp.db.get_process('super_admin_passwd', database_id) # Once the database is fully created
+        >>> oerp.db.get_progress('super_admin_passwd', database_id) # Once the database is fully created
         (1.0, [{'login': u'admin', 'password': u'admin', 'name': u'Administrator'},
                {'login': u'demo', 'password': u'demo', 'name': u'Demo User'}])
 
@@ -138,15 +138,15 @@ class DB(object):
 
             This method is not part of the official API of `OpenERP`. It's just
             a wrapper around the :func:`create <DB.create>` and
-            :func:`get_process <DB.get_process>` methods.
+            :func:`get_progress <DB.get_progress>` methods.
 
         Like the :func:`create <DB.create>` method, but waits the end of
         the creating process by executing the
-        :func:`get_process <DB.get_process>` method regularly to check its
+        :func:`get_progress <DB.get_progress>` method regularly to check its
         state.
 
         >>> oerp.db.create_and_wait('super_admin_passwd', 'test_db', False, 'fr_FR', 'my_admin_passwd')
-        [{'login': u'admin', 'password': u'admin', 'name': u'Administrator'},
+        [{'login': u'admin', 'password': u'my_admin_passwd', 'name': u'Administrateur'},
          {'login': u'demo', 'password': u'demo', 'name': u'Demo User'}]
 
         The super administrator password `super_admin_passwd` of `OpenERP` is
