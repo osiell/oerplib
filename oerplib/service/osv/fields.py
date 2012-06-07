@@ -189,11 +189,14 @@ class One2ManyField(BaseField):
 
 
 class ReferenceField(BaseField):
-    """Represent the OpenObject 'fields.reference'"""
+    """.. versionadded:: 0.6.0
+    Represent the OpenObject 'fields.reference'.
+    """
     def __init__(self, osv, name, data):
         super(ReferenceField, self).__init__(osv, name, data)
         self.context = 'context' in data and data['context'] or False
         self.domain = 'domain' in data and data['domain'] or False
+        self.selection = 'selection' in data and data['selection'] or False
 
     def __get__(self, instance, owner):
         if getattr(instance, "_{0}".format(self.name)):
@@ -211,9 +214,23 @@ class ReferenceField(BaseField):
         setattr(instance, "_{0}".format(self.name), value)
         instance.__data__['fields_updated'].append(self.name)
 
+    def _check_relation(self, relation):
+        selection = [val[0] for val in self.selection]
+        if relation not in selection:
+            raise ValueError(
+                (u"The value '{value}' supplied doesn't match with the possible"
+                 u" values '{selection}' for the '{field_name}' field").format(
+                    value=relation,
+                    selection=selection,
+                    field_name=self.name,
+            ))
+        return relation
+
     def check_value(self, value):
         if isinstance(value, browse.BrowseRecord):
-            value = "%s,%s" % (value.__class__.__osv__['name'], value.id)
+            relation = value.__class__.__osv__['name']
+            self._check_relation(relation)
+            value = "%s,%s" % (relation, value.id)
             super(ReferenceField, self).check_value(value)
         elif isinstance(value, basestring):
             super(ReferenceField, self).check_value(value)
@@ -224,6 +241,7 @@ class ReferenceField(BaseField):
             if not relation or not is_int(o_id):
                 raise ValueError(u"String not well formatted, expecting "
                                  u"'{relation},{id}' format")
+            self._check_relation(relation)
         else:
             raise ValueError(u"Value supplied has to be a string or"
                              u" a browse_record object.")
