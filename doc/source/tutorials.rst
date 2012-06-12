@@ -83,14 +83,14 @@ almost syntactically identical to the `OpenERP` server side API
     >>> context
     {'lang': 'fr_FR', 'tz': False}
     >>> product_osv = oerp.get('product.product')
-    >>> product_osv.name_get([3, 4])
+    >>> product_osv.name_get([3, 4]) # Without context, lang 'en_US' by default
     [[3, '[PC1] Basic PC'], [4, '[PC2] Basic+ PC (assembly on order)']]
-    >>> product_osv.name_get([3, 4], context)
+    >>> product_osv.name_get([3, 4], context) # With a 'fr_FR' context lang
     [[3, '[PC1] PC Basic'], [4, u'[PC2] Basic+ PC (assembl\xe9 sur commande)']]
 
 Here is another example of how to install a module (you have to be logged
-as an administrator to perform this task). The ``button_immediate_install`` used
-here is available since `OpenERP v6.1`::
+as an administrator to perform this task). The ``button_immediate_install``
+method used here is available since `OpenERP v6.1`::
 
     >>> module_osv = oerp.get('ir.module.module')
     >>> module_id = module_osv.search([('name', '=', 'purchase')])
@@ -240,13 +240,13 @@ record as below::
     >>> helpdesk = oerp.browse('crm.helpdesk', 1)
     >>> helpdesk.ref = 'res.partner,1' # with a string with the format '{relation},{id}'
     >>> oerp.write_record(helpdesk)
-    >>> partner = oerp.browse('res.partner', 1) # with a browsable record
-    >>> helpdesk.ref = partner
+    >>> partner = oerp.browse('res.partner', 1)
+    >>> helpdesk.ref = partner # with a browsable record
     >>> oerp.write_record(helpdesk)
 
 A check is made on the relation name::
 
-    >>> c.ref = 'foo.bar,42'
+    >>> helpdesk.ref = 'foo.bar,42'
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
       File "oerplib/service/osv/fields.py", line 213, in __set__
