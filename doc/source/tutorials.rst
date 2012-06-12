@@ -141,6 +141,7 @@ Outside relation fields, Python data types are used, like ``datetime.date`` and
 A list of data types used by ``browse_record`` fields are
 available :ref:`here <fields>`.
 
+
 Update data through browsable records
 -------------------------------------
 

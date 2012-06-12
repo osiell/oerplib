@@ -1,6 +1,15 @@
-oerplib.service.osv.osv
-=======================
+oerplib.service.osv
+===================
 
-.. autoclass:: oerplib.service.osv.osv.OSV
+oerplib.service.osv.OSV
+'''''''''''''''''''''''
+
+.. autoclass:: oerplib.service.osv.OSV
+    :members:
+
+oerplib.service.osv.BrowseRecord
+''''''''''''''''''''''''''''''''
+
+.. autoclass:: oerplib.service.osv.BrowseRecord
     :members:
 
