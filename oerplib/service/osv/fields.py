@@ -130,7 +130,7 @@ class Many2OneField(BaseField):
         if getattr(instance, "_{0}".format(self.name)):
             return instance.__class__.__oerp__.browse(
                     self.relation,
-                    getattr(instance, "_{0}".format(self.name))[0]
+                    getattr(instance, "_{0}".format(self.name))
                 )
 
     def __set__(self, instance, value):
@@ -142,7 +142,7 @@ class Many2OneField(BaseField):
             raise ValueError(u"Value supplied has to be an integer or"
                              " a browse_record object.")
         o_rel = self.check_value(o_rel)
-        setattr(instance, "_{0}".format(self.name), [o_rel.id, o_rel.name])
+        setattr(instance, "_{0}".format(self.name), o_rel.id)
         instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
