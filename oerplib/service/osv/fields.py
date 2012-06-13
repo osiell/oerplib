@@ -9,6 +9,8 @@ from oerplib import error
 from oerplib.service.osv import browse
 
 def is_int(value):
+    if isinstance(value, bool):
+        return False
     try:
         int(value)
         return True
@@ -148,16 +150,18 @@ class Many2OneField(BaseField):
             o_rel = value
         elif is_int(value):
             o_rel = instance.__class__.__oerp__.browse(self.relation, value)
+        elif value in [None, False]:
+            o_rel = False
         else:
-            raise ValueError(u"Value supplied has to be an integer or"
-                             " a browse_record object.")
+            raise ValueError(u"Value supplied has to be an integer, "
+                             u"a browse_record object or False.")
         o_rel = self.check_value(o_rel)
-        setattr(instance, "_{0}".format(self.name), o_rel.id)
+        setattr(instance, "_{0}".format(self.name), o_rel and o_rel.id)
         instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
         super(Many2OneField, self).check_value(value)
-        if value.__osv__['name'] != self.relation:
+        if value and value.__osv__['name'] != self.relation:
             raise ValueError(
                 (u"Instance of '{osv_name}' supplied doesn't match with the " +\
                  u"relation '{relation}' of the '{field_name}' field.").format(
