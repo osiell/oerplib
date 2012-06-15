@@ -11,11 +11,11 @@ _parser.add_argument('--server', default='localhost',
 #_parser.add_argument('--port', default='8069',
 #                     help="Port")
 
-_parser.add_argument('--test_xmlrpc', action='store_true',
+_parser.add_argument('--test_xmlrpc', action='store_true', default=True,
                      help="Test the XML-RPC protocol")
 _parser.add_argument('--xmlrpc_port', default='8069',
                      help="Port to use with the XML-RPC protocol")
-_parser.add_argument('--test_netrpc', action='store_true',
+_parser.add_argument('--test_netrpc', action='store_true', default=True,
                      help="Test the NET-RPC protocol")
 _parser.add_argument('--netrpc_port', default='8070',
                      help="Port to use with the NET-RPC protocol")

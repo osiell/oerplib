@@ -46,8 +46,10 @@ To run unit tests from the project directory, run the following command::
 
     PYTHONPATH=. ./tests/runtests.py --help
 
-Set your parameters in order to indicate the `OpenERP` server on which you
-want to perform the tests, for instance::
+Then, set your parameters in order to indicate the `OpenERP` server on which
+you want to perform the tests, for instance::
 
-    PYTHONPATH=. ./tests.runtests.py --server 192.168.1.4 --netrpc_port 8071
+    PYTHONPATH=. ./tests.runtests.py --create_db --server 192.168.1.4
+
+The name of the database created is 'oerplib-test' by default.
 

@@ -2,6 +2,7 @@
 
 import unittest
 import numbers
+import time
 
 from args import ARGS
 
@@ -49,18 +50,19 @@ class TestExecute(unittest.TestCase):
     # Create
     # ------
     def test_execute_create_with_good_args(self):
+        login = "%s_%s" % ("foobar", time.time())
         # Check the result returned
         result = self.oerp.execute(
                 'res.users', 'create',
-                {'name': "Foobar",
-                 'login': 'foo'})
+                {'name': login,
+                 'login': login})
         self.assertIsInstance(result, numbers.Number)
         # Handle exception (create another user with the same login)
         self.assertRaises(
                 oerplib.error.RPCError,
                 self.oerp.execute,
                 'res.users', 'create',
-                {'name': "Foobar", 'login': 'foo'})
+                {'name': login, 'login': login})
 
     def test_execute_create_without_args(self):
         # Handle exception (execute a 'create' without args)
