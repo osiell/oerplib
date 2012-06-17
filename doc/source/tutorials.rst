@@ -134,8 +134,9 @@ Update data of a browsable record is workable with the
 :class:`OERP <oerplib.OERP>` instance. Let's update the first contact's
 name of a partner::
 
-    >>> partner.address[0].name = "Caporal Jones"
-    >>> oerp.write_record(partner.address[0])
+    >>> addr = partner.address[0] # Keep the reference to the address record
+    >>> addr.name = "Caporal Jones"
+    >>> oerp.write_record(addr)
 
 This is equivalent to::
 
