@@ -89,10 +89,10 @@ class SelectionField(BaseField):
     def check_value(self, value):
         super(SelectionField, self).check_value(value)
         selection = [val[0] for val in self.selection]
-        if value not in selection:
+        if value and value not in selection:
             raise ValueError(
-                u"The value '{value}' supplied doesn't match with the possible \
-values '{selection}' for the '{field_name}' field".format(
+                u"The value '{value}' supplied doesn't match with the possible "
+                u"values '{selection}' for the '{field_name}' field".format(
                     value=value,
                     selection=selection,
                     field_name=self.name,
