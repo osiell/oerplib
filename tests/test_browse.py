@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import unittest
+import datetime
 
 from args import ARGS
 
@@ -55,7 +56,6 @@ class TestBrowse(unittest.TestCase):
                 False) # Wrong arg
 
     def test_write_record_char(self):
-        # Check the result returned
         backup_name = self.user.name
         self.user.name = "Charly"
         self.oerp.write_record(self.user)
@@ -74,34 +74,83 @@ class TestBrowse(unittest.TestCase):
         partner = self.user.company_id.partner_id
         partner.credit_limit = False
         self.oerp.write_record(partner)
-        self.assertEqual(partner, 0.0)
+        self.assertEqual(partner.credit_limit, 0.0)
         partner.credit_limit = 0.0
         self.oerp.write_record(partner)
-        self.assertEqual(partner, 0.0)
+        self.assertEqual(partner.credit_limit, 0.0)
 
     def test_write_record_integer(self):
-        # TODO
-        pass
+        cur = self.oerp.browse('res.currency', 1)
+        backup_accuracy = cur.accuracy
+        cur.accuracy = False
+        self.oerp.write_record(cur)
+        self.assertEqual(cur.accuracy, 0)
+        cur.accuracy = backup_accuracy
+        self.oerp.write_record(cur)
+        self.assertEqual(cur.accuracy, backup_accuracy)
 
     def test_write_record_selection(self):
-        # TODO
-        pass
+        self.user.context_tz = False
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.context_tz, False)
+        self.user.context_tz = 'Europe/Paris'
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.context_tz, 'Europe/Paris')
 
     def test_write_record_date(self):
-        # TODO
-        pass
+        partner = self.user.company_id.partner_id
+        partner.date = False
+        self.oerp.write_record(partner)
+        self.assertEqual(partner.date, False)
+        partner.date = '2012-01-01'
+        self.oerp.write_record(partner)
+        self.assertEqual(partner.date, datetime.date(2012, 1, 1))
+        partner.date = datetime.date(2012, 1, 1)
+        self.oerp.write_record(partner)
+        self.assertEqual(partner.date, datetime.date(2012, 1, 1))
 
     def test_write_record_datetime(self):
-        # TODO
-        pass
+        version = self.oerp.db.server_version()
+        # OpenERP 5.0.X
+        if version[:3] in ['5.0']:
+            act = self.oerp.browse('ir.actions.todo', 1)
+            act.start_date = False
+            self.oerp.write_record(act)
+            self.assertEqual(act.start_date, False)
+            act.start_date = '2012-01-01 0:0:0'
+            self.oerp.write_record(act)
+            self.assertEqual(act.start_date, datetime.datetime(2012, 1, 1))
+            act.start_date = datetime.datetime(2012, 1, 1)
+            self.oerp.write_record(act)
+            self.assertEqual(act.start_date, datetime.datetime(2012, 1, 1))
+        # OpenERP 6.0.X
+        elif version[:3] in ['6.0']:
+            # TODO
+            pass
 
     def test_write_record_many2one(self):
-        # TODO
-        pass
+        backup_company = self.user.company_id
+        self.user.company_id = False
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.company_id, False)
+        self.user.company_id = backup_company
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.company_id.id, backup_company.id)
+        self.user.company_id = backup_company.id
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.company_id.id, backup_company.id)
 
     def test_write_record_many2many(self):
-        # TODO
-        pass
+        backup_groups = [grp for grp in self.user.groups_id]
+        self.user.groups_id = False
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.groups_id, [])
+        self.user.groups_id = []
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.groups_id, [])
+        self.user.groups_id = [grp.id for grp in backup_groups]
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.groups_id, backup_groups)
 
     def test_write_record_one2many(self):
         # TODO
