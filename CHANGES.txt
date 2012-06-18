@@ -4,10 +4,19 @@ v0.6.0, 2012-05-09:
     - Support for the OpenERP 'fields.reference' added
     - Documentation updated.
 
+v0.5.3, 2012-06-17:
+    Bug fixes:
+    - For 'browse_record' objects, able to get/set a value to a many2one field
+      which the model relation has no 'name' field (Bug #1012593).
+    - Able to set the 'False' value to a many2one field for 'browse_record'
+      objects (Bug #1012597).
+    - Able to set the 'False' value to a selection field for 'browse_record'
+      objects (Bug #1014252).
+
 v0.5.2, 2012-06-04:
     Bug fixes:
     - Able to get the 'False' value from a field of type 'date' or 'datetime'
-      for a browse record. 
+      for a browse record.
 
 v0.5.1, 2012-05-09:
     Bug fixes:
