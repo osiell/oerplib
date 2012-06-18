@@ -54,7 +54,7 @@ class TestBrowse(unittest.TestCase):
                 'res.users',
                 False) # Wrong arg
 
-    def test_write_record(self):
+    def test_write_record_char(self):
         # Check the result returned
         backup_name = self.user.name
         self.user.name = "Charly"
@@ -63,6 +63,42 @@ class TestBrowse(unittest.TestCase):
         self.user.name = backup_name
         self.oerp.write_record(self.user)
         self.assertEqual(self.user.name, backup_name)
+
+    def test_write_record_boolean(self):
+        # TODO
+        pass
+
+    def test_write_record_float(self):
+        # TODO
+        pass
+
+    def test_write_record_integer(self):
+        # TODO
+        pass
+
+    def test_write_record_selection(self):
+        # TODO
+        pass
+
+    def test_write_record_date(self):
+        # TODO
+        pass
+
+    def test_write_record_datetime(self):
+        # TODO
+        pass
+
+    def test_write_record_many2one(self):
+        # TODO
+        pass
+
+    def test_write_record_many2many(self):
+        # TODO
+        pass
+
+    def test_write_record_one2many(self):
+        # TODO
+        pass
 
     def test_reset(self):
         # Check the result returned
