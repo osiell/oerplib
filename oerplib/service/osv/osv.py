@@ -118,7 +118,8 @@ class OSV(collections.Mapping):
                 field = self._browse_class.__osv__['columns'][field_name]
                 # Many2One fields
                 if isinstance(field, fields.Many2OneField):
-                    vals[field_name] = getattr(obj, "_{0}".format(field_name))
+                    vals[field_name] = getattr(obj,
+                                               "_{0}".format(field_name))[0]
                 # One2Many and Many2Many fields
                 elif isinstance(field, fields.One2ManyField) \
                         or isinstance(field, fields.Many2ManyField):
