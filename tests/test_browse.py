@@ -65,12 +65,19 @@ class TestBrowse(unittest.TestCase):
         self.assertEqual(self.user.name, backup_name)
 
     def test_write_record_boolean(self):
-        # TODO
-        pass
+        self.user.active = False
+        self.user.active = True
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.active, True)
 
     def test_write_record_float(self):
-        # TODO
-        pass
+        partner = self.user.company_id.partner_id
+        partner.credit_limit = False
+        self.oerp.write_record(partner)
+        self.assertEqual(partner, 0.0)
+        partner.credit_limit = 0.0
+        self.oerp.write_record(partner)
+        self.assertEqual(partner, 0.0)
 
     def test_write_record_integer(self):
         # TODO
