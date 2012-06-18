@@ -144,6 +144,7 @@ class Many2OneField(BaseField):
                     self.relation,
                     getattr(instance, "_{0}".format(self.name))[0]
                 )
+        return False
 
     def __set__(self, instance, value):
         if isinstance(value, browse.BrowseRecord):
