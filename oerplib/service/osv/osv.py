@@ -89,6 +89,8 @@ class OSV(collections.Mapping):
             raise error.RPCError(
                 u"There is no OSV class named '{0}'.".format(osv_name))
         cls_name = osv_name.replace('.', '_')
+        if type(cls_name) == unicode:
+            cls_name = cls_name.encode('utf-8')
         cls_fields = {}
         for field_name, field_data in fields_get.items():
             if field_name not in OSV.fields_reserved:
