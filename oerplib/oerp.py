@@ -93,7 +93,7 @@ class OERP(object):
             raise error.Error(
                 u"User login required.")
 
-    def login(self, user, passwd, database=None):
+    def login(self, user='admin', passwd='admin', database=None):
         """Log in as the given `user` with the password `passwd` on the
         database `database` and return the corresponding user as a browsable
         record (from the ``res.users`` model).
