@@ -30,7 +30,7 @@ class OERP(object):
 
     """
 
-    def __init__(self, server, database=None, protocol='xmlrpc', port=8069):
+    def __init__(self, server='localhost', database=None, protocol='xmlrpc', port=8069):
         self._server = server
         self._port = port
         self._protocol = protocol
