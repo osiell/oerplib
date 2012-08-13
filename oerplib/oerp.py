@@ -21,7 +21,7 @@ class OERP(object):
 
     `XML-RPC` (by default, with the port 8069) and `Net-RPC` protocols
     are supported. Respective values for the `protocol` parameter are
-    ``xmlrpc`` and ``netrpc``.
+    ``xmlrpc``, ``xmlrpc+ssl`` and ``netrpc``.
 
         >>> import oerplib
         >>> oerp = oerplib.OERP('localhost', protocol='netrpc', port=8070)

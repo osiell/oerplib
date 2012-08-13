@@ -34,13 +34,17 @@ from oerplib.rpc import connector, error
 
 PROTOCOLS = {
         'xmlrpc': connector.ConnectorXMLRPC,
+        'xmlrpc+ssl': connector.ConnectorXMLRPCSSL,
         'netrpc': connector.ConnectorNetRPC,
         }
 
 def get_connector(server, port, protocol='xmlrpc'):
     """Return a `RPC` connector to interact with an `OpenERP` server.
-    This one use either the `XML-RPC` protocol (by default) or `Net-RPC`,
-    at the discretion of the user.
+    Supported protocols are:
+
+        - 'xmlrpc': Standard XML-RPC protocol (default),
+        - 'xmlrpc+ssl': XML-RPC protocol over SSL,
+        - 'netrpc': Net-RPC protocol made by `OpenERP`.
     """
     if protocol not in PROTOCOLS:
         txt = ("The protocol '{0}' is not supported. "

@@ -1,11 +1,8 @@
 # -*- coding: UTF-8 -*-
-"""Provides the ``ConnectorXMLRPC`` and ``ConnectorNetRPC`` classes."""
+"""Provides connectors for different protocols."""
 
-#import xmlrpclib, socket
 import abc
-#import time
 
-#from oerplib.rpc import error, socket_netrpc, service
 from oerplib.rpc import error, service
 
 
@@ -33,6 +30,20 @@ class ConnectorXMLRPC(Connector):
         super(ConnectorXMLRPC, self).__init__(server, port)
         self._url = 'http://{server}:{port}/xmlrpc'.format(server=self.server,
                                                            port=self.port)
+
+    def __getattr__(self, service_name):
+        url = self._url + '/' + service_name
+        srv = service.ServiceXMLRPC(service_name, url)
+        setattr(self, service_name, srv)
+        return srv
+
+
+class ConnectorXMLRPCSSL(Connector):
+    """Connector class using XMLRPC protocol over SSL."""
+    def __init__(self, server, port):
+        super(ConnectorXMLRPCSSL, self).__init__(server, port)
+        self._url = 'https://{server}:{port}/xmlrpc'.format(server=self.server,
+                                                            port=self.port)
 
     def __getattr__(self, service_name):
         url = self._url + '/' + service_name
