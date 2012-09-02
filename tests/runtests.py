@@ -13,6 +13,7 @@ from test_db_drop import TestDBDrop
 from test_execute import TestExecute
 from test_browse import TestBrowse
 from test_osv import TestOSV
+from test_timeout import TestTimeout
 
 if __name__ == '__main__':
     suite = unittest.TestSuite()
@@ -52,6 +53,10 @@ if __name__ == '__main__':
 
     # Test OERP.get
     loader = unittest.TestLoader().loadTestsFromTestCase(TestOSV)
+    suite.addTest(loader)
+
+    # Test socket timeout
+    loader = unittest.TestLoader().loadTestsFromTestCase(TestTimeout)
     suite.addTest(loader)
 
     #---------------

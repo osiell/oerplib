@@ -38,7 +38,7 @@ PROTOCOLS = {
         'netrpc': connector.ConnectorNetRPC,
         }
 
-def get_connector(server, port, protocol='xmlrpc'):
+def get_connector(server, port=8069, protocol='xmlrpc', timeout=120):
     """Return a `RPC` connector to interact with an `OpenERP` server.
     Supported protocols are:
 
@@ -51,6 +51,6 @@ def get_connector(server, port, protocol='xmlrpc'):
                "Please choose a protocol among these ones: {1}")
         txt = txt.format(protocol, PROTOCOLS.keys())
         raise error.ConnectorError(txt)
-    return PROTOCOLS[protocol](server, port)
+    return PROTOCOLS[protocol](server, port, timeout)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

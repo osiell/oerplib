@@ -3,18 +3,21 @@
 import xmlrpclib
 import socket
 
-from oerplib.rpc import socket_netrpc, error
+from oerplib.rpc import socket_netrpc, xmlrpclib_custom, error
 
 
 class ServiceXMLRPC(object):
-    def __init__(self, name, url):
+    def __init__(self, connector, name, url):
+        self._connector = connector
         self._name = name
         self._url = url
-        self._sock = xmlrpclib.ServerProxy(self._url, allow_none=True)
 
     def __getattr__(self, method):
         def rpc_method(*args):
             try:
+                self._sock = xmlrpclib_custom.TimeoutServerProxy(
+                        self._url, allow_none=True,
+                        timeout=self._connector.timeout)
                 sock_method = getattr(self._sock, method, False)
                 return sock_method(*args)
             #TODO NEED TEST
@@ -30,7 +33,8 @@ class ServiceXMLRPC(object):
 
 
 class ServiceNetRPC(object):
-    def __init__(self, name, server, port):
+    def __init__(self, connector, name, server, port):
+        self._connector = connector
         self._name = name
         self._server = server
         self._port = port
@@ -38,7 +42,7 @@ class ServiceNetRPC(object):
     def __getattr__(self, method):
         def rpc_method(*args):
             try:
-                sock = socket_netrpc.NetRPC()
+                sock = socket_netrpc.NetRPC(timeout=self._connector.timeout)
                 sock.connect(self._server, self._port)
                 sock.send((self._name, method, )+args)
                 result = sock.receive()

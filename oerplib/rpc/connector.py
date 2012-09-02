@@ -12,7 +12,7 @@ class Connector(object):
     """
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, server, port):
+    def __init__(self, server, port, timeout):
         self.server = server
         try:
             int(port)
@@ -22,43 +22,45 @@ class Connector(object):
             raise error.ConnectorError(txt)
         else:
             self.port = port
+        self.timeout = timeout
 
 
 class ConnectorXMLRPC(Connector):
     """Connector class using XMLRPC protocol."""
-    def __init__(self, server, port):
-        super(ConnectorXMLRPC, self).__init__(server, port)
+    def __init__(self, server, port, timeout):
+        super(ConnectorXMLRPC, self).__init__(server, port, timeout)
         self._url = 'http://{server}:{port}/xmlrpc'.format(server=self.server,
                                                            port=self.port)
 
     def __getattr__(self, service_name):
         url = self._url + '/' + service_name
-        srv = service.ServiceXMLRPC(service_name, url)
+        srv = service.ServiceXMLRPC(self, service_name, url)
         setattr(self, service_name, srv)
         return srv
 
 
 class ConnectorXMLRPCSSL(Connector):
     """Connector class using XMLRPC protocol over SSL."""
-    def __init__(self, server, port):
-        super(ConnectorXMLRPCSSL, self).__init__(server, port)
+    def __init__(self, server, port, timeout):
+        super(ConnectorXMLRPCSSL, self).__init__(server, port, timeout)
         self._url = 'https://{server}:{port}/xmlrpc'.format(server=self.server,
                                                             port=self.port)
 
     def __getattr__(self, service_name):
         url = self._url + '/' + service_name
-        srv = service.ServiceXMLRPC(service_name, url)
+        srv = service.ServiceXMLRPC(self, service_name, url)
         setattr(self, service_name, srv)
         return srv
 
 
 class ConnectorNetRPC(Connector):
     """Connector class using NetRPC protocol."""
-    def __init__(self, server, port):
-        super(ConnectorNetRPC, self).__init__(server, port)
+    def __init__(self, server, port, timeout):
+        super(ConnectorNetRPC, self).__init__(server, port, timeout)
 
     def __getattr__(self, service_name):
-        srv = service.ServiceNetRPC(service_name, self.server, self.port)
+        srv = service.ServiceNetRPC(
+                self, service_name, self.server, self.port)
         setattr(self, service_name, srv)
         return srv
 

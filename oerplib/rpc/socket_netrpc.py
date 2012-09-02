@@ -19,12 +19,12 @@ class NetRPCError(BaseException):
 
 class NetRPC(object):
     """Low level class for NetRPC protocol."""
-    def __init__(self, sock=None):
+    def __init__(self, sock=None, timeout=120):
         if sock is None:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         else:
             self.sock = sock
-        self.sock.settimeout(120)
+        self.sock.settimeout(timeout)
 
     def connect(self, host, port=False):
         if not port:

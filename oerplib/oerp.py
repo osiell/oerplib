@@ -30,7 +30,8 @@ class OERP(object):
 
     """
 
-    def __init__(self, server='localhost', database=None, protocol='xmlrpc', port=8069):
+    def __init__(self, server='localhost', database=None, protocol='xmlrpc',
+                 port=8069, timeout=120):
         self._server = server
         self._port = port
         self._protocol = protocol
@@ -43,7 +44,7 @@ class OERP(object):
         # Instanciate the OpenERP server connector
         try:
             self._connector = rpc.get_connector(self._server, self._port,
-                                                self._protocol)
+                                                self._protocol, timeout)
         except rpc.error.ConnectorError as exc:
             raise error.InternalError(unicode(exc))
 
@@ -58,14 +59,13 @@ class OERP(object):
         """
         return self._user
 
-    #user = property(lambda self: self._user,
-    #                doc="Return the browsable record of the user connected.")
     server = property(lambda self: self._server,
                       doc="The server name.")
     port = property(lambda self: self._port,
                     doc="The port used.")
     protocol = property(lambda self: self._protocol,
                         doc="The protocol used.")
+
     database = property(lambda self: self._database,
                         doc="The database currently used.")
     common = property(lambda self: self._common,
@@ -83,6 +83,19 @@ class OERP(object):
 
                        The wizard service (``/wizard`` RPC service).
                        See the :class:`oerplib.service.wizard.Wizard` class."""))
+
+    # RPC Connector timeout
+    @property
+    def timeout(self):
+        """.. versionadded:: 0.6.0
+
+        Set the maximum timeout for a RPC request.
+        """
+        return self._connector.timeout
+
+    @timeout.setter
+    def timeout(self, timeout):
+        self._connector.timeout = timeout
 
     #NOTE: in the past this function was implemented as a decorator for other
     # methods needed to be checked, but Sphinx documentation generator is not
