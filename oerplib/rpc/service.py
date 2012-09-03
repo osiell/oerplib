@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
 
 import xmlrpclib
-#FIXME delete later
-import socket
 
 from oerplib.rpc import socket_netrpc, xmlrpclib_custom, error
 
@@ -33,9 +31,6 @@ class ServiceXMLRPC(object):
             #TODO NEED TEST (when is raised this exception?)
             except xmlrpclib.Error as exc:
                 raise error.ConnectorError(' - '.join(exc.args))
-            #FIXME delete later
-            except socket.error as exc:
-                raise error.ConnectorError(exc.strerror)
         return rpc_method
 
 
@@ -64,9 +59,6 @@ class ServiceNetRPC(object):
                 # server version used, a bad request can produce a
                 # server traceback, or not).
                 raise error.ConnectorError(exc.faultCode, exc.faultString)
-            #FIXME delete later
-            except socket.error as exc:
-                raise error.ConnectorError(exc.strerror)
         return rpc_method
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
