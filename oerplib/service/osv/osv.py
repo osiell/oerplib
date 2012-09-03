@@ -82,12 +82,7 @@ class OSV(collections.Mapping):
 
         """
         # Retrieve server fields info and generate corresponding local fields
-        #FIXME try catch needed?
-        try:
-            fields_get = self._oerp.execute(osv_name, 'fields_get')
-        except error.RPCError:
-            raise error.RPCError(
-                u"There is no OSV class named '{0}'.".format(osv_name))
+        fields_get = self._oerp.execute(osv_name, 'fields_get')
         cls_name = osv_name.replace('.', '_')
         if type(cls_name) == unicode:
             cls_name = cls_name.encode('utf-8')

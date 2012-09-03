@@ -3,17 +3,15 @@
 occurred.
 
 """
-#import traceback, sys
 
 
 class Error(Exception):
     def __init__(self, message, oerp_traceback=False):
         super(Error, self).__init__()
-        self.oerp_traceback = oerp_traceback
         self.message = message
-        #self.tb = sys.exc_info()[2]
+        self.oerp_traceback = oerp_traceback
+
     def __str__(self):
-        #traceback.print_tb(self.tb)
         return u"{message}".format(message=self.message)
 
 

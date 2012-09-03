@@ -178,7 +178,7 @@ class DB(object):
             #FIXME handle the exception with the UnicodeEncodeError for
             # the error 'the database already exists'.
             #print dir(exc)
-            raise error.RPCError(exc)
+            raise error.RPCError(exc.message, exc.oerp_traceback)
 
     def __getattr__(self, method):
         def rpc_method(*args):
@@ -186,7 +186,7 @@ class DB(object):
                 meth = getattr(self._oerp._connector.db, method, False)
                 return meth(*args)
             except rpc.error.ConnectorError as exc:
-                raise error.RPCError(exc)
+                raise error.RPCError(exc.message, exc.oerp_traceback)
         return rpc_method
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

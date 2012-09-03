@@ -51,7 +51,7 @@ class Wizard(object):
                 meth = getattr(self._oerp._connector.wizard, method, False)
                 return meth(self._oerp.database, self._oerp.user.id, *args)
             except rpc.error.ConnectorError as exc:
-                raise error.RPCError(exc)
+                raise error.RPCError(exc.message, exc.oerp_traceback)
         return rpc_method
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

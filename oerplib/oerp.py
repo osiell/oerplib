@@ -46,7 +46,7 @@ class OERP(object):
             self._connector = rpc.get_connector(self._server, self._port,
                                                 self._protocol, timeout)
         except rpc.error.ConnectorError as exc:
-            raise error.InternalError(unicode(exc))
+            raise error.InternalError(exc.message)
 
     # Readonly properties
     @property
@@ -128,7 +128,7 @@ class OERP(object):
         try:
             user_id = self.common.login(self._database, user, passwd)
         except rpc.error.ConnectorError as exc:
-            raise error.RPCError(unicode(exc))
+            raise error.RPCError(exc.message, exc.oerp_traceback)
         else:
             if user_id:
                 #NOTE: create a fake User record just to execute the
@@ -169,7 +169,7 @@ class OERP(object):
                                                   self._user.password,
                                                   osv_name, method, *args)
         except rpc.error.ConnectorError as exc:
-            raise error.RPCError(unicode(exc))
+            raise error.RPCError(exc.message, exc.oerp_traceback)
 
     def exec_workflow(self, osv_name, signal, obj_id):
         """`XML-RPC` Workflow query. Execute the workflow signal ``signal`` on
@@ -188,7 +188,7 @@ class OERP(object):
                                                  self._user.password,
                                                  osv_name, signal, obj_id)
         except rpc.error.ConnectorError as exc:
-            raise error.RPCError(unicode(exc))
+            raise error.RPCError(exc.message, exc.oerp_traceback)
 
     def report(self, report_name, osv_name, obj_id, report_type='pdf',
                context=None):
@@ -212,7 +212,7 @@ class OERP(object):
             pdf_data = self._get_report_data(report_name, osv_name, obj_id,
                                              report_type, context)
         except rpc.error.ConnectorError as exc:
-            raise error.RPCError(unicode(exc))
+            raise error.RPCError(exc.message, exc.oerp_traceback)
         return self._print_file_data(pdf_data)
 
     def _get_report_data(self, report_name, osv_name, obj_id,
@@ -226,7 +226,7 @@ class OERP(object):
                             self._database, self.user.id, self.user.password,
                             report_name, [obj_id], data, context)
         except rpc.error.ConnectorError as exc:
-            raise error.RPCError(unicode(exc))
+            raise error.RPCError(exc.message, exc.oerp_traceback)
         state = False
         attempt = 0
         while not state:

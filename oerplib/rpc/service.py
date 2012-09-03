@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import xmlrpclib
+#FIXME delete later
 import socket
 
 from oerplib.rpc import socket_netrpc, xmlrpclib_custom, error
@@ -20,13 +21,19 @@ class ServiceXMLRPC(object):
                         timeout=self._connector.timeout)
                 sock_method = getattr(self._sock, method, False)
                 return sock_method(*args)
-            #TODO NEED TEST
+            #NOTE: exception raised with these kind of requests:
+            #   - execute('fake.model', 'search', [])
+            #   - execute('sale.order', 'fake_method')
             except xmlrpclib.Fault as exc:
-                raise error.ConnectorError(
-                        repr(exc.faultCode) + ': ' + exc.faultString)
-            #TODO NEED TEST
+                # faultCode: error message
+                # faultString: OpenERP server traceback (following the OpenERP
+                # server version used, a bad request can produce a
+                # server traceback, or not).
+                raise error.ConnectorError(exc.faultCode, exc.faultString)
+            #TODO NEED TEST (when is raised this exception?)
             except xmlrpclib.Error as exc:
                 raise error.ConnectorError(' - '.join(exc.args))
+            #FIXME delete later
             except socket.error as exc:
                 raise error.ConnectorError(exc.strerror)
         return rpc_method
@@ -48,9 +55,16 @@ class ServiceNetRPC(object):
                 result = sock.receive()
                 sock.disconnect()
                 return result
-            #TODO NEED TEST
+            #NOTE: exception raised with these kind of requests:
+            #   - execute('fake.model', 'search', [])
+            #   - execute('sale.order', 'fake_method')
             except socket_netrpc.NetRPCError as exc:
-                raise error.ConnectorError(unicode(exc))
+                # faultCode: error message
+                # faultString: OpenERP server traceback (following the OpenERP
+                # server version used, a bad request can produce a
+                # server traceback, or not).
+                raise error.ConnectorError(exc.faultCode, exc.faultString)
+            #FIXME delete later
             except socket.error as exc:
                 raise error.ConnectorError(exc.strerror)
         return rpc_method
