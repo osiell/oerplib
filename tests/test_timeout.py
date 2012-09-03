@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import unittest
+import socket
 
 from args import ARGS
 
@@ -21,7 +22,7 @@ class TestTimeout(unittest.TestCase):
         # Execute a time consuming query: handle exception
         ids = self.oerp.search('ir.module.module', [])
         self.assertRaises(
-            RPCError,
+            socket.timeout,
             self.oerp.write, 'ir.module.module', ids, {})
 
     def test_increased_timeout(self):

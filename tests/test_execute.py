@@ -46,6 +46,24 @@ class TestExecute(unittest.TestCase):
                 'search',
                 False) # Wrong arg
 
+    def test_execute_search_with_wrong_model(self):
+        # Handle exception (execute a 'search' with a wrong model)
+        self.assertRaises(
+                oerplib.error.RPCError,
+                self.oerp.execute,
+                'wrong.model', # Wrong model
+                'search',
+                [])
+
+    def test_execute_search_with_wrong_method(self):
+        # Handle exception (execute a 'search' with a wrong method)
+        self.assertRaises(
+                oerplib.error.RPCError,
+                self.oerp.execute,
+                'res.users',
+                'wrong_method', # Wrong method
+                [])
+
     # ------
     # Create
     # ------
