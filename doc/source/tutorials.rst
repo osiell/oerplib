@@ -156,9 +156,8 @@ name of a partner::
 
 This is equivalent to::
 
-    >>> addr_osv_name = oerp.get_osv_name(partner.address[0]) # 'res.partner.address'
     >>> addr_id = partner.address[0].id
-    >>> oerp.write(addr_osv_name, [addr_id], {'name': "Caporal Jones"})
+    >>> oerp.write('res.partner.address', [addr_id], {'name': "Caporal Jones"})
 
 Char, Float, Integer, Boolean, Text and Binary
 ''''''''''''''''''''''''''''''''''''''''''''''
