@@ -1,8 +1,10 @@
+.. _reference:
+
 Reference
 =========
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     ref_fields
     ref_oerplib

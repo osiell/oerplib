@@ -51,5 +51,5 @@ you want to perform the tests, for instance::
 
     PYTHONPATH=. ./tests/runtests.py --create_db --server 192.168.1.4
 
-The name of the database created is 'oerplib-test' by default.
+The name of the database created is ``oerplib-test`` by default.
 

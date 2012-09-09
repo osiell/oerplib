@@ -351,3 +351,16 @@ However, `OERPLib` simplifies this by providing the
 Some documentation about methods offered by the `OpenERP` ``/db`` RPC service
 is available :class:`here <oerplib.service.db.DB>`.
 
+Change the timeout
+------------------
+
+.. versionadded:: 0.6.0
+
+By default, the timeout is set to 120 seconds for all RPC requests.
+If your request needs a higher timeout, you can set a new value to the
+:attr:`oerp.timeout <oerplib.OERP.timeout>` property::
+
+    >>> oerp.timeout
+    120
+    >>> oerp.timeout = 300 # Set the timeout to 300 seconds
+

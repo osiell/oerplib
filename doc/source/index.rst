@@ -55,6 +55,8 @@ How does it work? See below::
     user.name = "Brian Jones"
     oerp.write_record(user)
 
+For more details, see the :ref:`tutorials <tutorials>` and the :ref:`API reference <reference>`.
+
 Download and install
 --------------------
 
