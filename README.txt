@@ -77,7 +77,7 @@ Bugs or suggestions
 -------------------
 
 Please, feel free to report bugs or suggestions in the `Bug Tracker
-<https://bugs.launchpad.net/oerplib/+filebug>`_!
+<https://bugs.launchpad.net/oerplib>`_!
 
 Changes in this version
 -----------------------

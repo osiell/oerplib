@@ -2,7 +2,3 @@ Original Author
 ---------------
 Sébastien ALIX <sebastien.alix@osiell.com>
 
-Contributors
-------------
-Scott Hassan
-
