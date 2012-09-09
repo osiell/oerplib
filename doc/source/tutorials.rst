@@ -217,18 +217,10 @@ One2Many and Many2Many
 .. versionadded:: 0.6.0
 
 ``one2many`` and ``many2many`` fields can be updated by providing
-a list of IDs::
+a list of tuple as specified in the `OpenERP` documentation::
 
     >>> user = oerp.browse('res.users', 1)
-    >>> user.groups_id = [42]
-    >>> oerp.write_record(user)
-
-Or keep previous IDs before adding yours::
-
-    >>> user = oerp.browse('res.users', 1)
-    >>> ids = [g.id for g in user.groups_id]
-    >>> ids.append(42)
-    >>> user.groups_id = ids
+    >>> user.groups_id = [(6, 0, [8, 5, 6, 4])]
     >>> oerp.write_record(user)
 
 Reference

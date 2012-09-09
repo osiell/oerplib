@@ -113,18 +113,13 @@ class OSV(collections.Mapping):
         for field_name in obj_data['fields_updated']:
             if field_name in obj_data['raw_data']:
                 field = self._browse_class.__osv__['columns'][field_name]
+                field_value = getattr(obj, "_{0}".format(field_name))
                 # Many2One fields
                 if isinstance(field, fields.Many2OneField):
-                    value = getattr(obj, "_{0}".format(field_name))
-                    vals[field_name] = value and value[0]
-                # One2Many and Many2Many fields
-                elif isinstance(field, fields.One2ManyField) \
-                        or isinstance(field, fields.Many2ManyField):
-                    vals[field_name] = \
-                            [(6, 0, getattr(obj, "_{0}".format(field_name)))]
+                    vals[field_name] = field_value and field_value[0]
                 # All other fields
                 else:
-                    vals[field_name] = getattr(obj, "_{0}".format(field_name))
+                    vals[field_name] = field_value
         try:
             res = self._oerp.write(obj.__osv__['name'], [obj.id], vals, context)
         except error.Error as exc:
