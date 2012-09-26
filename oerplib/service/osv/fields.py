@@ -112,10 +112,10 @@ class Many2ManyField(BaseField):
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
-        if getattr(instance, "_{0}".format(self.name)):
-            return [instance.__oerp__.browse(self.relation, o_id)
-                    for o_id in getattr(instance, "_{0}".format(self.name))]
-        return []
+        ids = getattr(instance, "_{0}".format(self.name))
+        if ids:
+            return instance.__oerp__.browse(self.relation, ids)
+        return iter(())
 
     def __set__(self, instance, value):
         value = self.check_value(value)
@@ -181,10 +181,10 @@ class One2ManyField(BaseField):
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
-        if getattr(instance, "_{0}".format(self.name)):
-            return [instance.__oerp__.browse(self.relation, o_id)
-                    for o_id in getattr(instance, "_{0}".format(self.name))]
-        return []
+        ids = getattr(instance, "_{0}".format(self.name))
+        if ids:
+            return instance.__oerp__.browse(self.relation, ids)
+        return iter(())
 
     def __set__(self, instance, value):
         value = self.check_value(value)
