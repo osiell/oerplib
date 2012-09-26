@@ -112,6 +112,7 @@ class Many2ManyField(BaseField):
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
+        """Return a generator to iterate on ``browse_record`` instances."""
         ids = getattr(instance, "_{0}".format(self.name))
         if ids:
             return instance.__oerp__.browse(self.relation, ids)
@@ -181,6 +182,7 @@ class One2ManyField(BaseField):
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
+        """Return a generator to iterate on ``browse_record`` instances."""
         ids = getattr(instance, "_{0}".format(self.name))
         if ids:
             return instance.__oerp__.browse(self.relation, ids)

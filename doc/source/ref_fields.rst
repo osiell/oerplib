@@ -27,8 +27,8 @@ Exceptions made for relation fields:
 `OpenERP` fields  Types used in `OERPLib`
 ================  ===========================================================
 fields.many2one   ``browse_record`` instance
-fields.one2many   list of ``browse_record`` instances 
-fields.many2many  list of ``browse_record`` instances
+fields.one2many   generator to iterate on ``browse_record`` instances 
+fields.many2many  generator to iterate on ``browse_record`` instances
 fields.reference  ``browse_record`` instance
 ================  ===========================================================
 
