@@ -97,6 +97,9 @@ class BrowseRecord(object):
     def __getitem__(self, key):
         return getattr(self, key)
 
+    def __int__(self):
+        return self._id
+
     def __eq__(self, other):
         """Compare two browse records. Return ``True`` if their ID and OSV name
         are equals.
