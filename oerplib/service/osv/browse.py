@@ -81,6 +81,7 @@ class BrowseRecord(object):
     """
     __oerp__ = None
     __osv__ = None
+
     def __init__(self, o_id):
         self._id = o_id
         self.__data__ = {'raw_data': False, 'fields_updated': []}
@@ -90,13 +91,8 @@ class BrowseRecord(object):
         """ID of the record."""
         return self._id
 
-    def __str__(self):
-        return "browse_record({osv_name}, {obj_id})".format(
-                osv_name=self.__osv__['name'],
-                obj_id=self._id)
-
     def __repr__(self):
-        return str(self)
+        return "browse_record(%r, %r)" % (self.__osv__['name'], self._id)
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -111,7 +107,7 @@ class BrowseRecord(object):
         """
         return isinstance(other, BrowseRecord) and \
             self.id == other.id and \
-            self.__osv__['name'] == other.__osv__['name'] # and \
+            self.__osv__['name'] == other.__osv__['name']  # and \
             #self.__osv__['columns'].keys() == other.__osv__['columns'].keys():
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
