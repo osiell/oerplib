@@ -145,15 +145,15 @@ class TestBrowse(unittest.TestCase):
         # False
         self.user.groups_id = False
         self.oerp.write_record(self.user)
-        self.assertEqual(self.user.groups_id, backup_groups)
+        self.assertEqual(list(self.user.groups_id), backup_groups)
         # []
         self.user.groups_id = []
         self.oerp.write_record(self.user)
-        self.assertEqual(self.user.groups_id, backup_groups)
+        self.assertEqual(list(self.user.groups_id), backup_groups)
         # [(6, 0, ...)]
         self.user.groups_id = [(6, 0, [grp.id for grp in backup_groups])]
         self.oerp.write_record(self.user)
-        self.assertEqual(self.user.groups_id, backup_groups)
+        self.assertEqual(list(self.user.groups_id), backup_groups)
 
     def test_write_record_one2many(self):
         partner = self.user.company_id.partner_id
@@ -161,17 +161,17 @@ class TestBrowse(unittest.TestCase):
         # False
         partner.address = False
         self.oerp.write_record(partner)
-        self.assertEqual(partner.address, backup_address)
+        self.assertEqual(list(partner.address), backup_address)
         # []
         partner.address = []
         self.oerp.write_record(partner)
-        self.assertEqual(partner.address, backup_address)
+        self.assertEqual(list(partner.address), backup_address)
         # [(1, ID, { values })]
-        addr_id = partner.address[0].id
+        addr_id = list(partner.address)[0].id
         partner.address = [(1, addr_id, {'name': u"OERPLib-test"})]
         self.oerp.write_record(partner)
-        self.assertEqual(partner.address, backup_address)
-        addr = partner.address[0]
+        self.assertEqual(list(partner.address), backup_address)
+        addr = list(partner.address)[0]
         self.assertEqual(addr.name, u"OERPLib-test")
 
     def test_reset(self):
