@@ -34,8 +34,8 @@ class TestDB(unittest.TestCase):
     def test_db_restore_existing_database(self):
         dump = self.oerp.db.dump(ARGS.super_admin_passwd, ARGS.database)
         self.assertRaises(
-                oerplib.error.RPCError,
-                self.oerp.db.restore,
-                ARGS.super_admin_passwd, ARGS.database, dump)
+            oerplib.error.RPCError,
+            self.oerp.db.restore,
+            ARGS.super_admin_passwd, ARGS.database, dump)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

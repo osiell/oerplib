@@ -4,7 +4,9 @@ the `OpenERP` server.
 
 """
 import os
-import base64, zlib, tempfile
+import base64
+import zlib
+import tempfile
 import time
 
 from oerplib import rpc
@@ -69,7 +71,7 @@ class OERP(object):
     database = property(lambda self: self._database,
                         doc="The database currently used.")
     common = property(lambda self: self._common,
-                  doc=(""".. versionadded:: 0.6.0
+                      doc=(""".. versionadded:: 0.6.0
 
                        The common service (``/common`` RPC service).
                        See the :class:`oerplib.service.common.Common` class."""))
@@ -79,7 +81,7 @@ class OERP(object):
                        The database management service (``/db`` RPC service).
                        See the :class:`oerplib.service.db.DB` class."""))
     wizard = property(lambda self: self._wizard,
-                  doc=(""".. versionadded:: 0.6.0
+                      doc=(""".. versionadded:: 0.6.0
 
                        The wizard service (``/wizard`` RPC service).
                        See the :class:`oerplib.service.wizard.Wizard` class."""))
@@ -118,7 +120,6 @@ class OERP(object):
 
         :return: the user connected as a browsable record
         :raise: :class:`oerplib.error.RPCError`
-
         """
         # Raise an error if no database was given
         self._database = database or self._database_default
@@ -133,11 +134,11 @@ class OERP(object):
             if user_id:
                 #NOTE: create a fake User record just to execute the
                 # first query : browse the real User record
-                self._user = type('FakeUser', (osv.BrowseRecord,), {
-                                    'id': None,
-                                    'login': None,
-                                    'password': None,
-                                })
+                self._user = type('FakeUser',
+                                  (osv.BrowseRecord,),
+                                  {'id': None,
+                                   'login': None,
+                                   'password': None})
                 self._user.id = user_id
                 self._user.login = user
                 self._user.password = passwd
@@ -165,9 +166,10 @@ class OERP(object):
         self._check_logged_user()
         # Execute the query
         try:
-            return self._connector.object.execute(self._database, self._user.id,
-                                                  self._user.password,
-                                                  osv_name, method, *args)
+            return self._connector.object.execute(
+                self._database, self._user.id,
+                self._user.password,
+                osv_name, method, *args)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
 
@@ -223,8 +225,8 @@ class OERP(object):
         data = {'model': osv_name, 'id': obj_id, 'report_type': report_type}
         try:
             report_id = self._connector.report.report(
-                            self._database, self.user.id, self.user.password,
-                            report_name, [obj_id], data, context)
+                self._database, self.user.id, self.user.password,
+                report_name, [obj_id], data, context)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
         state = False
@@ -232,8 +234,8 @@ class OERP(object):
         while not state:
             try:
                 pdf_data = self._connector.report.report_get(
-                            self._database, self.user.id, self.user.password,
-                            report_id)
+                    self._database, self.user.id, self.user.password,
+                    report_id)
             except rpc.error.ConnectorError as exc:
                 raise error.RPCError("Unknown error occurred during the "
                                      "download of the report.")
@@ -251,7 +253,7 @@ class OERP(object):
         """Print data in a temporary file and return the path of this one."""
         if 'result' not in data:
             raise error.InternalError(
-                    u"Invalid data, the operation has been canceled.")
+                u"Invalid data, the operation has been canceled.")
         content = base64.decodestring(data['result'])
         if data.get('code') == 'zlib':
             content = zlib.decompress(content)
@@ -260,7 +262,7 @@ class OERP(object):
                               'sxw', 'odt', 'tiff']:
             if data['format'] == 'html' and os.name == 'nt':
                 data['format'] = 'doc'
-            (file_no, file_path) = tempfile.mkstemp('.'+data['format'],
+            (file_no, file_path) = tempfile.mkstemp('.' + data['format'],
                                                     'oerplib_')
             with file(file_path, 'wb+') as fp:
                 fp.write(content)
@@ -391,7 +393,7 @@ class OERP(object):
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
         return self._pool.get_by_class(browse_record.__class__)._write_record(
-                browse_record, context)
+            browse_record, context)
 
     def unlink_record(self, browse_record, context=None):
         """.. versionadded:: 0.4.0
@@ -402,7 +404,7 @@ class OERP(object):
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
         return self._pool.get_by_class(browse_record.__class__)._unlink_record(
-                browse_record, context)
+            browse_record, context)
 
     def refresh(self, browse_record, context=None):
         """Restore original values of the ``browse_record`` from data
@@ -413,7 +415,7 @@ class OERP(object):
 
         """
         return self._pool.get_by_class(browse_record.__class__)._refresh(
-                browse_record, context)
+            browse_record, context)
 
     def reset(self, browse_record):
         """Cancel all changes made locally on the ``browse_record``.
@@ -422,9 +424,10 @@ class OERP(object):
 
         """
         return self._pool.get_by_class(browse_record.__class__)._reset(
-                browse_record)
+            browse_record)
 
-    def get_osv_name(self, browse_record):
+    @staticmethod
+    def get_osv_name(browse_record):
         """Return the OSV server class name of the ``browse_record`` supplied.
 
         >>> partner = oerp.browse('res.partner', 1)

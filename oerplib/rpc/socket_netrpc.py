@@ -37,7 +37,7 @@ class NetRPC(object):
         self.sock.close()
 
     def send(self, msg, exception=False, traceback=None):
-        msg = pickle.dumps([msg,traceback])
+        msg = pickle.dumps([msg, traceback])
         size = len(msg)
         self.sock.send('%8d' % size)
         self.sock.send(exception and "1" or "0")
@@ -63,7 +63,7 @@ class NetRPC(object):
             exception = False
         msg = ''
         while len(msg) < size:
-            chunk = self.sock.recv(size-len(msg))
+            chunk = self.sock.recv(size - len(msg))
             if chunk == '':
                 raise NetRPCError("RuntimeError", "Socket connection broken")
             msg = msg + chunk

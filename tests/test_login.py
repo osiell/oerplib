@@ -23,8 +23,8 @@ class TestLogin(unittest.TestCase):
         # OERP no database + login no database => Error
         oerp = oerplib.OERP(ARGS.server, protocol=ARGS.protocol, port=ARGS.port)
         self.assertRaises(
-                oerplib.error.Error,
-                oerp.login, ARGS.user, ARGS.passwd)
+            oerplib.error.Error,
+            oerp.login, ARGS.user, ARGS.passwd)
 
     def test_oerp_db_login_no_db(self):
         # OERP database + login no database

@@ -19,11 +19,12 @@ class TimeoutServerProxy(xmlrpclib.ServerProxy):
 
 # Python 2.5 and 2.6
 class TimeoutHTTPPy26(httplib.HTTP):
-   def __init__(self, host='', port=None, strict=None,
-                timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
+    def __init__(self, host='', port=None, strict=None,
+                 timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
         if port == 0:
             port = None
         self._setup(self._connection_class(host, port, strict, timeout))
+
 
 class TimeoutTransportPy26(xmlrpclib.Transport):
     def __init__(self, timeout=socket._GLOBAL_DEFAULT_TIMEOUT, *args, **kwargs):
@@ -46,6 +47,7 @@ class TimeoutHTTPConnectionPy27(httplib.HTTPConnection):
         httplib.HTTPConnection.connect(self)
         self.sock.settimeout(self.timeout)
 
+
 class TimeoutTransportPy27(xmlrpclib.Transport):
     def __init__(self, timeout=socket._GLOBAL_DEFAULT_TIMEOUT, *args, **kwargs):
         xmlrpclib.Transport.__init__(self, *args, **kwargs)
@@ -62,7 +64,7 @@ class TimeoutTransportPy27(xmlrpclib.Transport):
 
 # Define the TimeTransport class version to use
 TimeoutTransport = sys.version_info <= (2, 7) \
-        and TimeoutTransportPy26 \
-        or TimeoutTransportPy27
+    and TimeoutTransportPy26 \
+    or TimeoutTransportPy27
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

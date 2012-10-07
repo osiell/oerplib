@@ -15,8 +15,8 @@ class ServiceXMLRPC(object):
         def rpc_method(*args):
             try:
                 self._sock = xmlrpclib_custom.TimeoutServerProxy(
-                        self._url, allow_none=True,
-                        timeout=self._connector.timeout)
+                    self._url, allow_none=True,
+                    timeout=self._connector.timeout)
                 sock_method = getattr(self._sock, method, False)
                 return sock_method(*args)
             #NOTE: exception raised with these kind of requests:
@@ -46,7 +46,7 @@ class ServiceNetRPC(object):
             try:
                 sock = socket_netrpc.NetRPC(timeout=self._connector.timeout)
                 sock.connect(self._server, self._port)
-                sock.send((self._name, method, )+args)
+                sock.send((self._name, method, ) + args)
                 result = sock.receive()
                 sock.disconnect()
                 return result

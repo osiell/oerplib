@@ -27,16 +27,16 @@ class TestOSV(unittest.TestCase):
         # Handle exception (execute a 'name_get' with without args)
         osv_class = self.oerp.get('res.users')
         self.assertRaises(
-                oerplib.error.RPCError,
-                osv_class.name_get)
+            oerplib.error.RPCError,
+            osv_class.name_get)
 
     def test_osv_method_with_wrong_args(self):
         # Handle exception (execute a 'search' with wrong args)
         osv_class = self.oerp.get('res.users')
         self.assertRaises(
-                oerplib.error.RPCError,
-                osv_class.search,
-                False) # Wrong arg
+            oerplib.error.RPCError,
+            osv_class.search,
+            False)  # Wrong arg
 
     def test_osv_browse_with_one_id(self):
         # Check the result returned
@@ -51,12 +51,12 @@ class TestOSV(unittest.TestCase):
         user_ids = self.oerp.search('res.users', [])
         for result in self.oerp.get('res.users').browse(user_ids):
             self.assertIsInstance(
-                    result, oerplib.service.osv.browse.BrowseRecord)
+                result, oerplib.service.osv.browse.BrowseRecord)
         # With context
         context = self.oerp.execute('res.users', 'context_get')
         for result in self.oerp.get('res.users').browse(user_ids, context):
             self.assertIsInstance(
-                    result, oerplib.service.osv.browse.BrowseRecord)
+                result, oerplib.service.osv.browse.BrowseRecord)
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

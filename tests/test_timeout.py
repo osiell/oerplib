@@ -6,7 +6,6 @@ import socket
 from args import ARGS
 
 import oerplib
-from oerplib.error import RPCError
 
 
 class TestTimeout(unittest.TestCase):

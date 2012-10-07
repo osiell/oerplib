@@ -36,6 +36,7 @@ class OSV(collections.Mapping):
     """
 
     fields_reserved = ['id', '__oerp__', '__osv__', '__data__']
+
     def __init__(self, oerp, osv_name):
         super(OSV, self).__init__()
         self._oerp = oerp
@@ -126,7 +127,7 @@ class OSV(collections.Mapping):
             raise exc
         else:
             # Update raw_data dictionary
-            self._refresh(obj, context) #FIXME delete to avoid a RPC request?
+            self._refresh(obj, context)  # FIXME delete to avoid a RPC request?
             return res
 
     def _refresh(self, obj, context=None):

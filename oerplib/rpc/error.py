@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 
+
 class ConnectorError(BaseException):
     """Exception raised by the ``oerplib.rpc`` package."""
     def __init__(self, message, oerp_traceback=None):

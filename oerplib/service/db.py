@@ -158,20 +158,20 @@ class DB(object):
         """
         try:
             db_id = self._oerp._connector.db.create(
-                    super_admin_passwd, database, demo_data, lang, admin_passwd)
+                super_admin_passwd, database, demo_data, lang, admin_passwd)
             progress = 0.0
             attempt = 0
             while progress < 1.0:
                 result = self._oerp._connector.db.get_progress(
-                                super_admin_passwd, db_id)
+                    super_admin_passwd, db_id)
                 progress = result[0]
                 if progress < 1.0:
                     time.sleep(1)
                     attempt += 1
                 if attempt > 300:
                     raise error.RPCError(
-                            "Too many attempts, the operation"
-                            " has been canceled.")
+                        "Too many attempts, the operation"
+                        " has been canceled.")
             return result[1]
 
         except rpc.error.ConnectorError as exc:

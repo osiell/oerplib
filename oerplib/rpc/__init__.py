@@ -33,10 +33,11 @@ the protocol used.
 from oerplib.rpc import connector, error
 
 PROTOCOLS = {
-        'xmlrpc': connector.ConnectorXMLRPC,
-        'xmlrpc+ssl': connector.ConnectorXMLRPCSSL,
-        'netrpc': connector.ConnectorNetRPC,
-        }
+    'xmlrpc': connector.ConnectorXMLRPC,
+    'xmlrpc+ssl': connector.ConnectorXMLRPCSSL,
+    'netrpc': connector.ConnectorNetRPC,
+}
+
 
 def get_connector(server, port=8069, protocol='xmlrpc', timeout=120):
     """Return a `RPC` connector to interact with an `OpenERP` server.

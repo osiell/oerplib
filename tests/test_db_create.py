@@ -16,11 +16,11 @@ class TestDBCreate(unittest.TestCase):
     def test_db_create(self):
         if ARGS.database not in self.oerp.db.list():
             res = self.oerp.db.create_and_wait(
-                    ARGS.super_admin_passwd,
-                    ARGS.database,
-                    demo_data=False,
-                    lang='en_US',
-                    admin_passwd=ARGS.passwd)
+                ARGS.super_admin_passwd,
+                ARGS.database,
+                demo_data=False,
+                lang='en_US',
+                admin_passwd=ARGS.passwd)
             self.assertIsInstance(res, list)
             self.assertNotEqual(res, list())
             self.assertEqual(res[0], {'login': 'admin',

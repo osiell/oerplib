@@ -60,7 +60,7 @@ class ConnectorNetRPC(Connector):
 
     def __getattr__(self, service_name):
         srv = service.ServiceNetRPC(
-                self, service_name, self.server, self.port)
+            self, service_name, self.server, self.port)
         setattr(self, service_name, srv)
         return srv
 

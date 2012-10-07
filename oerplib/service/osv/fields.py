@@ -8,6 +8,7 @@ import datetime
 from oerplib import error
 from oerplib.service.osv import browse
 
+
 def is_int(value):
     if isinstance(value, bool):
         return False
@@ -99,7 +100,7 @@ class SelectionField(BaseField):
                     value=value,
                     selection=selection,
                     field_name=self.name,
-            ))
+                ))
         return value
 
 
@@ -127,7 +128,7 @@ class Many2ManyField(BaseField):
         if value:
             if not isinstance(value, list):
                 raise ValueError(
-                        u"The value supplied has to be a list or 'False'")
+                    u"The value supplied has to be a list or 'False'")
         return super(Many2ManyField, self).check_value(value)
 
 
@@ -142,9 +143,8 @@ class Many2OneField(BaseField):
     def __get__(self, instance, owner):
         if getattr(instance, "_{0}".format(self.name)):
             return instance.__class__.__oerp__.browse(
-                    self.relation,
-                    getattr(instance, "_{0}".format(self.name))[0]
-                )
+                self.relation,
+                getattr(instance, "_{0}".format(self.name))[0])
         return False
 
     def __set__(self, instance, value):
@@ -165,11 +165,11 @@ class Many2OneField(BaseField):
         super(Many2OneField, self).check_value(value)
         if value and value.__osv__['name'] != self.relation:
             raise ValueError(
-                (u"Instance of '{osv_name}' supplied doesn't match with the " +\
+                (u"Instance of '{osv_name}' supplied doesn't match with the " +
                  u"relation '{relation}' of the '{field_name}' field.").format(
-                    osv_name=value.__osv__['name'],
-                    relation=self.relation,
-                    field_name=self.name))
+                     osv_name=value.__osv__['name'],
+                     relation=self.relation,
+                     field_name=self.name))
         return value
 
 
@@ -197,7 +197,7 @@ class One2ManyField(BaseField):
         if value:
             if not isinstance(value, list):
                 raise ValueError(
-                        u"The value supplied has to be a list or 'False'")
+                    u"The value supplied has to be a list or 'False'")
         return super(One2ManyField, self).check_value(value)
 
 
@@ -219,7 +219,7 @@ class ReferenceField(BaseField):
             o_id = int(o_id.strip())
             if relation and o_id:
                 return instance.__class__.__oerp__.browse(
-                        relation, o_id)
+                    relation, o_id)
         return False
 
     def __set__(self, instance, value):
@@ -233,10 +233,10 @@ class ReferenceField(BaseField):
             raise ValueError(
                 (u"The value '{value}' supplied doesn't match with the possible"
                  u" values '{selection}' for the '{field_name}' field").format(
-                    value=relation,
-                    selection=selection,
-                    field_name=self.name,
-            ))
+                     value=relation,
+                     selection=selection,
+                     field_name=self.name,
+                 ))
         return relation
 
     def check_value(self, value):
@@ -264,6 +264,7 @@ class ReferenceField(BaseField):
 class DateField(BaseField):
     """Represent the OpenObject 'fields.data'"""
     pattern = "%Y-%m-%d"
+
     def __init__(self, osv, name, data):
         super(DateField, self).__init__(osv, name, data)
 
@@ -271,7 +272,7 @@ class DateField(BaseField):
         value = getattr(instance, "_{0}".format(self.name))
         try:
             res = datetime.datetime.strptime(value, self.pattern).date()
-        except Exception: # ValueError, TypeError
+        except Exception:  # ValueError, TypeError
             res = value
         return res
 
@@ -295,13 +296,14 @@ class DateField(BaseField):
             return value
         else:
             raise ValueError(
-                    "Expecting a datetime.date object or basestring")
+                "Expecting a datetime.date object or basestring")
         return value
 
 
 class DateTimeField(BaseField):
     """Represent the OpenObject 'fields.datetime'"""
     pattern = "%Y-%m-%d %H:%M:%S"
+
     def __init__(self, osv, name, data):
         super(DateTimeField, self).__init__(osv, name, data)
 
@@ -309,7 +311,7 @@ class DateTimeField(BaseField):
         value = getattr(instance, "_{0}".format(self.name))
         try:
             res = datetime.datetime.strptime(value, self.pattern)
-        except Exception: # ValueError, TypeError
+        except Exception:  # ValueError, TypeError
             res = value
         return res
 
@@ -333,7 +335,7 @@ class DateTimeField(BaseField):
             return value
         else:
             raise ValueError(
-                    "Expecting a datetime.datetime object or basestring")
+                "Expecting a datetime.datetime object or basestring")
         return value
 
 
