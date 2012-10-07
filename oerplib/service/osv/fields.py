@@ -10,6 +10,7 @@ from oerplib.service.osv import browse
 
 
 def is_int(value):
+    """Return `True` if ``value`` is an integer."""
     if isinstance(value, bool):
         return False
     try:

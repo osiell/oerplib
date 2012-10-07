@@ -116,7 +116,7 @@ class BrowseRecord(object):
         if not isinstance(other, BrowseRecord):
             return True
         return isinstance(other, BrowseRecord)\
-            and (self.__osv__['name'], self._id) !=\
-                (other.__osv__['name'], other._id)
+            and (self.__osv__['name'], self.id) !=\
+                (other.__osv__['name'], other.id)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

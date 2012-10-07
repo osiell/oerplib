@@ -127,7 +127,8 @@ class OSV(collections.Mapping):
             raise exc
         else:
             # Update raw_data dictionary
-            self._refresh(obj, context)  # FIXME delete to avoid a RPC request?
+            # FIXME: make it optional to avoid a RPC request?
+            self._refresh(obj, context)
             return res
 
     def _refresh(self, obj, context=None):
@@ -137,23 +138,12 @@ class OSV(collections.Mapping):
 
         """
         obj_data = obj.__data__
+        # FIXME: use the context
         obj_data['raw_data'] = self._oerp.read(obj.__osv__['name'], obj.id)
         if obj_data['raw_data'] is False:
             raise error.RPCError(
                 u"There is no '{osv_name}' record with ID {obj_id}.".format(
                     osv_name=obj.__class__.__osv__['name'], obj_id=obj.id))
-        # Special field 'name' have to be filled with the value returned
-        # by the 'name_get' method
-        #try:
-        #    name = self._oerp.execute(obj.__osv__['name'], 'name_get', [obj.id])
-        #except error.Error:
-        #    pass
-        #else:
-        #    if name:
-        #        try:
-        #            obj_data['raw_data']['name'] = ast.literal_eval(name[0][1])
-        #        except Exception:
-        #            obj_data['raw_data']['name'] = name[0][1]
         self._reset(obj)
 
     def _reset(self, obj):
@@ -178,6 +168,7 @@ class OSV(collections.Mapping):
 
     def __getattr__(self, method):
         def rpc_method(*args):
+            """Return the result of the RPC request."""
             result = self._oerp.execute(self._browse_class.__osv__['name'],
                                         method, *args)
             return result

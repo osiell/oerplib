@@ -126,6 +126,7 @@ class Common(object):
 
     def __getattr__(self, method):
         def rpc_method(*args):
+            """Return the result of the RPC request."""
             try:
                 meth = getattr(self._oerp._connector.common, method, False)
                 return meth(*args)

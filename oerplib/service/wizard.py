@@ -47,6 +47,7 @@ class Wizard(object):
 
     def __getattr__(self, method):
         def rpc_method(*args):
+            """Return the result of the RPC request."""
             try:
                 meth = getattr(self._oerp._connector.wizard, method, False)
                 return meth(self._oerp.database, self._oerp.user.id, *args)
