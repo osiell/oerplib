@@ -136,7 +136,7 @@ class OSV(collections.Mapping):
 
         """
         obj_data = obj.__data__
-        obj_data['raw_data'] = self._oerp.read(obj.__osv__['name'], obj.id)
+        obj_data['raw_data'] = self._oerp.read(obj.__osv__['name'], [obj.id])[0]
         if obj_data['raw_data'] is False:
             raise error.RPCError(
                 u"There is no '{osv_name}' record with ID {obj_id}.".format(
