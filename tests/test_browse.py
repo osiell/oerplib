@@ -129,16 +129,15 @@ class TestBrowse(unittest.TestCase):
             pass
 
     def test_write_record_many2one(self):
-        backup_company = self.user.company_id
-        self.user.company_id = False
+        backup_action = self.user.action_id
+        self.user.action_id = False
+        self.assertEqual(self.user.action_id, False)
+        self.user.action_id = backup_action
         self.oerp.write_record(self.user)
-        self.assertEqual(self.user.company_id, False)
-        self.user.company_id = backup_company
+        self.assertEqual(self.user.action_id.id, backup_action.id)
+        self.user.action_id = backup_action.id
         self.oerp.write_record(self.user)
-        self.assertEqual(self.user.company_id.id, backup_company.id)
-        self.user.company_id = backup_company.id
-        self.oerp.write_record(self.user)
-        self.assertEqual(self.user.company_id.id, backup_company.id)
+        self.assertEqual(self.user.action_id.id, backup_action.id)
 
     def test_write_record_many2many(self):
         backup_groups = [grp for grp in self.user.groups_id]
