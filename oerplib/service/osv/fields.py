@@ -72,7 +72,7 @@ class BaseField(object):
                         size=self.size))
         if not value and self.required:
             raise ValueError(
-                u"'{field_name}' field require a value".format(
+                u"'{field_name}' field is required".format(
                     field_name=self.name))
         return value
 
