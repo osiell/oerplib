@@ -122,7 +122,7 @@ class OSV(collections.Mapping):
                 else:
                     vals[field_name] = field_value
         try:
-            res = self._oerp.write(obj.__osv__['name'], [obj.id], vals, context)
+            res = self.write([obj.id], vals, context)
         except error.Error as exc:
             raise exc
         else:
@@ -139,7 +139,7 @@ class OSV(collections.Mapping):
         """
         obj_data = obj.__data__
         # FIXME: use the context
-        obj_data['raw_data'] = self._oerp.read(obj.__osv__['name'], [obj.id])[0]
+        obj_data['raw_data'] = self.read([obj.id])[0]
         if obj_data['raw_data'] is False:
             raise error.RPCError(
                 u"There is no '{osv_name}' record with ID {obj_id}.".format(
@@ -164,7 +164,7 @@ class OSV(collections.Mapping):
 
     def _unlink_record(self, obj, context=None):
         """Delete the object from the OpenERP server."""
-        return self._oerp.unlink(obj.__osv__, [obj.id], context)
+        return self.unlink([obj.id], context)
 
     def __getattr__(self, method):
         def rpc_method(*args):
