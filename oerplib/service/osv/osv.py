@@ -182,9 +182,8 @@ class OSV(collections.Mapping):
         return self.browse(obj_id)
 
     def __iter__(self):
-        ids = self._oerp.search(self._browse_class.__osv__['name'])
-        for obj_id in ids:
-            yield self.browse(obj_id)
+        ids = self.search([])
+        return self._browse_generator(ids)
 
     def __len__(self):
         return self._oerp.search(self._browse_class.__osv__['name'], count=True)
