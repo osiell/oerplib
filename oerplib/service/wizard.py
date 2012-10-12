@@ -46,6 +46,7 @@ class Wizard(object):
         self._oerp = oerp
 
     def __getattr__(self, method):
+        """Provide a dynamic access to a RPC method."""
         def rpc_method(*args):
             """Return the result of the RPC request."""
             try:

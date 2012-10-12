@@ -181,6 +181,7 @@ class DB(object):
             raise error.RPCError(exc.message, exc.oerp_traceback)
 
     def __getattr__(self, method):
+        """Provide a dynamic access to a RPC method."""
         def rpc_method(*args):
             """Return the result of the RPC request."""
             try:

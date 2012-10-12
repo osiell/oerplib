@@ -167,6 +167,7 @@ class OSV(collections.Mapping):
         return self.unlink([obj.id], context)
 
     def __getattr__(self, method):
+        """Provide a dynamic access to a RPC method."""
         def rpc_method(*args):
             """Return the result of the RPC request."""
             result = self._oerp.execute(self._browse_class.__osv__['name'],
