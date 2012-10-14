@@ -117,7 +117,8 @@ class Many2ManyField(BaseField):
         """Return a generator to iterate on ``browse_record`` instances."""
         ids = getattr(instance, "_{0}".format(self.name))
         if ids:
-            return instance.__oerp__.browse(self.relation, ids)
+            return instance.__oerp__.browse(
+                self.relation, ids, instance.__data__['context'])
         return iter(())
 
     def __set__(self, instance, value):
@@ -145,7 +146,8 @@ class Many2OneField(BaseField):
         if getattr(instance, "_{0}".format(self.name)):
             return instance.__class__.__oerp__.browse(
                 self.relation,
-                getattr(instance, "_{0}".format(self.name))[0])
+                getattr(instance, "_{0}".format(self.name))[0],
+                instance.__data__['context'])
         return False
 
     def __set__(self, instance, value):
@@ -186,7 +188,8 @@ class One2ManyField(BaseField):
         """Return a generator to iterate on ``browse_record`` instances."""
         ids = getattr(instance, "_{0}".format(self.name))
         if ids:
-            return instance.__oerp__.browse(self.relation, ids)
+            return instance.__oerp__.browse(
+                self.relation, ids, instance.__data__['context'])
         return iter(())
 
     def __set__(self, instance, value):
@@ -220,7 +223,7 @@ class ReferenceField(BaseField):
             o_id = int(o_id.strip())
             if relation and o_id:
                 return instance.__class__.__oerp__.browse(
-                    relation, o_id)
+                    relation, o_id, instance.__data__['context'])
         return False
 
     def __set__(self, instance, value):

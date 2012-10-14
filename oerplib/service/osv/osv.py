@@ -138,10 +138,10 @@ class OSV(collections.Mapping):
 
         """
         obj_data = obj.__data__
+        obj_data['context'] = context
         # Fill fields with values of the record
         if obj.id:
-            # FIXME: use the context
-            obj_data['raw_data'] = self.read([obj.id])[0]
+            obj_data['raw_data'] = self.read([obj.id], None, context)[0]
             if obj_data['raw_data'] is False:
                 raise error.RPCError(
                     u"There is no '{osv_name}' record with ID {obj_id}.".format(
