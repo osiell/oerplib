@@ -138,12 +138,22 @@ class OSV(collections.Mapping):
 
         """
         obj_data = obj.__data__
-        # FIXME: use the context
-        obj_data['raw_data'] = self.read([obj.id])[0]
-        if obj_data['raw_data'] is False:
-            raise error.RPCError(
-                u"There is no '{osv_name}' record with ID {obj_id}.".format(
-                    osv_name=obj.__class__.__osv__['name'], obj_id=obj.id))
+        # Fill fields with values of the record
+        if obj.id:
+            # FIXME: use the context
+            obj_data['raw_data'] = self.read([obj.id])[0]
+            if obj_data['raw_data'] is False:
+                raise error.RPCError(
+                    u"There is no '{osv_name}' record with ID {obj_id}.".format(
+                        osv_name=obj.__class__.__osv__['name'], obj_id=obj.id))
+        # No ID: fields filled with default values
+        else:
+            default_get = self.default_get(
+                obj.__osv__['columns'].keys(), context)
+            obj_data['raw_data'] = {}
+            for field_name in obj.__osv__['columns'].keys():
+                obj_data['raw_data'][field_name] = False
+            obj_data['raw_data'].update(default_get)
         self._reset(obj)
 
     def _reset(self, obj):

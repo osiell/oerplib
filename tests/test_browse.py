@@ -40,6 +40,17 @@ class TestBrowse(unittest.TestCase):
             self.assertIsInstance(
                 result, oerplib.service.osv.browse.BrowseRecord)
 
+    def test_browse_with_id_false(self):
+        # Check the result returned
+        result = self.oerp.browse('res.users', False)
+        self.assertIsInstance(result, oerplib.service.osv.browse.BrowseRecord)
+        self.assertEqual(False, result.id)
+        # With context
+        context = self.oerp.execute('res.users', 'context_get')
+        result = self.oerp.browse('res.users', False, context)
+        self.assertIsInstance(result, oerplib.service.osv.browse.BrowseRecord)
+        self.assertEqual(False, result.id)
+
     def test_browse_without_args(self):
         # Handle exception (execute a 'browse' without args)
         self.assertRaises(
@@ -53,7 +64,7 @@ class TestBrowse(unittest.TestCase):
             oerplib.error.RPCError,
             self.oerp.browse,
             'res.users',
-            False)  # Wrong arg
+            "wrong_arg")  # Wrong arg
 
     def test_write_record_char(self):
         backup_name = self.user.name
