@@ -110,15 +110,16 @@ class Many2ManyField(BaseField):
     def __init__(self, osv, name, data):
         super(Many2ManyField, self).__init__(osv, name, data)
         self.relation = 'relation' in data and data['relation'] or False
-        self.context = 'context' in data and data['context'] or False
+        self.context = 'context' in data and data['context'] or {}
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
         """Return a generator to iterate on ``browse_record`` instances."""
         ids = getattr(instance, "_{0}".format(self.name))
         if ids:
-            return instance.__oerp__.browse(
-                self.relation, ids, instance.__data__['context'])
+            context = instance.__data__['context'].copy()
+            context.update(self.context)
+            return instance.__oerp__.browse(self.relation, ids, context)
         return iter(())
 
     def __set__(self, instance, value):
@@ -139,15 +140,17 @@ class Many2OneField(BaseField):
     def __init__(self, osv, name, data):
         super(Many2OneField, self).__init__(osv, name, data)
         self.relation = 'relation' in data and data['relation'] or False
-        self.context = 'context' in data and data['context'] or False
+        self.context = 'context' in data and data['context'] or {}
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
         if getattr(instance, "_{0}".format(self.name)):
+            context = instance.__data__['context'].copy()
+            context.update(self.context)
             return instance.__class__.__oerp__.browse(
                 self.relation,
                 getattr(instance, "_{0}".format(self.name))[0],
-                instance.__data__['context'])
+                context)
         return False
 
     def __set__(self, instance, value):
@@ -181,15 +184,16 @@ class One2ManyField(BaseField):
     def __init__(self, osv, name, data):
         super(One2ManyField, self).__init__(osv, name, data)
         self.relation = 'relation' in data and data['relation'] or False
-        self.context = 'context' in data and data['context'] or False
+        self.context = 'context' in data and data['context'] or {}
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
         """Return a generator to iterate on ``browse_record`` instances."""
         ids = getattr(instance, "_{0}".format(self.name))
         if ids:
-            return instance.__oerp__.browse(
-                self.relation, ids, instance.__data__['context'])
+            context = instance.__data__['context'].copy()
+            context.update(self.context)
+            return instance.__oerp__.browse(self.relation, ids, context)
         return iter(())
 
     def __set__(self, instance, value):
@@ -211,7 +215,7 @@ class ReferenceField(BaseField):
     """
     def __init__(self, osv, name, data):
         super(ReferenceField, self).__init__(osv, name, data)
-        self.context = 'context' in data and data['context'] or False
+        self.context = 'context' in data and data['context'] or {}
         self.domain = 'domain' in data and data['domain'] or False
         self.selection = 'selection' in data and data['selection'] or False
 
@@ -222,8 +226,10 @@ class ReferenceField(BaseField):
             relation = relation.strip()
             o_id = int(o_id.strip())
             if relation and o_id:
+                context = instance.__data__['context'].copy()
+                context.update(self.context)
                 return instance.__class__.__oerp__.browse(
-                    relation, o_id, instance.__data__['context'])
+                    relation, o_id, context)
         return False
 
     def __set__(self, instance, value):
