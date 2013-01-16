@@ -187,7 +187,7 @@ class OERP(object):
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
 
-    def execute_kw(self, osv_name, method, args, kwargs):
+    def execute_kw(self, osv_name, method, args=None, kwargs=None):
         """Execute a simple `XML-RPC` `method` on the OSV server class
         `osv_name`. `args` is a list of parameters (in the right order),
         and `kwargs` a dictionary (named parameters). Both varies according
@@ -202,6 +202,8 @@ class OERP(object):
         """
         self._check_logged_user()
         # Execute the query
+        args = args or []
+        kwargs = kwargs or {}
         try:
             return self._connector.object.execute_kw(
                 self._database, self._user.id,
