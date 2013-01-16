@@ -54,17 +54,18 @@ is :func:`execute <oerplib.OERP.execute>`.
 It takes at least two parameters (OSV model name and the method name)
 following by variable parameters according to the method called. Example::
 
-    >>> order_data = oerp.execute('sale.order', 'read', 1)
+    >>> order_data = oerp.execute('sale.order', 'read', [1], ['name'])
 
 This instruction will call the ``read`` method of the OSV model ``sale.order``
-with the parameter ``1`` (the record ID asked by ``read``).
+with the parameters ``[1]`` (list of record IDs) and ``['name']`` (list of
+fields to return).
 
 However, for usual methods such as ``create``, ``read``, ``write``, ``unlink``
 and ``search`` there are convenient shortcuts available (see
 :class:`oerplib.OERP`)::
 
     >>> partner_id = oerp.create('res.partner', {'name': 'Jacky Bob', 'lang': 'fr_FR'})
-    >>> partner_data = oerp.read('res.partner', partner_id)
+    >>> partner_data = oerp.read('res.partner', [partner_id], ['name'])
     >>> oerp.write('res.partner', [partner_id], {'name': 'Charly Bob'})
     True
     >>> partner_ids = oerp.search('res.partner', [('name', 'ilike', 'Bob')])

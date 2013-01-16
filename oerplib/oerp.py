@@ -179,7 +179,7 @@ class OERP(object):
         and `kwargs` a dictionary (named parameters). Both varies according
         to the `method` used.
 
-        >>> oerp.execute_kw('res.partner', 'read', [1, 2], fields=['name'])
+        >>> oerp.execute_kw('res.partner', 'read', [[1, 2]], {'fields': ['name']})
         [{'name': u'ASUStek', 'id': 2}, {'name': u'Your Company', 'id': 1}]
 
         :return: the result returned by the `method` called
