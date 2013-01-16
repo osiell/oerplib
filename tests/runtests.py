@@ -11,6 +11,7 @@ from test_db_create import TestDBCreate
 from test_db import TestDB
 from test_db_drop import TestDBDrop
 from test_execute import TestExecute
+from test_execute_kw import TestExecuteKw
 from test_browse import TestBrowse
 from test_osv import TestOSV
 from test_timeout import TestTimeout
@@ -43,8 +44,10 @@ if __name__ == '__main__':
     loader = unittest.TestLoader().loadTestsFromTestCase(TestDB)
     suite.addTest(loader)
 
-    # Test OERP.execute
+    # Test OERP.execute and OERP.execute_kw
     loader = unittest.TestLoader().loadTestsFromTestCase(TestExecute)
+    suite.addTest(loader)
+    loader = unittest.TestLoader().loadTestsFromTestCase(TestExecuteKw)
     suite.addTest(loader)
 
     # Test OERP.browse
@@ -81,5 +84,8 @@ if __name__ == '__main__':
         ARGS.protocol = 'netrpc'
         ARGS.port = ARGS.netrpc_port
         unittest.TextTestRunner(verbosity=ARGS.verbosity).run(suite)
+    else:
+        print("-- NO TEST --")
+        print("Please use '--test_xmlrpc' and/or '--test_netrpc' option.")
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

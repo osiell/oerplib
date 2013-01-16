@@ -28,7 +28,8 @@ class TestDB(unittest.TestCase):
 
     def test_db_restore_new_database(self):
         dump = self.oerp.db.dump(ARGS.super_admin_passwd, ARGS.database)
-        new_database = "%s_%s" % (ARGS.database, datetime.today())
+        date = datetime.strftime(datetime.today(), '%Y-%m-%d_%Hh%Mm%S')
+        new_database = "%s_%s" % (ARGS.database, date)
         self.oerp.db.restore(ARGS.super_admin_passwd, new_database, dump)
 
     def test_db_restore_existing_database(self):
