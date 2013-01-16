@@ -173,6 +173,29 @@ class OERP(object):
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
 
+    def execute_kw(self, osv_name, method, args, kwargs):
+        """Execute a simple `XML-RPC` `method` on the OSV server class
+        `osv_name`. `args` is a list of parameters (in the right order),
+        and `kwargs` a dictionary (named parameters). Both varies according
+        to the `method` used.
+
+        >>> oerp.execute_kw('res.partner', 'read', [1, 2], fields=['name'])
+        [{'name': u'ASUStek', 'id': 2}, {'name': u'Your Company', 'id': 1}]
+
+        :return: the result returned by the `method` called
+        :raise: :class:`oerplib.error.RPCError`
+
+        """
+        self._check_logged_user()
+        # Execute the query
+        try:
+            return self._connector.object.execute_kw(
+                self._database, self._user.id,
+                self._user.password,
+                osv_name, method, args, kwargs)
+        except rpc.error.ConnectorError as exc:
+            raise error.RPCError(exc.message, exc.oerp_traceback)
+
     def exec_workflow(self, osv_name, signal, obj_id):
         """`XML-RPC` Workflow query. Execute the workflow signal ``signal`` on
         the instance having the ID ``obj_id`` of OSV server class ``osv_name``.

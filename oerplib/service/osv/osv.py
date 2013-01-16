@@ -179,10 +179,10 @@ class OSV(collections.Mapping):
 
     def __getattr__(self, method):
         """Provide a dynamic access to a RPC method."""
-        def rpc_method(*args):
+        def rpc_method(*args, **kwargs):
             """Return the result of the RPC request."""
-            result = self._oerp.execute(self._browse_class.__osv__['name'],
-                                        method, *args)
+            result = self._oerp.execute_kw(
+                self._browse_class.__osv__['name'], method, args, kwargs)
             return result
         return rpc_method
 
