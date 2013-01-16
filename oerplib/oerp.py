@@ -61,6 +61,19 @@ class OERP(object):
         """
         return self._user
 
+    @property
+    def context(self):
+        """The context of the user connected.
+
+        >>> oerp.login('admin', 'admin')
+        browse_record('res.users', 1)
+        >>> oerp.context
+        {'lang': 'fr_FR', 'tz': False}
+        >>> oerp.context['lang'] = 'en_US'
+
+        """
+        return self._context
+
     server = property(lambda self: self._server,
                       doc="The server name.")
     port = property(lambda self: self._port,
@@ -143,6 +156,7 @@ class OERP(object):
                 self._user.login = user
                 self._user.password = passwd
                 self._user = self.browse('res.users', user_id)
+                self._context = self.execute('res.users', 'context_get')
                 return self._user
             else:
                 #FIXME: Raise an error?
