@@ -142,7 +142,7 @@ class OSV(collections.Mapping):
         obj_data['context'] = context
         # Fill fields with values of the record
         if obj.id:
-            obj_data['raw_data'] = self.read([obj.id], None, context)[0]
+            obj_data['raw_data'] = self.read([obj.id], None, context=context)[0]
             if obj_data['raw_data'] is False:
                 raise error.RPCError(
                     u"There is no '{osv_name}' record with ID {obj_id}.".format(
@@ -150,7 +150,7 @@ class OSV(collections.Mapping):
         # No ID: fields filled with default values
         else:
             default_get = self.default_get(
-                obj.__osv__['columns'].keys(), context)
+                obj.__osv__['columns'].keys(), context=context)
             obj_data['raw_data'] = {}
             for field_name in obj.__osv__['columns'].keys():
                 obj_data['raw_data'][field_name] = False
@@ -175,12 +175,14 @@ class OSV(collections.Mapping):
 
     def _unlink_record(self, obj, context=None):
         """Delete the object from the OpenERP server."""
-        return self.unlink([obj.id], context)
+        return self.unlink([obj.id], context=context)
 
     def __getattr__(self, method):
         """Provide a dynamic access to a RPC method."""
         def rpc_method(*args, **kwargs):
             """Return the result of the RPC request."""
+            if self._oerp.config['auto_context'] and 'context' not in kwargs:
+                kwargs['context'] = self._oerp.context
             result = self._oerp.execute_kw(
                 self._browse_class.__osv__['name'], method, args, kwargs)
             return result

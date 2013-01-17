@@ -17,7 +17,7 @@ class TestTimeout(unittest.TestCase):
 
     def test_reduced_timeout(self):
         # Set the timeout
-        self.oerp.timeout = 0.1
+        self.oerp.config['timeout'] = 0.1
         # Execute a time consuming query: handle exception
         ids = self.oerp.search('ir.module.module', [])
         self.assertRaises(
@@ -26,7 +26,7 @@ class TestTimeout(unittest.TestCase):
 
     def test_increased_timeout(self):
         # Set the timeout
-        self.oerp.timeout = 120
+        self.oerp.config['timeout'] = 120
         # Execute a time consuming query: no exception
         ids = self.oerp.search('ir.module.module', [])
         self.oerp.write('ir.module.module', ids, {})

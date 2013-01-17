@@ -9,6 +9,7 @@ import zlib
 import tempfile
 import time
 
+from oerplib import config
 from oerplib import rpc
 from oerplib import error
 from oerplib.service import common, db, wizard, osv
@@ -49,6 +50,38 @@ class OERP(object):
                                                 self._protocol, timeout)
         except rpc.error.ConnectorError as exc:
             raise error.InternalError(exc.message)
+        # Dictionary of configuration options
+        self._config = config.Config(
+            self, {'auto_context': True, 'timeout': timeout})
+
+    @property
+    def config(self):
+        """Dictionary of available configuration options.
+
+        >>> oerp.config
+        {'auto_context': True, 'timeout': 120}
+
+        - ``auto_context``: if set to ``True``, the user context will be sent
+          to every call of an `OSV` method (default: ``True``):
+
+            .. versionadded:: 0.7.0
+
+            >>> product_osv = oerp.get('product.product')
+            >>> product_osv.name_get([3]) # Context sent by default ('lang': 'fr_FR' here)
+            [[3, '[PC1] PC Basic']]
+            >>> oerp.config['auto_context'] = False
+            >>> product_osv.name_get([3]) # No context sent
+            [[3, '[PC1] Basic PC']]
+
+        - ``timeout``: set the maximum timeout in seconds for a RPC request
+          (default: ``120``):
+
+            .. versionadded:: 0.6.0
+
+            >>> oerp.config['timeout'] = 300
+
+        """
+        return self._config
 
     # Readonly properties
     @property
@@ -104,13 +137,15 @@ class OERP(object):
     def timeout(self):
         """.. versionadded:: 0.6.0
 
+        .. deprecated:: 0.7.0 will be deleted in the next version
+
         Set the maximum timeout for a RPC request.
         """
-        return self._connector.timeout
+        return self.config['timeout']
 
     @timeout.setter
     def timeout(self, timeout):
-        self._connector.timeout = timeout
+        self.config['timeout'] = timeout
 
     #NOTE: in the past this function was implemented as a decorator for other
     # methods needed to be checked, but Sphinx documentation generator is not
@@ -155,8 +190,8 @@ class OERP(object):
                 self._user.id = user_id
                 self._user.login = user
                 self._user.password = passwd
-                self._user = self.browse('res.users', user_id)
                 self._context = self.execute('res.users', 'context_get')
+                self._user = self.browse('res.users', user_id)
                 return self._user
             else:
                 #FIXME: Raise an error?

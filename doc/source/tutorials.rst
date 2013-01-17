@@ -84,10 +84,14 @@ almost syntactically identical to the `OpenERP` server side API
     >>> context
     {'lang': 'fr_FR', 'tz': False}
     >>> product_osv = oerp.get('product.product')
-    >>> product_osv.name_get([3, 4]) # Without context, lang 'en_US' by default
-    [[3, '[PC1] Basic PC'], [4, '[PC2] Basic+ PC (assembly on order)']]
-    >>> product_osv.name_get([3, 4], context) # With a 'fr_FR' context lang
+    >>> product_osv.name_get([3, 4])    # User context is automatically sent (lang 'fr_FR' here)
     [[3, '[PC1] PC Basic'], [4, u'[PC2] Basic+ PC (assembl\xe9 sur commande)']]
+
+You can choose to not automatically send the user context::
+
+    >>> oerp.config['auto_context'] = False
+    >>> product_osv.name_get([3, 4])    # Without context, lang 'en_US' by default
+    [[3, '[PC1] Basic PC'], [4, '[PC2] Basic+ PC (assembly on order)']]
 
 Here is another example of how to install a module (you have to be logged
 as an administrator to perform this task). The ``button_immediate_install``
