@@ -122,7 +122,7 @@ class OSV(collections.Mapping):
                 else:
                     vals[field_name] = field_value
         try:
-            res = self.write([obj.id], vals, context)
+            res = self.write([obj.id], vals, context=context)
         except error.Error as exc:
             raise exc
         else:
