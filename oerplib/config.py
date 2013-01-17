@@ -32,4 +32,10 @@ class Config(collections.MutableMapping):
     def __len__(self):
         return len(self._options)
 
+    def __str__(self):
+        return self._options.__str__()
+
+    def __repr__(self):
+        return self._options.__repr__()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
