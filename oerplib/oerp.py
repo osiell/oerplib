@@ -62,7 +62,7 @@ class OERP(object):
         {'auto_context': True, 'timeout': 120}
 
         - ``auto_context``: if set to ``True``, the user context will be sent
-          to every call of an `OSV` method (default: ``True``):
+          automatically to every call of an `OSV` method (default: ``True``):
 
             .. versionadded:: 0.7.0
 
@@ -137,7 +137,8 @@ class OERP(object):
     def timeout(self):
         """.. versionadded:: 0.6.0
 
-        .. deprecated:: 0.7.0 will be deleted in the next version
+        .. deprecated:: 0.7.0 will be deleted in the next version. Use the
+            :attr:`OERP.config <oerplib.OERP.config>` property instead
 
         Set the maximum timeout for a RPC request.
         """
