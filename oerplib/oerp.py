@@ -22,19 +22,25 @@ class OERP(object):
     If no `database` is set, the `database` parameter of the
     :func:`login <oerplib.OERP.login>` method will be mandatory.
 
-    `XML-RPC` (by default, with the port 8069) and `Net-RPC` protocols
-    are supported. Respective values for the `protocol` parameter are
-    ``xmlrpc``, ``xmlrpc+ssl`` and ``netrpc``.
+    `XML-RPC` and `Net-RPC` protocols are supported. Respective values for the
+    `protocol` parameter are ``xmlrpc``, ``xmlrpc+ssl`` and ``netrpc``.
 
         >>> import oerplib
-        >>> oerp = oerplib.OERP('localhost', protocol='netrpc', port=8070)
+        >>> oerp = oerplib.OERP('localhost', protocol='xmlrpc', port=8069)
+
+    By default, the :class:`OERP` instance is not compatible with versions of
+    `OpenERP` inferior to `6.1`.
+    If you run an older version of `OpenERP`, just set the `compatible`
+    parameter to `True`::
+
+        >>> oerp = oerplib.OERP('localhost', protocol='xmlrpc', port=8069, compatible=True)
 
     :raise: :class:`oerplib.error.InternalError`
 
     """
 
     def __init__(self, server='localhost', database=None, protocol='xmlrpc',
-                 port=8069, timeout=120):
+                 port=8069, timeout=120, compatible=False):
         self._server = server
         self._port = port
         self._protocol = protocol
@@ -52,19 +58,35 @@ class OERP(object):
             raise error.InternalError(exc.message)
         # Dictionary of configuration options
         self._config = config.Config(
-            self, {'auto_context': True, 'timeout': timeout})
+            self,
+            {'compatible': compatible,
+             'auto_context': True,
+             'timeout': timeout})
 
     @property
     def config(self):
         """Dictionary of available configuration options.
 
         >>> oerp.config
-        {'auto_context': True, 'timeout': 120}
+        {'compatible': False, 'auto_context': True, 'timeout': 120}
+
+        - ``compatible``: if set to ``True``, the :class:`OERP <oerplib.OERP>`
+          instance will perform RPC requests in compatibility mode in order to
+          work on `OpenERP` versions inferior to `6.1` (default: ``False``):
+
+            .. versionadded:: 0.7.0
+
+            >>> oerp.config['compatible'] = True
 
         - ``auto_context``: if set to ``True``, the user context will be sent
           automatically to every call of an `OSV` method (default: ``True``):
 
             .. versionadded:: 0.7.0
+
+            .. note::
+
+                This option only works on `OpenERP` version `6.1` and above,
+                and only when the `compatible` option is set to `False`.
 
             >>> product_osv = oerp.get('product.product')
             >>> product_osv.name_get([3]) # Context sent by default ('lang': 'fr_FR' here)
@@ -232,6 +254,10 @@ class OERP(object):
         >>> oerp.execute_kw('res.partner', 'read', [[1, 2]], {'fields': ['name']})
         [{'name': u'ASUStek', 'id': 2}, {'name': u'Your Company', 'id': 1}]
 
+        .. warning::
+
+            This method only works on `OpenERP` version `6.1` and above.
+
         :return: the result returned by the `method` called
         :raise: :class:`oerplib.error.RPCError`
 
@@ -283,7 +309,8 @@ class OERP(object):
 
         self._check_logged_user()
         # If no context was supplied, get the default one
-        context = context or self.execute('res.users', 'context_get')
+        if context is None:
+            context = self.context
         # Execute the report query
         try:
             pdf_data = self._get_report_data(report_name, osv_name, obj_id,
@@ -295,8 +322,7 @@ class OERP(object):
     def _get_report_data(self, report_name, osv_name, obj_id,
                          report_type='pdf', context=None):
         """Download binary data of a report from the `OpenERP` server."""
-        if context is None:
-            context = {}
+        context = context or {}
         data = {'model': osv_name, 'id': obj_id, 'report_type': report_type}
         try:
             report_id = self._connector.report.report(

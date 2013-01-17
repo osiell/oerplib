@@ -122,7 +122,10 @@ class OSV(collections.Mapping):
                 else:
                     vals[field_name] = field_value
         try:
-            res = self.write([obj.id], vals, context=context)
+            if self._oerp.config['compatible']:
+                res = self.write([obj.id], vals, context)
+            else:
+                res = self.write([obj.id], vals, context=context)
         except error.Error as exc:
             raise exc
         else:
@@ -142,15 +145,23 @@ class OSV(collections.Mapping):
         obj_data['context'] = context
         # Fill fields with values of the record
         if obj.id:
-            obj_data['raw_data'] = self.read([obj.id], None, context=context)[0]
+            if self._oerp.config['compatible']:
+                obj_data['raw_data'] = self.read([obj.id], None, context)[0]
+            else:
+                obj_data['raw_data'] = self.read(
+                    [obj.id], None, context=context)[0]
             if obj_data['raw_data'] is False:
                 raise error.RPCError(
                     u"There is no '{osv_name}' record with ID {obj_id}.".format(
                         osv_name=obj.__class__.__osv__['name'], obj_id=obj.id))
         # No ID: fields filled with default values
         else:
-            default_get = self.default_get(
-                obj.__osv__['columns'].keys(), context=context)
+            if self._oerp.config['compatible']:
+                default_get = self.default_get(
+                    obj.__osv__['columns'].keys(), context)
+            else:
+                default_get = self.default_get(
+                    obj.__osv__['columns'].keys(), context=context)
             obj_data['raw_data'] = {}
             for field_name in obj.__osv__['columns'].keys():
                 obj_data['raw_data'][field_name] = False
@@ -175,16 +186,28 @@ class OSV(collections.Mapping):
 
     def _unlink_record(self, obj, context=None):
         """Delete the object from the OpenERP server."""
-        return self.unlink([obj.id], context=context)
+        if self._oerp.config['compatible']:
+            return self.unlink([obj.id], context)
+        else:
+            return self.unlink([obj.id], context=context)
 
     def __getattr__(self, method):
         """Provide a dynamic access to a RPC method."""
         def rpc_method(*args, **kwargs):
             """Return the result of the RPC request."""
-            if self._oerp.config['auto_context'] and 'context' not in kwargs:
-                kwargs['context'] = self._oerp.context
-            result = self._oerp.execute_kw(
-                self._browse_class.__osv__['name'], method, args, kwargs)
+            if self._oerp.config['compatible']:
+                if kwargs:
+                    raise error.RPCError(
+                        u"Named parameters are not supported in "
+                        u"compatibility mode")
+                result = self._oerp.execute(
+                    self._browse_class.__osv__['name'], method, *args)
+            else:
+                if self._oerp.config['auto_context'] \
+                        and 'context' not in kwargs:
+                    kwargs['context'] = self._oerp.context
+                result = self._oerp.execute_kw(
+                    self._browse_class.__osv__['name'], method, args, kwargs)
             return result
         return rpc_method
 

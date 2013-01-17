@@ -93,6 +93,10 @@ You can choose to not automatically send the user context::
     >>> product_osv.name_get([3, 4])    # Without context, lang 'en_US' by default
     [[3, '[PC1] Basic PC'], [4, '[PC2] Basic+ PC (assembly on order)']]
 
+.. note::
+
+    The ``auto_context`` only affect `OSV` methods.
+
 Here is another example of how to install a module (you have to be logged
 as an administrator to perform this task). The ``button_immediate_install``
 method used here is available since `OpenERP v6.1`::
