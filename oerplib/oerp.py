@@ -52,8 +52,8 @@ class OERP(object):
         self._wizard = wizard.Wizard(self)
         # Instanciate the OpenERP server connector
         try:
-            self._connector = rpc.get_connector(self._server, self._port,
-                                                self._protocol, timeout)
+            self._connector = rpc.get_connector(
+                self._server, self._port, self._protocol, timeout, compatible)
         except rpc.error.ConnectorError as exc:
             raise error.InternalError(exc.message)
         # Dictionary of configuration options

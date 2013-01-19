@@ -12,7 +12,7 @@ class Connector(object):
     """
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, server, port, timeout):
+    def __init__(self, server, port, timeout, compatible):
         self.server = server
         try:
             int(port)
@@ -23,14 +23,22 @@ class Connector(object):
         else:
             self.port = port
         self.timeout = timeout
+        self.compatible = compatible
 
 
 class ConnectorXMLRPC(Connector):
     """Connector class using XMLRPC protocol."""
-    def __init__(self, server, port, timeout):
-        super(ConnectorXMLRPC, self).__init__(server, port, timeout)
-        self._url = 'http://{server}:{port}/xmlrpc'.format(server=self.server,
-                                                           port=self.port)
+    def __init__(self, server, port, timeout, compatible):
+        super(ConnectorXMLRPC, self).__init__(
+            server, port, timeout, compatible)
+        # OpenERP < 6.1
+        if self.compatible:
+            self._url = 'http://{server}:{port}/xmlrpc'.format(
+                server=self.server, port=self.port)
+        # OpenERP >= 6.1
+        else:
+            self._url = 'http://{server}:{port}/openerp/xmlrpc/1'.format(
+                server=self.server, port=self.port)
 
     def __getattr__(self, service_name):
         url = self._url + '/' + service_name
@@ -39,24 +47,19 @@ class ConnectorXMLRPC(Connector):
         return srv
 
 
-class ConnectorXMLRPCSSL(Connector):
+class ConnectorXMLRPCSSL(ConnectorXMLRPC):
     """Connector class using XMLRPC protocol over SSL."""
-    def __init__(self, server, port, timeout):
-        super(ConnectorXMLRPCSSL, self).__init__(server, port, timeout)
-        self._url = 'https://{server}:{port}/xmlrpc'.format(server=self.server,
-                                                            port=self.port)
-
-    def __getattr__(self, service_name):
-        url = self._url + '/' + service_name
-        srv = service.ServiceXMLRPC(self, service_name, url)
-        setattr(self, service_name, srv)
-        return srv
+    def __init__(self, server, port, timeout, compatible):
+        super(ConnectorXMLRPCSSL, self).__init__(
+            server, port, timeout, compatible)
+        self._url = self._url.replace('http', 'https')
 
 
 class ConnectorNetRPC(Connector):
     """Connector class using NetRPC protocol."""
-    def __init__(self, server, port, timeout):
-        super(ConnectorNetRPC, self).__init__(server, port, timeout)
+    def __init__(self, server, port, timeout, compatible):
+        super(ConnectorNetRPC, self).__init__(
+            server, port, timeout, compatible)
 
     def __getattr__(self, service_name):
         srv = service.ServiceNetRPC(
