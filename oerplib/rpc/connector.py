@@ -18,7 +18,7 @@ class Connector(object):
             int(port)
         except ValueError:
             txt = "The port '{0}' is invalid. An integer is required."
-            txt = error.format(port)
+            txt = txt.format(port)
             raise error.ConnectorError(txt)
         else:
             self.port = port
