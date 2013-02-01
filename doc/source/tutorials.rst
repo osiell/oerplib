@@ -75,7 +75,7 @@ and ``search`` there are convenient shortcuts available (see
 There is another way to perform all methods of an OSV class, with the
 :func:`get <oerplib.OERP.get>` method, which provide an API
 almost syntactically identical to the `OpenERP` server side API
-(see :class:`oerplib.service.osv.osv.OSV`)::
+(see :class:`oerplib.service.osv.OSV`)::
 
     >>> user_osv = oerp.get('res.users')
     >>> user_osv.write([1], {'name': "Dupont D."})
@@ -128,7 +128,7 @@ records are generated on the fly::
     for addr in partner.address:
         print(addr.name)
 
-You can browse objects through an :class:`OSV <oerplib.service.osv.osv.OSV>`
+You can browse objects through an :class:`OSV <oerplib.service.osv.OSV>`
 class too. In fact, both methods are strictly identical,
 :func:`oerplib.OERP.browse` is simply a shortcut to the other::
 
