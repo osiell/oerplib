@@ -14,7 +14,7 @@
 /* -- page layout ----------------------------------------------------------- */
 
 div.related {
-    background-color: #920000;      /*BACKUP: #6BA81E;*/
+    background-color: #8684BE;      /*BACKUP: #6BA81E;*/
 }
 
 div.related a {
@@ -24,15 +24,12 @@ div.related a {
 /* -- body styles ----------------------------------------------------------- */
 
 a {
-    color: #920000;                 /*BACKUP: #005B81;*/
+    color: #49487A;                 /*BACKUP: #005B81;*/
 }
-
-/*
 a:hover {
-    color: #E32E00;
+    color: #272658;                 /*BACKUP: #E32E00;*/
     text-decoration: underline;
 }
-*/
 
 div.body h1,
 div.body h2,
@@ -54,11 +51,11 @@ div.body h5 { font-size: 100%; background-color: #8C8C8C; /*BACKUP: #D8DEE3;*/ }
 div.body h6 { font-size: 100%; background-color: #8C8C8C; /*BACKUP: #D8DEE3;*/ }
 
 a.headerlink {
-    color: #B40000; /*BACKUP: #c60f0f;*/
+    color: white; /*BACKUP: #c60f0f;*/
 }
 
 a.headerlink:hover {
-    background-color: #B40000; /*BACKUP: #c60f0f;*/
+    background-color: #7C7BAD; /*BACKUP: #c60f0f;*/
     color: white;
 }
 
