@@ -40,7 +40,8 @@ class OSV(collections.Mapping):
     def __init__(self, oerp, osv_name):
         super(OSV, self).__init__()
         self._oerp = oerp
-        self._browse_class = self._generate_browse_class(osv_name)
+        self._name = osv_name
+        self._browse_class = self._generate_browse_class()
 
     def _browse_generator(self, ids, context=None):
         """Generator used by the
@@ -77,14 +78,14 @@ class OSV(collections.Mapping):
             return obj
             #return self.browse(ids, context)
 
-    def _generate_browse_class(self, osv_name):
+    def _generate_browse_class(self):
         """Generate a class with all its fields corresponding to
         the OSV name supplied and return them.
 
         """
         # Retrieve server fields info and generate corresponding local fields
-        fields_get = self._oerp.execute(osv_name, 'fields_get')
-        cls_name = osv_name.replace('.', '_')
+        fields_get = self._oerp.execute(self._name, 'fields_get')
+        cls_name = self._name.replace('.', '_')
         if type(cls_name) == unicode:
             cls_name = cls_name.encode('utf-8')
         cls_fields = {}
@@ -101,7 +102,7 @@ class OSV(collections.Mapping):
 
         cls = type(cls_name, (browse.BrowseRecord,), {})
         cls.__oerp__ = self._oerp
-        cls.__osv__ = {'name': osv_name, 'columns': cls_fields}
+        cls.__osv__ = {'name': self._name, 'columns': cls_fields}
         slots = ['__oerp__', '__osv__', '__dict__', '__data__']
         slots.extend(cls_fields.keys())
         cls.__slots__ = slots
