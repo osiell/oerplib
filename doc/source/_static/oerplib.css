@@ -12,6 +12,10 @@
 @import url("nature.css");
 
 /* -- page layout ----------------------------------------------------------- */
+
+p.logo {
+    text-align: center;
+}
  
 div.body {
     background-color: #ffffff;      /*BACKUP: #ffffff;*/
@@ -86,7 +90,7 @@ a.headerlink:hover {
 
 pre {
     padding: 10px;
-    background-color: #EEEEEE;
+    background-color: #EDEDF6;
     color: #222;
     line-height: 1.2em;
     border: 1px solid #C6C9CB;
