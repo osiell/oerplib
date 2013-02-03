@@ -47,7 +47,6 @@ class OERP(object):
         self._port = port
         self._protocol = protocol
         self._database = self._database_default = database
-        self._pool = osv.Pool(self)
         self._user = None
         self._common = common.Common(self)
         self._db = db.DB(self)
@@ -465,8 +464,6 @@ class OERP(object):
         #    ids = []
         if vals is None:
             vals = {}
-        #if isinstance(osv_obj, osv.BrowseRecord):
-        #    return self._pool.get_by_class(osv_obj.__class__).write(osv_obj)
         return self.execute(osv_name, 'write', ids, vals, context)
 
     def unlink(self, osv_name, ids, context=None):
@@ -482,8 +479,6 @@ class OERP(object):
         """
         #if ids is None:
         #    ids = []
-        #if isinstance(osv_obj, osv.BrowseRecord):
-        #    return self._pool.get(osv_obj.__osv__['name']).unlink(osv_obj)
         return self.execute(osv_name, 'unlink', ids, context)
 
     # ---------------------- #
@@ -499,7 +494,7 @@ class OERP(object):
         """
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
-        return self._pool.get_by_class(browse_record.__class__)._write_record(
+        return osv.OSV(self, browse_record.__osv__['name'])._write_record(
             browse_record, context)
 
     def unlink_record(self, browse_record, context=None):
@@ -510,7 +505,7 @@ class OERP(object):
         """
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
-        return self._pool.get_by_class(browse_record.__class__)._unlink_record(
+        return osv.OSV(self, browse_record.__osv__['name'])._unlink_record(
             browse_record, context)
 
     def refresh(self, browse_record, context=None):
@@ -521,7 +516,7 @@ class OERP(object):
         :raise: :class:`oerplib.error.RPCError`
 
         """
-        return self._pool.get_by_class(browse_record.__class__)._refresh(
+        return osv.OSV(self, browse_record.__osv__['name'])._refresh(
             browse_record, context)
 
     def reset(self, browse_record):
@@ -530,7 +525,7 @@ class OERP(object):
         Therefore, values restored may be outdated.
 
         """
-        return self._pool.get_by_class(browse_record.__class__)._reset(
+        return osv.OSV(self, browse_record.__osv__['name'])._reset(
             browse_record)
 
     @staticmethod
@@ -555,6 +550,6 @@ class OERP(object):
         server. See <TODO>.
 
         """
-        return self._pool.get(osv_name)
+        return osv.OSV(self, osv_name)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
