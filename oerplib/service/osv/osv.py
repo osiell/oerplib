@@ -211,6 +211,9 @@ class OSV(collections.Mapping):
             return result
         return rpc_method
 
+    def __repr__(self):
+        return "Model(%r)" % (self._browse_class.__osv__['name'])
+
     # ---------------------------- #
     # -- MutableMapping methods -- #
     # ---------------------------- #
