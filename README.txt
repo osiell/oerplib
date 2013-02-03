@@ -7,10 +7,12 @@ OERPLib
 way to remotely pilot an `OpenERP` server.
 
 Features supported:
-    - XML-RPC and Net-RPC protocols
-    - access to all methods proposed by an OSV class (even ``browse``) with an
-      API similar to that can be found in OpenERP server,
+    - `XML-RPC` and `Net-RPC` protocols,
+    - access to all methods proposed by an `OSV` class (even ``browse``) with an
+      API similar to that can be found in `OpenERP` server,
     - browse records,
+    - ability to use named parameters with `OSV` methods (`OpenERP` >= `6.1`),
+    - user contact automatically sent with `OSV` methods (`OpenERP` >= `6.1`)
     - execute workflows,
     - manage databases,
     - manage old-style wizards,
@@ -32,7 +34,7 @@ How does it work? See below::
     print(user.company_id.name) # the name of its company
 
     # Simple 'raw' query
-    user_data = oerp.execute('res.users', 'read', user.id)
+    user_data = oerp.execute('res.users', 'read', [user.id])
     print(user_data)
 
     # Use all methods of an OSV class
@@ -52,7 +54,8 @@ See the documentation for more details.
 Supported OpenERP versions
 --------------------------
 
-`OERPLib` is known to work with `OpenERP` server v5 and v6.
+`OERPLib` is known to work with `OpenERP` server v5.0, v6.0, v6.1 and v7.0
+(and above?).
 
 Supported Python versions
 -------------------------

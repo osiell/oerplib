@@ -28,12 +28,14 @@ class OERP(object):
         >>> import oerplib
         >>> oerp = oerplib.OERP('localhost', protocol='xmlrpc', port=8069)
 
-    By default, the :class:`OERP` instance is not compatible with versions of
+    By default (since the version `0.7.0`), the :class:`OERP` instance is not compatible with versions of
     `OpenERP` inferior to `6.1`.
     If you run an older version of `OpenERP`, just set the `compatible`
     parameter to `True`::
 
         >>> oerp = oerplib.OERP('localhost', protocol='xmlrpc', port=8069, compatible=True)
+
+    See :attr:`oerplib.OERP.config` property for more details.
 
     :raise: :class:`oerplib.error.InternalError`
 
@@ -78,6 +80,10 @@ class OERP(object):
 
             >>> oerp.config['compatible'] = True
 
+            The compatible mode turns off the ability to use named parameters
+            while using `OSV` methods (and as such the automatic sending of the
+            context is impacted, see the ``auto_context`` option below).
+
         - ``auto_context``: if set to ``True``, the user context will be sent
           automatically to every call of an `OSV` method (default: ``True``):
 
@@ -86,7 +92,7 @@ class OERP(object):
             .. note::
 
                 This option only works on `OpenERP` version `6.1` and above,
-                and only when the `compatible` option is set to `False`.
+                and only when the `compatible` option is set to ``False``.
 
             >>> product_osv = oerp.get('product.product')
             >>> product_osv.name_get([3]) # Context sent by default ('lang': 'fr_FR' here)
