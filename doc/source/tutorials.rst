@@ -355,12 +355,13 @@ Change the timeout
 ------------------
 
 .. versionadded:: 0.6.0
+.. versionchanged:: 0.7.0
 
 By default, the timeout is set to 120 seconds for all RPC requests.
-If your request needs a higher timeout, you can set a new value to the
-:attr:`oerp.timeout <oerplib.OERP.timeout>` property::
+If your requests need a higher timeout, you can set it through the
+:attr:`oerplib.OERP.config` property::
 
-    >>> oerp.timeout
+    >>> oerp.config['timeout']
     120
-    >>> oerp.timeout = 300 # Set the timeout to 300 seconds
+    >>> oerp.config['timeout'] = 300  # Set the timeout to 300 seconds
 
