@@ -141,7 +141,7 @@ class OSV(collections.Mapping):
         in the purpose to cancel all changes made.
 
         """
-        context = context or {}
+        context = context or self._oerp.context
         obj_data = obj.__data__
         obj_data['context'] = context
         # Fill fields with values of the record

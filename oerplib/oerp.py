@@ -219,7 +219,7 @@ class OERP(object):
                 self._user.login = user
                 self._user.password = passwd
                 self._context = self.execute('res.users', 'context_get')
-                self._user = self.browse('res.users', user_id)
+                self._user = self.browse('res.users', user_id, self._context)
                 return self._user
             else:
                 #FIXME: Raise an error?
