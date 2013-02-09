@@ -1,4 +1,8 @@
-include *.txt
+include AUTHORS.txt
+include CHANGES.txt
+include LICENSE.txt
+include README.txt
 include doc/Makefile doc/make.bat
 recursive-include doc/source *
 recursive-include examples *
+recursive-include tests *

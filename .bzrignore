@@ -5,3 +5,5 @@ dev_*
 doc/build
 doc/html
 doc/doctrees
+dist/
+MANIFEST
