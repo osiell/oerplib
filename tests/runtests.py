@@ -1,7 +1,10 @@
 #!/usr/bin/env python2.7
 # -*- coding: UTF-8 -*-
 
-import unittest
+try:
+    import unittest2 as unittest
+except:
+    import unittest
 
 from args import ARGS
 
@@ -47,8 +50,9 @@ if __name__ == '__main__':
     # Test OERP.execute and OERP.execute_kw
     loader = unittest.TestLoader().loadTestsFromTestCase(TestExecute)
     suite.addTest(loader)
-    loader = unittest.TestLoader().loadTestsFromTestCase(TestExecuteKw)
-    suite.addTest(loader)
+    if not ARGS.compatible:
+        loader = unittest.TestLoader().loadTestsFromTestCase(TestExecuteKw)
+        suite.addTest(loader)
 
     # Test OERP.browse
     loader = unittest.TestLoader().loadTestsFromTestCase(TestBrowse)
@@ -84,7 +88,7 @@ if __name__ == '__main__':
         ARGS.protocol = 'netrpc'
         ARGS.port = ARGS.netrpc_port
         unittest.TextTestRunner(verbosity=ARGS.verbosity).run(suite)
-    else:
+    if not ARGS.test_xmlrpc and not ARGS.test_netrpc:
         print("-- NO TEST --")
         print("Please use '--test_xmlrpc' and/or '--test_netrpc' option.")
 

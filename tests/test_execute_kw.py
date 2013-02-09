@@ -1,6 +1,9 @@
 # -*- coding: UTF-8 -*-
 
-import unittest
+try:
+    import unittest2 as unittest
+except:
+    import unittest
 import numbers
 import time
 
@@ -12,9 +15,10 @@ import oerplib
 class TestExecuteKw(unittest.TestCase):
 
     def setUp(self):
-        self.oerp = oerplib.OERP(ARGS.server, ARGS.database,
-                                 protocol=ARGS.protocol, port=ARGS.port)
-        self.user = self.oerp.login(ARGS.user, ARGS.passwd)
+        self.oerp = oerplib.OERP(
+            ARGS.server, protocol=ARGS.protocol, port=ARGS.port,
+            compatible=ARGS.compatible)
+        self.user = self.oerp.login(ARGS.user, ARGS.passwd, ARGS.database)
 
     # ------
     # Search

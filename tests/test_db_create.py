@@ -1,6 +1,9 @@
 # -*- coding: UTF-8 -*-
 
-import unittest
+try:
+    import unittest2 as unittest
+except:
+    import unittest
 
 from args import ARGS
 
@@ -10,8 +13,9 @@ import oerplib
 class TestDBCreate(unittest.TestCase):
 
     def setUp(self):
-        self.oerp = oerplib.OERP(ARGS.server,
-                                 protocol=ARGS.protocol, port=ARGS.port)
+        self.oerp = oerplib.OERP(
+            ARGS.server, protocol=ARGS.protocol, port=ARGS.port,
+            compatible=ARGS.compatible)
 
     def test_db_create(self):
         if ARGS.database not in self.oerp.db.list():
@@ -23,8 +27,7 @@ class TestDBCreate(unittest.TestCase):
                 admin_passwd=ARGS.passwd)
             self.assertIsInstance(res, list)
             self.assertNotEqual(res, list())
-            self.assertEqual(res[0], {'login': 'admin',
-                                      'password': ARGS.passwd,
-                                      'name': "Administrator"})
+            self.assertEqual(res[0]['login'], 'admin')
+            self.assertEqual(res[0]['password'], ARGS.passwd)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

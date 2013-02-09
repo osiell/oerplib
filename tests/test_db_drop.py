@@ -1,6 +1,9 @@
 # -*- coding: UTF-8 -*-
 
-import unittest
+try:
+    import unittest2 as unittest
+except:
+    import unittest
 
 from args import ARGS
 
@@ -10,8 +13,9 @@ import oerplib
 class TestDBDrop(unittest.TestCase):
 
     def setUp(self):
-        self.oerp = oerplib.OERP(ARGS.server,
-                                 protocol=ARGS.protocol, port=ARGS.port)
+        self.oerp = oerplib.OERP(
+            ARGS.server, protocol=ARGS.protocol, port=ARGS.port,
+            compatible=ARGS.compatible)
 
     def test_db_drop_existing_database(self):
         res = self.oerp.db.drop(ARGS.super_admin_passwd, ARGS.database)
@@ -20,8 +24,7 @@ class TestDBDrop(unittest.TestCase):
         self.assertNotIn(ARGS.database, db_list)
 
     def test_db_drop_no_existing_database(self):
-        version = float(self.oerp.db.server_version()[:3])
-        if version >= 6.1:
+        if not ARGS.compatible:
             res = self.oerp.db.drop(ARGS.super_admin_passwd, 'fake_db_name')
             self.assertFalse(res)
         else:

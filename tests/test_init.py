@@ -1,6 +1,9 @@
 # -*- coding: UTF-8 -*-
 
-import unittest
+try:
+    import unittest2 as unittest
+except:
+    import unittest
 
 from args import ARGS
 
@@ -44,5 +47,30 @@ class TestInit(unittest.TestCase):
         self.assertEqual(oerp.database, ARGS.database)
         self.assertEqual(oerp.protocol, ARGS.protocol)
         self.assertEqual(oerp.port, ARGS.port)
+
+    def test_init5(self):
+        # Server + Database + Protocol + Port + Timeout
+        oerp = oerplib.OERP(ARGS.server, ARGS.database,
+                            ARGS.protocol, ARGS.port, 42)
+        self.assertIsInstance(oerp, oerplib.OERP)
+        self.assertIsNotNone(oerp)
+        self.assertEqual(oerp.server, ARGS.server)
+        self.assertEqual(oerp.database, ARGS.database)
+        self.assertEqual(oerp.protocol, ARGS.protocol)
+        self.assertEqual(oerp.port, ARGS.port)
+        self.assertEqual(oerp.config['timeout'], 42)
+
+    def test_init6(self):
+        # Server + Database + Protocol + Port + Timeout + Compatible
+        oerp = oerplib.OERP(ARGS.server, ARGS.database,
+                            ARGS.protocol, ARGS.port, 42, ARGS.compatible)
+        self.assertIsInstance(oerp, oerplib.OERP)
+        self.assertIsNotNone(oerp)
+        self.assertEqual(oerp.server, ARGS.server)
+        self.assertEqual(oerp.database, ARGS.database)
+        self.assertEqual(oerp.protocol, ARGS.protocol)
+        self.assertEqual(oerp.port, ARGS.port)
+        self.assertEqual(oerp.config['timeout'], 42)
+        self.assertEqual(oerp.config['compatible'], ARGS.compatible)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

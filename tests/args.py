@@ -19,6 +19,8 @@ _parser.add_argument('--test_netrpc', action='store_true',
                      help="Test the NET-RPC protocol")
 _parser.add_argument('--netrpc_port', default='8070',
                      help="Port to use with the NET-RPC protocol")
+_parser.add_argument('--compatible', action='store_true',
+                     help="Compatibility OpenERP 6.0 and inferior")
 
 _parser.add_argument('--super_admin_passwd', default='admin',
                      help="Super administrator password")
