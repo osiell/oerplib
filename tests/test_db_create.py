@@ -15,7 +15,7 @@ class TestDBCreate(unittest.TestCase):
     def setUp(self):
         self.oerp = oerplib.OERP(
             ARGS.server, protocol=ARGS.protocol, port=ARGS.port,
-            compatible=ARGS.compatible)
+            version=ARGS.version)
 
     def test_db_create(self):
         if ARGS.database not in self.oerp.db.list():

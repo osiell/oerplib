@@ -16,7 +16,7 @@ class TestDB(unittest.TestCase):
     def setUp(self):
         self.oerp = oerplib.OERP(
             ARGS.server, protocol=ARGS.protocol, port=ARGS.port,
-            compatible=ARGS.compatible)
+            version=ARGS.version)
         self.databases = []
 
     def test_db_list(self):

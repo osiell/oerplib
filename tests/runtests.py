@@ -19,6 +19,8 @@ from test_browse import TestBrowse
 from test_osv import TestOSV
 from test_timeout import TestTimeout
 
+from oerplib.tools import v
+
 if __name__ == '__main__':
     suite = unittest.TestSuite()
 
@@ -50,7 +52,7 @@ if __name__ == '__main__':
     # Test OERP.execute and OERP.execute_kw
     loader = unittest.TestLoader().loadTestsFromTestCase(TestExecute)
     suite.addTest(loader)
-    if not ARGS.compatible:
+    if ARGS.version and v(ARGS.version) >= v('6.1'):
         loader = unittest.TestLoader().loadTestsFromTestCase(TestExecuteKw)
         suite.addTest(loader)
 

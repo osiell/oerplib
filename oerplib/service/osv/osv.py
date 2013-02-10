@@ -4,6 +4,7 @@ methods proposed by an OSV model of the `OpenERP` server."""
 
 import collections
 
+from oerplib.tools import v
 from oerplib import error
 from oerplib.service.osv import fields, browse
 
@@ -123,7 +124,7 @@ class OSV(collections.Mapping):
                 else:
                     vals[field_name] = field_value
         try:
-            if self._oerp.config['compatible']:
+            if v(self._oerp._version) < v('6.1'):
                 res = self.write([obj.id], vals, context)
             else:
                 res = self.write([obj.id], vals, context=context)
@@ -146,7 +147,7 @@ class OSV(collections.Mapping):
         obj_data['context'] = context
         # Fill fields with values of the record
         if obj.id:
-            if self._oerp.config['compatible']:
+            if v(self._oerp._version) < v('6.1'):
                 obj_data['raw_data'] = self.read([obj.id], None, context)[0]
             else:
                 obj_data['raw_data'] = self.read(
@@ -157,7 +158,7 @@ class OSV(collections.Mapping):
                         osv_name=obj.__class__.__osv__['name'], obj_id=obj.id))
         # No ID: fields filled with default values
         else:
-            if self._oerp.config['compatible']:
+            if v(self._oerp._version) < v('6.1'):
                 default_get = self.default_get(
                     obj.__osv__['columns'].keys(), context)
             else:
@@ -187,7 +188,7 @@ class OSV(collections.Mapping):
 
     def _unlink_record(self, obj, context=None):
         """Delete the object from the OpenERP server."""
-        if self._oerp.config['compatible']:
+        if v(self._oerp._version) < v('6.1'):
             return self.unlink([obj.id], context)
         else:
             return self.unlink([obj.id], context=context)
@@ -196,11 +197,11 @@ class OSV(collections.Mapping):
         """Provide a dynamic access to a RPC method."""
         def rpc_method(*args, **kwargs):
             """Return the result of the RPC request."""
-            if self._oerp.config['compatible']:
+            if v(self._oerp._version) < v('6.1'):
                 if kwargs:
                     raise error.RPCError(
-                        u"Named parameters are not supported in "
-                        u"compatibility mode")
+                        u"Named parameters are not supported by this version "
+                        u"of OpenERP")
                 result = self._oerp.execute(
                     self._browse_class.__osv__['name'], method, *args)
             else:

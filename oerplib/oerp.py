@@ -12,6 +12,7 @@ import time
 from oerplib import config
 from oerplib import rpc
 from oerplib import error
+from oerplib.tools import detect_version
 from oerplib.service import common, db, wizard, osv
 
 
@@ -28,21 +29,18 @@ class OERP(object):
         >>> import oerplib
         >>> oerp = oerplib.OERP('localhost', protocol='xmlrpc', port=8069)
 
-    By default (since the version `0.7.0`), the :class:`OERP` instance is not compatible with versions of
-    `OpenERP` inferior to `6.1`.
-    If you run an older version of `OpenERP`, just set the `compatible`
-    parameter to `True`::
+    By default (since the version `0.7.0`), `OERPLib` will try to detect the
+    `OpenERP` version in order to adapt its requests. However, it is possible
+    to force the version of `OpenERP` with the ``version`` parameter:
 
-        >>> oerp = oerplib.OERP('localhost', protocol='xmlrpc', port=8069, compatible=True)
-
-    See :attr:`oerplib.OERP.config` property for more details.
+        >>> oerp = oerplib.OERP('localhost', version='6.0')
 
     :raise: :class:`oerplib.error.InternalError`
 
     """
 
     def __init__(self, server='localhost', database=None, protocol='xmlrpc',
-                 port=8069, timeout=120, compatible=False):
+                 port=8069, timeout=120, version=None):
         self._server = server
         self._port = port
         self._protocol = protocol
@@ -51,17 +49,19 @@ class OERP(object):
         self._common = common.Common(self)
         self._db = db.DB(self)
         self._wizard = wizard.Wizard(self)
+        self._version = version or detect_version(
+            server, protocol, port, timeout)
         # Instanciate the OpenERP server connector
         try:
             self._connector = rpc.get_connector(
-                self._server, self._port, self._protocol, timeout, compatible)
+                self._server, self._port, self._protocol,
+                timeout, self._version)
         except rpc.error.ConnectorError as exc:
             raise error.InternalError(exc.message)
         # Dictionary of configuration options
         self._config = config.Config(
             self,
-            {'compatible': compatible,
-             'auto_context': True,
+            {'auto_context': True,
              'timeout': timeout})
 
     @property
@@ -69,19 +69,7 @@ class OERP(object):
         """Dictionary of available configuration options.
 
         >>> oerp.config
-        {'compatible': False, 'auto_context': True, 'timeout': 120}
-
-        - ``compatible``: if set to ``True``, the :class:`OERP <oerplib.OERP>`
-          instance will perform RPC requests in compatibility mode in order to
-          work on `OpenERP` versions inferior to `6.1` (default: ``False``):
-
-            .. versionadded:: 0.7.0
-
-            >>> oerp.config['compatible'] = True
-
-            The compatible mode turns off the ability to use named parameters
-            while using `OSV` methods (and as such the automatic sending of the
-            context is impacted, see the ``auto_context`` option below).
+        {'auto_context': True, 'timeout': 120}
 
         - ``auto_context``: if set to ``True``, the user context will be sent
           automatically to every call of an `OSV` method (default: ``True``):
@@ -90,8 +78,7 @@ class OERP(object):
 
             .. note::
 
-                This option only works on `OpenERP` version `6.1` and above,
-                and only when the `compatible` option is set to ``False``.
+                This option only works on `OpenERP` version `6.1` and above.
 
             >>> product_osv = oerp.get('product.product')
             >>> product_osv.name_get([3]) # Context sent by default ('lang': 'fr_FR' here)

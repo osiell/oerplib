@@ -17,7 +17,7 @@ class TestLogin(unittest.TestCase):
         # OERP no database + login database
         oerp = oerplib.OERP(
             ARGS.server, protocol=ARGS.protocol, port=ARGS.port,
-            compatible=ARGS.compatible)
+            version=ARGS.version)
         user = oerp.login(ARGS.user, ARGS.passwd, ARGS.database)
         self.assertIsNotNone(user)
         self.assertIsInstance(user, osv.BrowseRecord)
@@ -28,7 +28,7 @@ class TestLogin(unittest.TestCase):
         # OERP no database + login no database => Error
         oerp = oerplib.OERP(
             ARGS.server, protocol=ARGS.protocol, port=ARGS.port,
-            compatible=ARGS.compatible)
+            version=ARGS.version)
         self.assertRaises(
             oerplib.error.Error,
             oerp.login, ARGS.user, ARGS.passwd)
@@ -37,7 +37,7 @@ class TestLogin(unittest.TestCase):
         # OERP database + login no database
         oerp = oerplib.OERP(
             ARGS.server, ARGS.database, protocol=ARGS.protocol, port=ARGS.port,
-            compatible=ARGS.compatible)
+            version=ARGS.version)
         user = oerp.login(ARGS.user, ARGS.passwd)
         self.assertIsNotNone(user)
         self.assertIsInstance(user, osv.BrowseRecord)
@@ -47,7 +47,7 @@ class TestLogin(unittest.TestCase):
         # OERP database + login database
         oerp = oerplib.OERP(
             ARGS.server, ARGS.database, protocol=ARGS.protocol, port=ARGS.port,
-            compatible=ARGS.compatible)
+            version=ARGS.version)
         user = oerp.login(ARGS.user, ARGS.passwd, ARGS.database)
         self.assertIsNotNone(user)
         self.assertIsInstance(user, osv.BrowseRecord)

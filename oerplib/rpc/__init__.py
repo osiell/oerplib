@@ -40,7 +40,7 @@ PROTOCOLS = {
 
 
 def get_connector(server, port=8069, protocol='xmlrpc',
-                  timeout=120, compatible=False):
+                  timeout=120, version=None):
     """Return a `RPC` connector to interact with an `OpenERP` server.
     Supported protocols are:
 
@@ -48,14 +48,16 @@ def get_connector(server, port=8069, protocol='xmlrpc',
         - 'xmlrpc+ssl': XML-RPC protocol over SSL,
         - 'netrpc': Net-RPC protocol made by `OpenERP`.
 
-    ``compatible`` parameter should be set to ``False`` for
-    `OpenERP >= 6.1`, and ``True`` for `OpenERP <= 6.0`.
+    If the ``version`` parameter is set to `None`, the last API supported will
+    be use to send requests to `OpenERP`. Otherwise, you can force the
+    API to use with the corresponding string version
+    (e.g.: ``'6.0', '6.1', '7.0', ...``).
     """
     if protocol not in PROTOCOLS:
         txt = ("The protocol '{0}' is not supported. "
                "Please choose a protocol among these ones: {1}")
         txt = txt.format(protocol, PROTOCOLS.keys())
         raise error.ConnectorError(txt)
-    return PROTOCOLS[protocol](server, port, timeout, compatible)
+    return PROTOCOLS[protocol](server, port, timeout, version)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

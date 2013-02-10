@@ -4,6 +4,7 @@
 import abc
 
 from oerplib.rpc import error, service
+from oerplib.tools import v
 
 
 class Connector(object):
@@ -12,7 +13,7 @@ class Connector(object):
     """
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, server, port, timeout, compatible):
+    def __init__(self, server, port, timeout, version):
         self.server = server
         try:
             int(port)
@@ -23,16 +24,16 @@ class Connector(object):
         else:
             self.port = port
         self.timeout = timeout
-        self.compatible = compatible
+        self.version = version
 
 
 class ConnectorXMLRPC(Connector):
     """Connector class using XMLRPC protocol."""
-    def __init__(self, server, port, timeout, compatible):
+    def __init__(self, server, port, timeout, version):
         super(ConnectorXMLRPC, self).__init__(
-            server, port, timeout, compatible)
+            server, port, timeout, version)
         # OpenERP < 6.1
-        if self.compatible:
+        if self.version and v(self.version) < v('6.1'):
             self._url = 'http://{server}:{port}/xmlrpc'.format(
                 server=self.server, port=self.port)
         # OpenERP >= 6.1
@@ -49,17 +50,17 @@ class ConnectorXMLRPC(Connector):
 
 class ConnectorXMLRPCSSL(ConnectorXMLRPC):
     """Connector class using XMLRPC protocol over SSL."""
-    def __init__(self, server, port, timeout, compatible):
+    def __init__(self, server, port, timeout, version):
         super(ConnectorXMLRPCSSL, self).__init__(
-            server, port, timeout, compatible)
+            server, port, timeout, version)
         self._url = self._url.replace('http', 'https')
 
 
 class ConnectorNetRPC(Connector):
     """Connector class using NetRPC protocol."""
-    def __init__(self, server, port, timeout, compatible):
+    def __init__(self, server, port, timeout, version):
         super(ConnectorNetRPC, self).__init__(
-            server, port, timeout, compatible)
+            server, port, timeout, version)
 
     def __getattr__(self, service_name):
         srv = service.ServiceNetRPC(

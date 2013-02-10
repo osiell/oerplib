@@ -15,7 +15,7 @@ class TestOSV(unittest.TestCase):
     def setUp(self):
         self.oerp = oerplib.OERP(
             ARGS.server, protocol=ARGS.protocol, port=ARGS.port,
-            compatible=ARGS.compatible)
+            version=ARGS.version)
         self.user = self.oerp.login(ARGS.user, ARGS.passwd, ARGS.database)
 
     def test_osv(self):

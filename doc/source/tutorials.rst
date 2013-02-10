@@ -18,11 +18,6 @@ You can also specify the default database to use with the `database` parameter::
 
     >>> oerp = oerplib.OERP(server='localhost', database='db_name', protocol='xmlrpc', port=8071)
 
-If you run a version of `OpenERP` inferior to `6.1`, you have to set the
-parameter ``compatible`` to ``True`` (see :attr:`oerplib.OERP.config`)::
-
-    >>> oerp = oerplib.OERP(server='localhost', database='db_name', protocol='xmlrpc', port=8071, compatible=True)
-
 To check databases available, use the :attr:`oerp.db <oerplib.OERP.db>`
 attribute with the **list** method::
 
@@ -89,10 +84,12 @@ almost syntactically identical to the `OpenERP` server side API
     >>> context
     {'lang': 'fr_FR', 'tz': False}
     >>> product_osv = oerp.get('product.product')
-    >>> product_osv.name_get([3, 4])    # User context is automatically sent if compatible mode is not enabled (lang 'fr_FR' here)
+    >>> product_osv.name_get([3, 4])
     [[3, '[PC1] PC Basic'], [4, u'[PC2] Basic+ PC (assembl\xe9 sur commande)']]
 
-You can choose to not automatically send the user context::
+If you run an `OpenERP` version `6.1` or above, the user context is
+automatically sent.
+You can disable this behaviour with the `oerplib.OERP.config` property::
 
     >>> oerp.config['auto_context'] = False
     >>> product_osv.name_get([3, 4])    # Without context, lang 'en_US' by default
