@@ -38,7 +38,7 @@ class DB(object):
         Return a list of the `OpenERP` databases:
 
         >>> oerp.db.list()
-        >>> ['production_db', 'test_db']
+        ['prod_db', 'test_db']
 
         :return: a list of database names
 
@@ -47,7 +47,7 @@ class DB(object):
         Return a list of codes and names of language supported by `OpenERP`:
 
         >>> oerp.db.list_lang()
-        >>> [['sq_AL', u'Albanian / Shqipëri'], ['ar_AR', 'Arabic / الْعَرَبيّة'], ...]
+        [['sq_AL', u'Albanian / Shqipëri'], ['ar_AR', 'Arabic / الْعَرَبيّة'], ...]
 
         :return: a list of pairs representing languages with their codes and
                  names
@@ -57,7 +57,7 @@ class DB(object):
         Return the version of the `OpenERP Server`:
 
         >>> oerp.db.server_version()
-        >>> '6.1'
+        '6.1'
 
         :return: the version of the `OpenERP Server` as string
 
@@ -65,7 +65,7 @@ class DB(object):
 
         Return a dump of `database` in `base64`:
 
-        >>> binary_data = oerp.db.dump('super_admin_passwd', 'production_db')
+        >>> binary_data = oerp.db.dump('super_admin_passwd', 'prod_db')
 
         The super administrator password `super_admin_passwd` of `OpenERP` is
         required to perform this action.
@@ -92,7 +92,7 @@ class DB(object):
         The super administrator password `super_admin_passwd` of `OpenERP` is
         required to perform this action.
 
-        :return: True
+        :return: `True`
 
     .. method:: DB.create(super_admin_passwd, database, demo_data=False, lang='en_US', admin_passwd='admin')
 
@@ -124,8 +124,72 @@ class DB(object):
         (1.0, [{'login': u'admin', 'password': u'admin', 'name': u'Administrator'},
                {'login': u'demo', 'password': u'demo', 'name': u'Demo User'}])
 
+        The super administrator password `super_admin_passwd` of `OpenERP` is
+        required to perform this action.
+
         :return: A tuple with the progressing state and a list
                 of user accounts created (once the database is fully created).
+
+    .. method:: DB.create_database(super_admin_passwd, database, demo_data=False, lang='en_US', admin_passwd='admin')
+
+        `Available since OpenERP 6.1`
+
+        Similar to :func:`create <DB.create>` but blocking.
+
+        >>> oerp.db.create_database('super_admin_passwd', 'test_db', False, 'fr_FR', 'my_admin_passwd')
+        True
+
+        The super administrator password `super_admin_passwd` of `OpenERP` is
+        required to perform this action.
+
+        :return: `True`
+
+    .. method:: DB.duplicate_database(super_admin_passwd, original_database, database)
+
+        `Available since OpenERP 7.0`
+
+        Duplicate `original_database' as `database`.
+
+        >>> oerp.db.duplicate_database('super_admin_passwd', 'prod_db', 'test_db')
+        True
+
+        The super administrator password `super_admin_passwd` of `OpenERP` is
+        required to perform this action.
+
+        :return: `True`
+
+    .. method:: DB.rename(super_admin_passwd, old_name, new_name)
+
+        Rename the `old_name` database to `new_name`.
+
+        >>> oerp.db.rename('super_admin_passwd', 'test_db', 'test_db2')
+        True
+
+        The super administrator password `super_admin_passwd` of `OpenERP` is
+        required to perform this action.
+
+        :return: `True`
+
+    .. method:: DB.db_exist(database)
+
+        Check if connection to database is possible.
+
+        >>> oerp.db.db_exist('prod_db')
+        True
+
+        :return: `True` or `False`
+
+    .. method:: DB.change_admin_password(super_admin_passwd, new_passwd)
+
+        Change the administrator password by `new_passwd`.
+
+        >>> oerp.db.change_admin_password('super_admin_passwd', 'new_passwd')
+        True
+
+        The super administrator password `super_admin_passwd` of `OpenERP` is
+        required to perform this action.
+
+        :return: `True`
 
     """
     def __init__(self, oerp):
@@ -138,7 +202,9 @@ class DB(object):
 
             This method is not part of the official API of `OpenERP`. It's just
             a wrapper around the :func:`create <DB.create>` and
-            :func:`get_progress <DB.get_progress>` methods.
+            :func:`get_progress <DB.get_progress>` methods. For `OpenERP`
+            in version `6.1` or above, please prefer the use of the
+            standard :func:`create_database <DB.create_database>` method.
 
         Like the :func:`create <DB.create>` method, but waits the end of
         the creating process by executing the

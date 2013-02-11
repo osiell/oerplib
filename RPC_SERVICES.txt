@@ -2,7 +2,7 @@
 ========|=========================|=======|=======|=======|=======
 db      |                         |       |       |       |
         | create                  |   X   |   X   |   X   |   X
-        | get_process             |   X   |   X   |   X   |   X
+        | get_progress            |   X   |   X   |   X   |   X
         | drop                    |   X   |   X   |   X   |   X
         | dump                    |   X   |   X   |   X   |   X
         | restore                 |   X   |   X   |   X   |   X
