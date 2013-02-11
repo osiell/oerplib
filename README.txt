@@ -23,7 +23,7 @@ How does it work? See below::
     import oerplib
 
     # Prepare the connection to the OpenERP server
-    oerp = oerplib.OERP('localhost', protocol='netrpc', port=8070)
+    oerp = oerplib.OERP('localhost', protocol='xmlrpc', port=8069)
 
     # Check available databases
     print(oerp.db.list())
