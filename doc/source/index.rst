@@ -18,7 +18,7 @@ Features supported:
       API similar to that can be found in OpenERP server,
     - browse records,
     - ability to use named parameters with `OSV` methods (`OpenERP` >= `6.1`),
-    - user context automatically sent with `OSV` methods (`OpenERP` >= `6.1`)
+    - user context automatically sent with `OSV` methods (`OpenERP` >= `6.1`),
     - execute workflows,
     - manage databases,
     - reports downloading.
