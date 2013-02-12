@@ -3,13 +3,30 @@
 
 import re
 
+match_version = re.compile(r'[^\d.]')
 
-def convert_version(version):
-    version = version.split('-')[0]
+
+def clean_version(version):
+    """Clean a version string.
+
+        >>> from oerplib.tools import clean_version
+        >>> clean_version('7.0alpha-20121206-000102')
+        '7.0'
+    """
+    version = match_version.sub('', version.split('-')[0])
     return version
 
 
-def detect_version(server, protocol, port, timeout):
+def detect_version(server, protocol, port, timeout=120):
+    """Try to detect the `OpenERP` server version.
+
+        >>> from oerplib.tools import detect_version
+        >>> detect_version('localhost', 'xmlrpc', 8069)
+        '7.0'
+
+    :return: the version as string
+
+    """
     from oerplib import rpc
     # Try to request OpenERP with the last API supported
     try:
@@ -27,10 +44,21 @@ def detect_version(server, protocol, port, timeout):
             # use of the last API supported
             version = '42'
     finally:
-        return convert_version(version)
+        return clean_version(version)
 
 
 def v(version):
-    return [int(x) for x in re.sub(r'(\.0+)*$', '', version).split(".")]
+    """Convert a version string in tuple. The tuple can be use to compare
+    versions between them.
+
+        >>> from oerplib.tools import v
+        >>> v('7.0')
+        [7, 0]
+        >>> v('6.1')
+        [6, 1]
+        >>> v('7.0') < v('6.1')
+        False
+    """
+    return [int(x) for x in clean_version(version).split(".")]
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
