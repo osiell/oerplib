@@ -47,7 +47,7 @@ class BrowseRecord(object):
 
     def __init__(self, o_id):
         self._id = o_id
-        self.__data__ = {'values': {}, 'raw_data': False, 'fields_updated': []}
+        self.__data__ = {'values': {}, 'raw_data': {}, 'fields_updated': []}
 
     @property
     def id(self):

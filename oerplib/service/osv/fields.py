@@ -116,6 +116,12 @@ class Many2ManyField(BaseField):
     def __get__(self, instance, owner):
         """Return a generator to iterate on ``browse_record`` instances."""
         ids = instance.__data__['values'][self.name]
+        # None value => get the value on the fly
+        if ids is None:
+            ids = instance.__oerp__.read(
+                instance.__osv__['name'],
+                [instance.id], [self.name])[0][self.name]
+            instance.__data__['values'][self.name] = ids
         if ids:
             context = instance.__data__['context'].copy()
             context.update(self.context)
@@ -144,13 +150,18 @@ class Many2OneField(BaseField):
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
-        if instance.__data__['values'][self.name]:
+        id_ = instance.__data__['values'][self.name]
+        # None value => get the value on the fly
+        if id_ is None:
+            id_ = instance.__oerp__.read(
+                instance.__osv__['name'],
+                [instance.id], [self.name])[0][self.name]
+            instance.__data__['values'][self.name] = id_
+        if id_:
             context = instance.__data__['context'].copy()
             context.update(self.context)
             return instance.__class__.__oerp__.browse(
-                self.relation,
-                instance.__data__['values'][self.name][0],
-                context)
+                self.relation, id_[0], context)
         return False
 
     def __set__(self, instance, value):
@@ -190,6 +201,12 @@ class One2ManyField(BaseField):
     def __get__(self, instance, owner):
         """Return a generator to iterate on ``browse_record`` instances."""
         ids = instance.__data__['values'][self.name]
+        # None value => get the value on the fly
+        if ids is None:
+            ids = instance.__oerp__.read(
+                instance.__osv__['name'],
+                [instance.id], [self.name])[0][self.name]
+            instance.__data__['values'][self.name] = ids
         if ids:
             context = instance.__data__['context'].copy()
             context.update(self.context)
@@ -220,8 +237,14 @@ class ReferenceField(BaseField):
         self.selection = 'selection' in data and data['selection'] or False
 
     def __get__(self, instance, owner):
-        if instance.__data__['values'][self.name]:
-            value = instance.__data__['values'][self.name]
+        value = instance.__data__['values'][self.name]
+        # None value => get the value on the fly
+        if value is None:
+            value = instance.__oerp__.read(
+                instance.__osv__['name'],
+                [instance.id], [self.name])[0][self.name]
+            instance.__data__['values'][self.name] = value
+        if value:
             relation, sep, o_id = value.rpartition(',')
             relation = relation.strip()
             o_id = int(o_id.strip())

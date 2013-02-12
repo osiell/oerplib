@@ -144,14 +144,27 @@ class OSV(collections.Mapping):
         context = context or self._oerp.context
         obj_data = obj.__data__
         obj_data['context'] = context
+        # Get basic fields (no relational ones)
+        basic_fields = []
+        for field_name, field in obj.__osv__['columns'].iteritems():
+            if not getattr(field, 'relation', False):
+                basic_fields.append(field_name)
+            else:
+                obj_data['raw_data'][field_name] = None
         # Fill fields with values of the record
         if obj.id:
             if v(self._oerp._version) < v('6.1'):
-                data = self.read([obj.id], None, context)
-                obj_data['raw_data'] = data and data[0] or False
+                data = self.read([obj.id], basic_fields, context)
+                if data:
+                    obj_data['raw_data'].update(data[0])
+                else:
+                    obj_data['raw_data'] = False
             else:
-                data = self.read([obj.id], None, context=context)
-                obj_data['raw_data'] = data and data[0] or False
+                data = self.read([obj.id], basic_fields, context=context)
+                if data:
+                    obj_data['raw_data'].update(data[0])
+                else:
+                    obj_data['raw_data'] = False
             if obj_data['raw_data'] is False:
                 raise error.RPCError(
                     u"There is no '{osv_name}' record with ID {obj_id}.".format(
