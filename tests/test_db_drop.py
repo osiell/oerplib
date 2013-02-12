@@ -19,7 +19,6 @@ class TestDBDrop(unittest.TestCase):
             version=ARGS.version)
 
     def test_db_drop_existing_database(self):
-        print self.oerp.db.list()
         res = self.oerp.db.drop(ARGS.super_admin_passwd, ARGS.database)
         self.assertTrue(res)
         db_list = self.oerp.db.list()
