@@ -92,9 +92,8 @@ class OSV(collections.Mapping):
         cls_fields = {}
         for field_name, field_data in fields_get.items():
             if field_name not in OSV.fields_reserved:
-                cls_fields[field_name] = fields.generate_field(self,
-                                                               field_name,
-                                                               field_data)
+                cls_fields[field_name] = fields.generate_field(
+                    self, field_name, field_data)
         # Case where no field 'name' exists, we generate one (which will be
         # in readonly mode) in purpose to be filled with the 'name_get' method
         if 'name' not in cls_fields:
@@ -148,10 +147,11 @@ class OSV(collections.Mapping):
         # Fill fields with values of the record
         if obj.id:
             if v(self._oerp._version) < v('6.1'):
-                obj_data['raw_data'] = self.read([obj.id], None, context)[0]
+                data = self.read([obj.id], None, context)
+                obj_data['raw_data'] = data and data[0] or False
             else:
-                obj_data['raw_data'] = self.read(
-                    [obj.id], None, context=context)[0]
+                data = self.read([obj.id], None, context=context)
+                obj_data['raw_data'] = data and data[0] or False
             if obj_data['raw_data'] is False:
                 raise error.RPCError(
                     u"There is no '{osv_name}' record with ID {obj_id}.".format(
@@ -165,7 +165,7 @@ class OSV(collections.Mapping):
                 default_get = self.default_get(
                     obj.__osv__['columns'].keys(), context=context)
             obj_data['raw_data'] = {}
-            for field_name in obj.__osv__['columns'].keys():
+            for field_name in obj.__osv__['columns']:
                 obj_data['raw_data'][field_name] = False
             obj_data['raw_data'].update(default_get)
         self._reset(obj)

@@ -55,6 +55,14 @@ class TestBrowse(unittest.TestCase):
         self.assertIsInstance(result, oerplib.service.osv.browse.BrowseRecord)
         self.assertEqual(False, result.id)
 
+    def test_browse_with_wrong_id(self):
+        # Handle exception (execute a 'browse' without args)
+        self.assertRaises(
+            oerplib.error.RPCError,
+            self.oerp.browse,
+            'res.users',
+            999999999)
+
     def test_browse_without_args(self):
         # Handle exception (execute a 'browse' without args)
         self.assertRaises(
