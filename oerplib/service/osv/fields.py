@@ -84,11 +84,11 @@ class SelectionField(BaseField):
         self.selection = 'selection' in data and data['selection'] or False
 
     def __get__(self, instance, owner):
-        return getattr(instance, "_{0}".format(self.name))
+        return instance.__data__['values'][self.name]
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        setattr(instance, "_{0}".format(self.name), value)
+        instance.__data__['values'][self.name] = value
         instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
@@ -115,7 +115,7 @@ class Many2ManyField(BaseField):
 
     def __get__(self, instance, owner):
         """Return a generator to iterate on ``browse_record`` instances."""
-        ids = getattr(instance, "_{0}".format(self.name))
+        ids = instance.__data__['values'][self.name]
         if ids:
             context = instance.__data__['context'].copy()
             context.update(self.context)
@@ -124,7 +124,7 @@ class Many2ManyField(BaseField):
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        setattr(instance, "_{0}".format(self.name), value)
+        instance.__data__['values'][self.name] = value
         instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
@@ -144,12 +144,12 @@ class Many2OneField(BaseField):
         self.domain = 'domain' in data and data['domain'] or False
 
     def __get__(self, instance, owner):
-        if getattr(instance, "_{0}".format(self.name)):
+        if instance.__data__['values'][self.name]:
             context = instance.__data__['context'].copy()
             context.update(self.context)
             return instance.__class__.__oerp__.browse(
                 self.relation,
-                getattr(instance, "_{0}".format(self.name))[0],
+                instance.__data__['values'][self.name][0],
                 context)
         return False
 
@@ -164,7 +164,7 @@ class Many2OneField(BaseField):
             raise ValueError(u"Value supplied has to be an integer, "
                              u"a browse_record object or False.")
         o_rel = self.check_value(o_rel)
-        setattr(instance, "_{0}".format(self.name), o_rel and [o_rel.id, False])
+        instance.__data__['values'][self.name] = o_rel and [o_rel.id, False]
         instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
@@ -189,7 +189,7 @@ class One2ManyField(BaseField):
 
     def __get__(self, instance, owner):
         """Return a generator to iterate on ``browse_record`` instances."""
-        ids = getattr(instance, "_{0}".format(self.name))
+        ids = instance.__data__['values'][self.name]
         if ids:
             context = instance.__data__['context'].copy()
             context.update(self.context)
@@ -198,7 +198,7 @@ class One2ManyField(BaseField):
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        setattr(instance, "_{0}".format(self.name), value)
+        instance.__data__['values'][self.name] = value
         instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
@@ -220,8 +220,8 @@ class ReferenceField(BaseField):
         self.selection = 'selection' in data and data['selection'] or False
 
     def __get__(self, instance, owner):
-        if getattr(instance, "_{0}".format(self.name)):
-            value = getattr(instance, "_{0}".format(self.name))
+        if instance.__data__['values'][self.name]:
+            value = instance.__data__['values'][self.name]
             relation, sep, o_id = value.rpartition(',')
             relation = relation.strip()
             o_id = int(o_id.strip())
@@ -234,7 +234,7 @@ class ReferenceField(BaseField):
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        setattr(instance, "_{0}".format(self.name), value)
+        instance.__data__['values'][self.name] = value
         instance.__data__['fields_updated'].append(self.name)
 
     def _check_relation(self, relation):
@@ -279,7 +279,7 @@ class DateField(BaseField):
         super(DateField, self).__init__(osv, name, data)
 
     def __get__(self, instance, owner):
-        value = getattr(instance, "_{0}".format(self.name))
+        value = instance.__data__['values'][self.name]
         try:
             res = datetime.datetime.strptime(value, self.pattern).date()
         except Exception:  # ValueError, TypeError
@@ -288,7 +288,7 @@ class DateField(BaseField):
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        setattr(instance, "_{0}".format(self.name), value)
+        instance.__data__['values'][self.name] = value
         instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
@@ -318,7 +318,7 @@ class DateTimeField(BaseField):
         super(DateTimeField, self).__init__(osv, name, data)
 
     def __get__(self, instance, owner):
-        value = getattr(instance, "_{0}".format(self.name))
+        value = instance.__data__['values'][self.name]
         try:
             res = datetime.datetime.strptime(value, self.pattern)
         except Exception:  # ValueError, TypeError
@@ -327,7 +327,7 @@ class DateTimeField(BaseField):
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        setattr(instance, "_{0}".format(self.name), value)
+        instance.__data__['values'][self.name] = value
         instance.__data__['fields_updated'].append(self.name)
 
     def check_value(self, value):
@@ -362,11 +362,11 @@ class ValueField(BaseField):
         super(ValueField, self).__init__(osv, name, data)
 
     def __get__(self, instance, owner):
-        return getattr(instance, "_{0}".format(self.name))
+        return instance.__data__['values'][self.name]
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        setattr(instance, "_{0}".format(self.name), value)
+        instance.__data__['values'][self.name] = value
         instance.__data__['fields_updated'].append(self.name)
 
 

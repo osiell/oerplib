@@ -115,7 +115,7 @@ class OSV(collections.Mapping):
         for field_name in obj_data['fields_updated']:
             if field_name in obj_data['raw_data']:
                 field = self._browse_class.__osv__['columns'][field_name]
-                field_value = getattr(obj, "_{0}".format(field_name))
+                field_value = obj.__data__['values'][field_name]
                 # Many2One fields
                 if isinstance(field, fields.Many2OneField):
                     vals[field_name] = field_value and field_value[0]
@@ -181,8 +181,8 @@ class OSV(collections.Mapping):
         # Load fields and their values
         for field in self._browse_class.__osv__['columns'].values():
             if field.name in obj_data['raw_data']:
-                setattr(obj, "_{0}".format(field.name),
-                        obj_data['raw_data'][field.name])
+                obj_data['values'][field.name] = \
+                    obj_data['raw_data'][field.name]
                 setattr(obj.__class__, field.name,
                         field)
 
