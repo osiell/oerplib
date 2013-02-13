@@ -8,6 +8,7 @@ except:
 
 from args import ARGS
 
+from test_tools import TestTools
 from test_init import TestInit
 from test_login import TestLogin
 from test_db_create import TestDBCreate
@@ -28,16 +29,20 @@ if __name__ == '__main__':
     #- First Tests -
     #---------------
 
-    # 1) Test OERP.__init__
+    # 1) Test oerplib.tools
+    loader = unittest.TestLoader().loadTestsFromTestCase(TestTools)
+    suite.addTest(loader)
+
+    # 2) Test OERP.__init__
     loader = unittest.TestLoader().loadTestsFromTestCase(TestInit)
     suite.addTest(loader)
-    # 2) Test OERP.db (create the database)
+    # 3) Test OERP.db (create the database)
     if ARGS.create_db:
         loader = unittest.TestLoader().loadTestsFromTestCase(TestDBCreate)
         suite.addTest(loader)
     else:
         print("-- TestDBCreate skipped --")
-    # 3) Test OERP.login
+    # 4) Test OERP.login
     loader = unittest.TestLoader().loadTestsFromTestCase(TestLogin)
     suite.addTest(loader)
 
