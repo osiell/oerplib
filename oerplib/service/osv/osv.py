@@ -38,10 +38,10 @@ class OSV(collections.Mapping):
 
     fields_reserved = ['id', '__oerp__', '__osv__', '__data__']
 
-    def __init__(self, oerp, osv_name):
+    def __init__(self, oerp, model):
         super(OSV, self).__init__()
         self._oerp = oerp
-        self._name = osv_name
+        self._name = model
         self._browse_class = self._generate_browse_class()
 
     def _browse_generator(self, ids, context=None):
@@ -53,9 +53,9 @@ class OSV(collections.Mapping):
             yield self.browse(o_id, context)
 
     def browse(self, ids, context=None):
-        """Browse one record or several records (if ``ids`` is a list of IDs)
-        according to the model ``osv_name``. The fields and values for such
-        objects are generated dynamically.
+        """Browse one record or several records (if `ids` is a list of IDs)
+        of `model`. The fields and values for such objects are generated
+        dynamically.
 
         >>> oerp.get('res.partner').browse(1)
         browse_record(res.partner, 1)
@@ -167,8 +167,8 @@ class OSV(collections.Mapping):
                     obj_data['raw_data'] = False
             if obj_data['raw_data'] is False:
                 raise error.RPCError(
-                    u"There is no '{osv_name}' record with ID {obj_id}.".format(
-                        osv_name=obj.__class__.__osv__['name'], obj_id=obj.id))
+                    u"There is no '{model}' record with ID {obj_id}.".format(
+                        model=obj.__class__.__osv__['name'], obj_id=obj.id))
         # No ID: fields filled with default values
         else:
             if v(self._oerp._version) < v('6.1'):

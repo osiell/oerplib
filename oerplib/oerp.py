@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 """This module contains the ``OERP`` class which manage the interaction with
 the `OpenERP` server.
-
 """
 import os
 import base64
@@ -30,13 +29,12 @@ class OERP(object):
         >>> oerp = oerplib.OERP('localhost', protocol='xmlrpc', port=8069)
 
     By default (since the version `0.7.0`), `OERPLib` will try to detect the
-    `OpenERP` version in order to adapt its requests. However, it is possible
-    to force the version of `OpenERP` with the ``version`` parameter:
+    `OpenERP` server version in order to adapt its requests. However, it is
+    possible to force the version of `OpenERP` with the `version` parameter:
 
         >>> oerp = oerplib.OERP('localhost', version='6.0')
 
     :raise: :class:`oerplib.error.InternalError`
-
     """
 
     def __init__(self, server='localhost', database=None, protocol='xmlrpc',
@@ -71,8 +69,8 @@ class OERP(object):
         >>> oerp.config
         {'auto_context': True, 'timeout': 120}
 
-        - ``auto_context``: if set to ``True``, the user context will be sent
-          automatically to every call of an `OSV` method (default: ``True``):
+        - ``auto_context``: if set to `True`, the user context will be sent
+          automatically to every call of an `OSV` method (default: `True`):
 
             .. versionadded:: 0.7.0
 
@@ -88,7 +86,7 @@ class OERP(object):
             [[3, '[PC1] Basic PC']]
 
         - ``timeout``: set the maximum timeout in seconds for a RPC request
-          (default: ``120``):
+          (default: `120`):
 
             .. versionadded:: 0.6.0
 
@@ -216,16 +214,15 @@ class OERP(object):
     # -- Raw XML-RPC methods -- #
     # ------------------------- #
 
-    def execute(self, osv_name, method, *args):
-        """Execute a simple `XML-RPC` `method` on the OSV server class
-        `osv_name`. `*args` parameters varies according to the `method` used.
+    def execute(self, model, method, *args):
+        """Execute the `method` of `model`.
+        `*args` parameters varies according to the `method` used.
 
         >>> oerp.execute('res.partner', 'read', [1, 2], ['name'])
         [{'name': u'ASUStek', 'id': 2}, {'name': u'Your Company', 'id': 1}]
 
         :return: the result returned by the `method` called
         :raise: :class:`oerplib.error.RPCError`
-
         """
         self._check_logged_user()
         # Execute the query
@@ -233,13 +230,13 @@ class OERP(object):
             return self._connector.object.execute(
                 self._database, self._user.id,
                 self._user.password,
-                osv_name, method, *args)
+                model, method, *args)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
 
-    def execute_kw(self, osv_name, method, args=None, kwargs=None):
-        """Execute a simple `XML-RPC` `method` on the OSV server class
-        `osv_name`. `args` is a list of parameters (in the right order),
+    def execute_kw(self, model, method, args=None, kwargs=None):
+        """Execute the `method` of `model`.
+        `args` is a list of parameters (in the right order),
         and `kwargs` a dictionary (named parameters). Both varies according
         to the `method` used.
 
@@ -252,7 +249,6 @@ class OERP(object):
 
         :return: the result returned by the `method` called
         :raise: :class:`oerplib.error.RPCError`
-
         """
         self._check_logged_user()
         # Execute the query
@@ -262,18 +258,15 @@ class OERP(object):
             return self._connector.object.execute_kw(
                 self._database, self._user.id,
                 self._user.password,
-                osv_name, method, args, kwargs)
+                model, method, args, kwargs)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
 
-    def exec_workflow(self, osv_name, signal, obj_id):
-        """`XML-RPC` Workflow query. Execute the workflow signal ``signal`` on
-        the instance having the ID ``obj_id`` of OSV server class ``osv_name``.
+    def exec_workflow(self, model, signal, obj_id):
+        """Execute the workflow `signal` on
+        the instance having the ID `obj_id` of `model`.
 
         :raise: :class:`oerplib.error.RPCError`
-
-        `WARNING: not sufficiently tested.`
-
         """
         #TODO NEED TEST
         self._check_logged_user()
@@ -281,11 +274,11 @@ class OERP(object):
         try:
             self._connector.object.exec_workflow(self._database, self._user.id,
                                                  self._user.password,
-                                                 osv_name, signal, obj_id)
+                                                 model, signal, obj_id)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
 
-    def report(self, report_name, osv_name, obj_id, report_type='pdf',
+    def report(self, report_name, model, obj_id, report_type='pdf',
                context=None):
         """Download a report from the `OpenERP` server and return
         the path of the file.
@@ -295,7 +288,6 @@ class OERP(object):
 
         :return: the path to the generated temporary file
         :raise: :class:`oerplib.error.RPCError`
-
         """
         #TODO report_type: what it means exactly?
 
@@ -305,17 +297,17 @@ class OERP(object):
             context = self.context
         # Execute the report query
         try:
-            pdf_data = self._get_report_data(report_name, osv_name, obj_id,
+            pdf_data = self._get_report_data(report_name, model, obj_id,
                                              report_type, context)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
         return self._print_file_data(pdf_data)
 
-    def _get_report_data(self, report_name, osv_name, obj_id,
+    def _get_report_data(self, report_name, model, obj_id,
                          report_type='pdf', context=None):
         """Download binary data of a report from the `OpenERP` server."""
         context = context or {}
-        data = {'model': osv_name, 'id': obj_id, 'report_type': report_type}
+        data = {'model': model, 'id': obj_id, 'report_type': report_type}
         try:
             report_id = self._connector.report.report(
                 self._database, self.user.id, self.user.password,
@@ -366,10 +358,10 @@ class OERP(object):
     # -- High Level methods  -- #
     # ------------------------- #
 
-    def browse(self, osv_name, ids, context=None):
-        """Browse one record or several records (if ``ids`` is a list of IDs)
-        according to the model ``osv_name``. The fields and values for such
-        objects are generated dynamically.
+    def browse(self, model, ids, context=None):
+        """Browse one record or several records (if `ids` is a list of IDs)
+        of `model`. The fields and values for such objects are generated
+        dynamically.
 
         >>> oerp.browse('res.partner', 1)
         browse_record(res.partner, 1)
@@ -383,14 +375,13 @@ class OERP(object):
         :return: a ``browse_record`` instance
         :return: a generator to iterate on ``browse_record`` instances
         :raise: :class:`oerplib.error.RPCError`
-
         """
-        return self.get(osv_name).browse(ids, context)
+        return self.get(model).browse(ids, context)
 
-    def search(self, osv_name, args=None, offset=0, limit=None, order=None,
+    def search(self, model, args=None, offset=0, limit=None, order=None,
                context=None, count=False):
         """Return a list of IDs of records matching the given criteria in
-        ``args`` parameter. ``args`` must be of the form
+        `args` parameter. `args` must be of the form
         ``[('name', '=', 'John'), (...)]``
 
         >>> oerp.search('res.partner', [('name', 'like', 'Agrolait')])
@@ -398,75 +389,64 @@ class OERP(object):
 
         :return: a list of IDs
         :raise: :class:`oerplib.error.RPCError`
-
         """
         if args is None:
             args = []
-        return self.execute(osv_name, 'search', args, offset, limit, order,
+        return self.execute(model, 'search', args, offset, limit, order,
                             context, count)
 
-    def create(self, osv_name, vals, context=None):
-        """Create a new record with the specified values contained in the
-        ``vals`` dictionary (e.g. ``{'name': 'John', ...}``).
+    def create(self, model, vals, context=None):
+        """Create a new `model` record with values contained in the `vals`
+        dictionary.
 
         >>> partner_id = oerp.create('res.partner', {'name': 'Jacky Bob', 'lang': 'fr_FR'})
 
         :return: the ID of the new record.
         :raise: :class:`oerplib.error.RPCError`
-
         """
-        return self.execute(osv_name, 'create', vals, context)
+        return self.execute(model, 'create', vals, context)
 
-    def read(self, osv_name, ids, fields=None, context=None):
-        """Return the ID of each record with the values
-        of the requested fields ``fields`` from the OSV server class
-        ``osv_name``. If ``fields`` is not specified, all fields values
-        will be retrieved.
+    def read(self, model, ids, fields=None, context=None):
+        """Return `fields` values for each `model` record identified by `ids`.
+        If `fields` is not specified, all fields values will be retrieved.
 
         >>> oerp.read('res.partner', [1, 2], ['name'])
         [{'name': u'ASUStek', 'id': 2}, {'name': u'Your Company', 'id': 1}]
 
+        :return: list of dictionaries
         :raise: :class:`oerplib.error.RPCError`
-
         """
         if fields is None:
             fields = []
-        return self.execute(osv_name, 'read', ids, fields, context)
+        return self.execute(model, 'read', ids, fields, context)
 
-    def write(self, osv_name, ids, vals=None, context=None):
-        """Update records with given `ids` (e.g. ``[1, 42, ...]``)
-        with the given values contained in the ``vals`` dictionary
-        (e.g. ``{'name': 'John', ...}``).
-        ``osv_name`` parameter is the OSV server class name
-        (e.g. ``'sale.order'``).
+    def write(self, model, ids, vals=None, context=None):
+        """Update `model` records identified by `ids` with the given values
+        contained in the `vals` dictionary.
 
         >>> oerp.write('res.users', [1], {'name': u"Administrator"})
         True
 
         :return: `True`
         :raise: :class:`oerplib.error.RPCError`
-
         """
         #if ids is None:
         #    ids = []
         if vals is None:
             vals = {}
-        return self.execute(osv_name, 'write', ids, vals, context)
+        return self.execute(model, 'write', ids, vals, context)
 
-    def unlink(self, osv_name, ids, context=None):
-        """Delete records with the given ``ids`` (e.g. ``[1, 42, ...]``).
-        ``osv_name`` parameter is the OSV server class name
-        (e.g. ``'sale.order'``).
+    def unlink(self, model, ids, context=None):
+        """Delete `model` records identified by `ids`.
 
         >>> oerp.unlink('res.partner', [1])
 
         :return: `True`
         :raise: :class:`oerplib.error.RPCError`
-
         """
         #if ids is None:
         #    ids = []
-        return self.execute(osv_name, 'unlink', ids, context)
+        return self.execute(model, 'unlink', ids, context)
 
     # ---------------------- #
     # -- Special methods  -- #
@@ -475,9 +455,15 @@ class OERP(object):
     def write_record(self, browse_record, context=None):
         """.. versionadded:: 0.4.0
 
-        Update the field values of ``browse_record`` by sending them to the
-        `OpenERP` server (only field values which have been changed).
+        Update the record corresponding to `browse_record` by sending its values
+        to the `OpenERP` database (only field values which have been changed).
 
+        >>> partner = oerp.browse('res.partner', 1)
+        >>> partner.name = "Test"
+        >>> oerp.write_record(partner)  # write('res.partner', [1], {'name': "Test"})
+
+        :return: `True`
+        :raise: :class:`oerplib.error.RPCError`
         """
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
@@ -487,8 +473,14 @@ class OERP(object):
     def unlink_record(self, browse_record, context=None):
         """.. versionadded:: 0.4.0
 
-        Delete the ``browse_record`` from the `OpenERP` server.
+        Delete the record corresponding to `browse_record` from the `OpenERP`
+        database.
 
+        >>> partner = oerp.browse('res.partner', 1)
+        >>> oerp.unlink_record(partner)  # unlink('res.partner', [1])
+
+        :return: `True`
+        :raise: :class:`oerplib.error.RPCError`
         """
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
@@ -496,47 +488,45 @@ class OERP(object):
             browse_record, context)
 
     def refresh(self, browse_record, context=None):
-        """Restore original values of the ``browse_record`` from data
-        retrieved on the OpenERP server.
-        Thus, all changes made locally on the record are canceled.
+        """Restore original values on `browse_record` with data
+        fetched on the `OpenERP` database.
+        As a result, all changes made locally on the record are canceled.
 
         :raise: :class:`oerplib.error.RPCError`
-
         """
         return osv.OSV(self, browse_record.__osv__['name'])._refresh(
             browse_record, context)
 
     def reset(self, browse_record):
-        """Cancel all changes made locally on the ``browse_record``.
+        """Cancel all changes made locally on the `browse_record`.
         No request to the server is executed to perform this operation.
         Therefore, values restored may be outdated.
-
         """
         return osv.OSV(self, browse_record.__osv__['name'])._reset(
             browse_record)
 
     @staticmethod
     def get_osv_name(browse_record):
-        """Return the OSV server class name of the ``browse_record`` supplied.
+        """Return the model name of the `browse_record` supplied.
 
         >>> partner = oerp.browse('res.partner', 1)
         >>> oerp.get_osv_name(partner)
         'res.partner'
 
-        :return: the OSV server class name of the browsable record
-
+        :return: the model name of the browsable record
         """
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"Value is not a browse_record.")
         return browse_record.__osv__['name']
 
-    def get(self, osv_name):
+    def get(self, model):
         """.. versionadded:: 0.5.0
 
-        Return a proxy of the OSV class `osv_name` built from the `OpenERP`
-        server. See <TODO>.
+        Return a proxy of the `model` built from the `OpenERP`
+        server (see :class:`oerplib.service.osv.OSV`).
 
+        :return: an instance of :class:`oerplib.service.osv.OSV`
         """
-        return osv.OSV(self, osv_name)
+        return osv.OSV(self, model)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -34,14 +34,14 @@ Or, if no default database was specified before::
     >>> user = oerp.login(user='admin', passwd='admin', database='db_name')
 
 The ``login`` method returns an object representing the user connected.
-It is built from the server-side OSV model ``res.users``, and all its
+It is built from the server-side model ``res.users``, and all its
 informations are accessible (see :ref:`browse-records` section)::
 
     >>> print(user.name)            # print the full name of the user
     >>> print(user.company_id.name) # print the name of its company
 
 Now you are connected, you can easily execute any kind of `RPC` queries on the
-the `OpenERP` server (execute `OSV` class methods, download reports,
+the `OpenERP` server (execute model methods, trigger workflow, download reports,
 and handle wizards).
 
 .. _tutorials-execute-queries:
@@ -51,12 +51,12 @@ Execute queries
 
 The basic method to execute queries (related to the ``/object`` `RPC` service)
 is :func:`execute <oerplib.OERP.execute>`.
-It takes at least two parameters (OSV model name and the method name)
+It takes at least two parameters (model name and the method name)
 following by variable parameters according to the method called. Example::
 
     >>> order_data = oerp.execute('sale.order', 'read', [1], ['name'])
 
-This instruction will call the ``read`` method of the OSV model ``sale.order``
+This instruction will call the ``read`` method of the model ``sale.order``
 with the parameters ``[1]`` (list of record IDs) and ``['name']`` (list of
 fields to return).
 
@@ -72,7 +72,7 @@ and ``search`` there are convenient shortcuts available (see
     >>> oerp.unlink('res.partner', [partner_id])
     True
 
-There is another way to perform all methods of an OSV class, with the
+There is another way to perform all methods of a model, with the
 :func:`get <oerplib.OERP.get>` method, which provide an API
 almost syntactically identical to the `OpenERP` server side API
 (see :class:`oerplib.service.osv.OSV`)::
@@ -89,7 +89,7 @@ almost syntactically identical to the `OpenERP` server side API
 
 If you run an `OpenERP` version `6.1` or above, the user context is
 automatically sent.
-You can disable this behaviour with the `oerplib.OERP.config` property::
+You can disable this behaviour with the :attr:`oerplib.OERP.config` property::
 
     >>> oerp.config['auto_context'] = False
     >>> product_osv.name_get([3, 4])    # Without context, lang 'en_US' by default
@@ -97,7 +97,7 @@ You can disable this behaviour with the `oerplib.OERP.config` property::
 
 .. note::
 
-    The ``auto_context`` only affect `OSV` methods.
+    The ``auto_context`` option only affect model methods.
 
 Here is another example of how to install a module (you have to be logged
 as an administrator to perform this task). The ``button_immediate_install``
@@ -130,8 +130,8 @@ records are generated on the fly::
     for addr in partner.address:
         print(addr.name)
 
-You can browse objects through an :class:`OSV <oerplib.service.osv.OSV>`
-class too. In fact, both methods are strictly identical,
+You can browse objects through a :class:`model <oerplib.service.osv.OSV>`
+too. In fact, both methods are strictly identical,
 :func:`oerplib.OERP.browse` is simply a shortcut to the other::
 
     >>> partner1 = oerp.browse('res.partner', 3)
@@ -296,7 +296,7 @@ Generate reports
 
 Another nice functionnality is the reports generation (related to the
 ``/report`` `RPC` service) with the :func:`report <oerplib.OERP.report>` method.
-You have to supply the name of the report, the name of the OSV model and
+You have to supply the name of the report, the name of the model and
 the ID of the record related::
 
     >>> oerp.report('sale.order', 'sale.order', 1)

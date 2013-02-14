@@ -182,9 +182,9 @@ class Many2OneField(BaseField):
         super(Many2OneField, self).check_value(value)
         if value and value.__osv__['name'] != self.relation:
             raise ValueError(
-                (u"Instance of '{osv_name}' supplied doesn't match with the " +
+                (u"Instance of '{model}' supplied doesn't match with the " +
                  u"relation '{relation}' of the '{field_name}' field.").format(
-                     osv_name=value.__osv__['name'],
+                     model=value.__osv__['name'],
                      relation=self.relation,
                      field_name=self.name))
         return value
