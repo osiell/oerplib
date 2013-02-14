@@ -6,6 +6,7 @@ v0.7.0, 2012-xx-xx:
       generator to iterate on 'browse_record' instead of a list,
     - [REGRESSION] 'osv_name' parameter of some functions has been renamed
       to 'model',
+    - 'OERP.get_osv_name()' method deprecated,
     - Documentation updated.
 
     Bug fixes:

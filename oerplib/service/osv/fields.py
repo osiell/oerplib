@@ -227,7 +227,7 @@ class One2ManyField(BaseField):
 
 
 class ReferenceField(BaseField):
-    """.. versionadded:: 0.6.0
+    """.. versionadded:: 0.6
     Represent the OpenObject 'fields.reference'.
     """
     def __init__(self, osv, name, data):

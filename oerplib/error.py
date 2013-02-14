@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 """This module contains all exceptions raised by `OERPLib` when an error
 occurred.
-
 """
 
 
@@ -16,7 +15,7 @@ class Error(Exception):
 
 
 class RPCError(Error):
-    """Exception raised when an error related to a RPC query occurs."""
+    """Exception raised when an error related to a RPC query occurred."""
     pass
 
 

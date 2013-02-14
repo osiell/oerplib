@@ -6,7 +6,7 @@ class BrowseRecord(object):
     """Base class that all browsable records inherit from.
     No attributes should be defined in this class (except ``_id``/``id``,
     ``__oerp__``, ``__osv__``, ``__data__`` and Python magic methods) in order
-    to not be conflicted with the fields defined in the `OSV` model class on
+    to not be conflicted with the fields defined in the model class on
     the `OpenERP` server.
 
     A reference to the :class:`OERP <oerplib.OERP>` object used to instanciate
@@ -32,7 +32,7 @@ class BrowseRecord(object):
                     ...}}
 
     In the same way, information about the `OSV` class and its columns may be
-    obtained via the ``__ osv__`` attribute::
+    obtained via the ``__osv__`` attribute::
 
         >>> user.__osv__
         {'columns': {'action_id': <oerplib.service.osv.fields.Many2OneField object at 0xb75786ec>,

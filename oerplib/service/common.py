@@ -7,7 +7,7 @@ from oerplib import rpc, error
 
 
 class Common(object):
-    r""".. versionadded:: 0.6.0
+    """.. versionadded:: 0.6
 
     The `Common` class represents the ``/common`` RPC service.
     Lets you log in on `OpenERP`, and provides various utility functions.

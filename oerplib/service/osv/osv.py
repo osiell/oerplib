@@ -10,7 +10,7 @@ from oerplib.service.osv import fields, browse
 
 
 class OSV(collections.Mapping):
-    """.. versionadded:: 0.5.0
+    """.. versionadded:: 0.5
 
     Represent a data model from the `OpenERP` server.
 

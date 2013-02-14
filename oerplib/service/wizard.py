@@ -6,7 +6,7 @@ from oerplib import rpc, error
 
 
 class Wizard(object):
-    r""".. versionadded:: 0.6.0
+    """.. versionadded:: 0.6
 
     The `Wizard` class represents the ``/wizard`` RPC service which
     lets you access to the old-style wizards.

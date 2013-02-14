@@ -28,13 +28,14 @@ class OERP(object):
         >>> import oerplib
         >>> oerp = oerplib.OERP('localhost', protocol='xmlrpc', port=8069)
 
-    By default (since the version `0.7.0`), `OERPLib` will try to detect the
+    Since the version `0.7`, `OERPLib` will try by default to detect the
     `OpenERP` server version in order to adapt its requests. However, it is
     possible to force the version of `OpenERP` with the `version` parameter:
 
         >>> oerp = oerplib.OERP('localhost', version='6.0')
 
-    :raise: :class:`oerplib.error.InternalError`
+    :raise: :class:`oerplib.error.InternalError`,
+        :class:`oerplib.error.RPCError`
     """
 
     def __init__(self, server='localhost', database=None, protocol='xmlrpc',
@@ -70,9 +71,10 @@ class OERP(object):
         {'auto_context': True, 'timeout': 120}
 
         - ``auto_context``: if set to `True`, the user context will be sent
-          automatically to every call of an `OSV` method (default: `True`):
+          automatically to every call of a
+          :class:`model <oerplib.service.osv.OSV>` method (default: `True`):
 
-            .. versionadded:: 0.7.0
+            .. versionadded:: 0.7
 
             .. note::
 
@@ -88,7 +90,7 @@ class OERP(object):
         - ``timeout``: set the maximum timeout in seconds for a RPC request
           (default: `120`):
 
-            .. versionadded:: 0.6.0
+            .. versionadded:: 0.6
 
             >>> oerp.config['timeout'] = 300
 
@@ -129,17 +131,17 @@ class OERP(object):
     database = property(lambda self: self._database,
                         doc="The database currently used.")
     common = property(lambda self: self._common,
-                      doc=(""".. versionadded:: 0.6.0
+                      doc=(""".. versionadded:: 0.6
 
                        The common service (``/common`` RPC service).
                        See the :class:`oerplib.service.common.Common` class."""))
     db = property(lambda self: self._db,
-                  doc=(""".. versionadded:: 0.4.0
+                  doc=(""".. versionadded:: 0.4
 
                        The database management service (``/db`` RPC service).
                        See the :class:`oerplib.service.db.DB` class."""))
     wizard = property(lambda self: self._wizard,
-                      doc=(""".. versionadded:: 0.6.0
+                      doc=(""".. versionadded:: 0.6
 
                        The wizard service (``/wizard`` RPC service).
                        See the :class:`oerplib.service.wizard.Wizard` class."""))
@@ -147,9 +149,9 @@ class OERP(object):
     # RPC Connector timeout
     @property
     def timeout(self):
-        """.. versionadded:: 0.6.0
+        """.. versionadded:: 0.6
 
-        .. deprecated:: 0.7.0 will be deleted in the next version. Use the
+        .. deprecated:: 0.7 will be deleted in the next version. Use the
             :attr:`OERP.config <oerplib.OERP.config>` property instead
 
         Set the maximum timeout for a RPC request.
@@ -453,7 +455,7 @@ class OERP(object):
     # ---------------------- #
 
     def write_record(self, browse_record, context=None):
-        """.. versionadded:: 0.4.0
+        """.. versionadded:: 0.4
 
         Update the record corresponding to `browse_record` by sending its values
         to the `OpenERP` database (only field values which have been changed).
@@ -471,7 +473,7 @@ class OERP(object):
             browse_record, context)
 
     def unlink_record(self, browse_record, context=None):
-        """.. versionadded:: 0.4.0
+        """.. versionadded:: 0.4
 
         Delete the record corresponding to `browse_record` from the `OpenERP`
         database.
@@ -507,20 +509,22 @@ class OERP(object):
 
     @staticmethod
     def get_osv_name(browse_record):
-        """Return the model name of the `browse_record` supplied.
+        """.. deprecated:: 0.7 use the ``__osv__`` attribute instead
+            (see :class:`BrowseRecord <oerplib.service.osv.BrowseRecord>`).
 
         >>> partner = oerp.browse('res.partner', 1)
         >>> oerp.get_osv_name(partner)
         'res.partner'
 
         :return: the model name of the browsable record
+
         """
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"Value is not a browse_record.")
         return browse_record.__osv__['name']
 
     def get(self, model):
-        """.. versionadded:: 0.5.0
+        """.. versionadded:: 0.5
 
         Return a proxy of the `model` built from the `OpenERP`
         server (see :class:`oerplib.service.osv.OSV`).

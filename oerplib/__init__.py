@@ -4,7 +4,6 @@
 The :class:`OERP` class manage the client-side operations which are related to
 an `OpenERP` server. You can use this one to write Python programs that performs
 a variety of automated jobs that communicate with an `OpenERP` server.
-
 """
 
 __author__ = 'ABF Osiell - Sebastien Alix'
