@@ -1,12 +1,15 @@
 v0.7.0, 2012-xx-xx:
     - User context is sent automatically (OpenERP >= 6.1),
     - Able to use named parameters with OSV methods (OpenERP >= 6.1),
-    - Auto-detect the OpenERP server version to adapt the API,
+    - Auto-detect the OpenERP server version (enable or disable some features
+      according to the version),
     - [REGRESSION] one2many and many2many descriptor attributes now return a
       generator to iterate on 'browse_record' instead of a list,
     - [REGRESSION] 'osv_name' parameter of some functions has been renamed
       to 'model',
-    - 'OERP.get_osv_name()' method deprecated,
+    - 'OERP.timeout' property deprecated (use 'OERP.config["timeout"]' instead),
+    - 'OERP.get_osv_name()' method deprecated (use 'record.__osv__["name"]'
+      instead),
     - Documentation updated.
 
     Bug fixes:
