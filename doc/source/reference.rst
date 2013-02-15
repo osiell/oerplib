@@ -14,5 +14,6 @@ Reference
     ref_db
     ref_wizard
     ref_rpc
+    ref_tools
     ref_error
 

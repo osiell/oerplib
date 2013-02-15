@@ -509,8 +509,9 @@ class OERP(object):
 
     @staticmethod
     def get_osv_name(browse_record):
-        """.. deprecated:: 0.7 use the ``__osv__`` attribute instead
-            (see :class:`BrowseRecord <oerplib.service.osv.BrowseRecord>`).
+        """
+        .. deprecated:: 0.7 use the ``__osv__`` attribute instead
+           (see :class:`BrowseRecord <oerplib.service.osv.BrowseRecord>`).
 
         >>> partner = oerp.browse('res.partner', 1)
         >>> oerp.get_osv_name(partner)
