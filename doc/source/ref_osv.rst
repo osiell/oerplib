@@ -1,10 +1,10 @@
 oerplib.service.osv
 ===================
 
-oerplib.service.osv.OSV
-'''''''''''''''''''''''
+oerplib.service.osv.Model
+'''''''''''''''''''''''''
 
-.. autoclass:: oerplib.service.osv.OSV
+.. autoclass:: oerplib.service.osv.Model
     :members:
 
 oerplib.service.osv.BrowseRecord

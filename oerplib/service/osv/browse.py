@@ -31,7 +31,7 @@ class BrowseRecord(object):
                     'company_id': [1, 'Your Company'],
                     ...}}
 
-    In the same way, information about the `OSV` class and its columns may be
+    In the same way, information about the model class and its columns may be
     obtained via the ``__osv__`` attribute::
 
         >>> user.__osv__
@@ -64,10 +64,10 @@ class BrowseRecord(object):
         return self._id
 
     def __eq__(self, other):
-        """Compare two browse records. Return ``True`` if their ID and OSV name
-        are equals.
+        """Compare two browse records. Return ``True`` if their ID and model
+        name are equals.
 
-        NOTE: the comparison is made this way because their OSV classes can be
+        NOTE: the comparison is made this way because their model classes can be
         differents objects.
 
         """

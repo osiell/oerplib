@@ -4,7 +4,7 @@ the `OpenERP` server, such as:
     - '/common' (service.common),
     - '/db' (service.db)
     - '/wizard' (service.wizard)
-    - OSV, through '/object' (service.osv),
+    - Model, through '/object' (service.osv),
 """
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

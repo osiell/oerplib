@@ -18,37 +18,37 @@ class TestOSV(unittest.TestCase):
             version=ARGS.version)
         self.user = self.oerp.login(ARGS.user, ARGS.passwd, ARGS.database)
 
-    def test_osv(self):
+    def test_model(self):
         # Check the result returned
         self.oerp.get('res.users')
 
-    def test_osv_method(self):
+    def test_model_method(self):
         # Check the result returned
-        osv_class = self.oerp.get('res.users')
-        osv_class.name_get(self.user.id)
+        model = self.oerp.get('res.users')
+        model.name_get(self.user.id)
 
-    def test_osv_method_without_args(self):
+    def test_model_method_without_args(self):
         # Handle exception (execute a 'name_get' with without args)
-        osv_class = self.oerp.get('res.users')
+        model = self.oerp.get('res.users')
         self.assertRaises(
             oerplib.error.RPCError,
-            osv_class.name_get)
+            model.name_get)
 
-    def test_osv_method_with_wrong_args(self):
+    def test_model_method_with_wrong_args(self):
         # Handle exception (execute a 'search' with wrong args)
-        osv_class = self.oerp.get('res.users')
+        model = self.oerp.get('res.users')
         self.assertRaises(
             oerplib.error.RPCError,
-            osv_class.search,
+            model.search,
             False)  # Wrong arg
 
-    def test_osv_browse_with_one_id(self):
+    def test_model_browse_with_one_id(self):
         # Check the result returned
-        osv_class = self.oerp.get('res.users')
-        user = osv_class.browse(self.user.id)
+        model = self.oerp.get('res.users')
+        user = model.browse(self.user.id)
         self.assertEqual(user, self.user)
 
-    def test_osv_browse_with_ids(self):
+    def test_model_browse_with_ids(self):
         # Iteration
         for result in self.oerp.get('res.users').browse([self.user.id]):
             self.assertEqual(self.user, result)

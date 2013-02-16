@@ -72,7 +72,7 @@ class OERP(object):
 
         - ``auto_context``: if set to `True`, the user context will be sent
           automatically to every call of a
-          :class:`model <oerplib.service.osv.OSV>` method (default: `True`):
+          :class:`model <oerplib.service.osv.Model>` method (default: `True`):
 
             .. versionadded:: 0.7
 
@@ -469,7 +469,7 @@ class OERP(object):
         """
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
-        return osv.OSV(self, browse_record.__osv__['name'])._write_record(
+        return osv.Model(self, browse_record.__osv__['name'])._write_record(
             browse_record, context)
 
     def unlink_record(self, browse_record, context=None):
@@ -486,7 +486,7 @@ class OERP(object):
         """
         if not isinstance(browse_record, osv.BrowseRecord):
             raise ValueError(u"An instance of BrowseRecord is required")
-        return osv.OSV(self, browse_record.__osv__['name'])._unlink_record(
+        return osv.Model(self, browse_record.__osv__['name'])._unlink_record(
             browse_record, context)
 
     def refresh(self, browse_record, context=None):
@@ -496,7 +496,7 @@ class OERP(object):
 
         :raise: :class:`oerplib.error.RPCError`
         """
-        return osv.OSV(self, browse_record.__osv__['name'])._refresh(
+        return osv.Model(self, browse_record.__osv__['name'])._refresh(
             browse_record, context)
 
     def reset(self, browse_record):
@@ -504,7 +504,7 @@ class OERP(object):
         No request to the server is executed to perform this operation.
         Therefore, values restored may be outdated.
         """
-        return osv.OSV(self, browse_record.__osv__['name'])._reset(
+        return osv.Model(self, browse_record.__osv__['name'])._reset(
             browse_record)
 
     @staticmethod
@@ -528,10 +528,10 @@ class OERP(object):
         """.. versionadded:: 0.5
 
         Return a proxy of the `model` built from the `OpenERP`
-        server (see :class:`oerplib.service.osv.OSV`).
+        server (see :class:`oerplib.service.osv.Model`).
 
-        :return: an instance of :class:`oerplib.service.osv.OSV`
+        :return: an instance of :class:`oerplib.service.osv.Model`
         """
-        return osv.OSV(self, model)
+        return osv.Model(self, model)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

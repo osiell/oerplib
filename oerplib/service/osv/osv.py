@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
-"""Provide the :class:`OSV` class which allow to access dynamically to all
-methods proposed by an OSV model of the `OpenERP` server."""
+"""Provide the :class:`Model` class which allow to access dynamically to all
+methods proposed by an model of the `OpenERP` server."""
 
 import collections
 
@@ -9,7 +9,7 @@ from oerplib import error
 from oerplib.service.osv import fields, browse
 
 
-class OSV(collections.Mapping):
+class Model(collections.Mapping):
     """.. versionadded:: 0.5
 
     Represent a data model from the `OpenERP` server.
@@ -21,17 +21,17 @@ class OSV(collections.Mapping):
     >>> import oerplib
     >>> oerp = oerplib.OERP('localhost')
     >>> user = oerp.login('admin', 'passwd', 'database')
-    >>> user_osv = oerp.get('res.users')
-    >>> user_osv
-    <oerplib.service.osv.osv.OSV object at 0xb75ba4ac>
-    >>> user_osv.name_get(user.id) # Use any methods from the OSV instance
+    >>> user_obj = oerp.get('res.users')
+    >>> user_obj
+    <oerplib.service.osv.osv.Model object at 0xb75ba4ac>
+    >>> user_obj.name_get(user.id) # Use any methods from the model instance
     [[1, 'Administrator']]
 
     .. warning::
 
         The only method implemented in this class is ``browse``. Except this
         one, method calls are purely dynamic. As long as you know the signature
-        of the OSV method targeted, you will be able to use it
+        of the model method targeted, you will be able to use it
         (see the :ref:`tutorial <tutorials-execute-queries>`).
 
     """
@@ -39,14 +39,14 @@ class OSV(collections.Mapping):
     fields_reserved = ['id', '__oerp__', '__osv__', '__data__']
 
     def __init__(self, oerp, model):
-        super(OSV, self).__init__()
+        super(Model, self).__init__()
         self._oerp = oerp
         self._name = model
         self._browse_class = self._generate_browse_class()
 
     def _browse_generator(self, ids, context=None):
         """Generator used by the
-        :func:`browse <oerplib.OERP.service.osv.osv.OSV.browse>` method.
+        :func:`browse <oerplib.OERP.service.osv.Model.browse>` method.
 
         """
         for o_id in ids:
@@ -81,7 +81,7 @@ class OSV(collections.Mapping):
 
     def _generate_browse_class(self):
         """Generate a class with all its fields corresponding to
-        the OSV name supplied and return them.
+        the model name supplied and return them.
 
         """
         # Retrieve server fields info and generate corresponding local fields
@@ -91,7 +91,7 @@ class OSV(collections.Mapping):
             cls_name = cls_name.encode('utf-8')
         cls_fields = {}
         for field_name, field_data in fields_get.items():
-            if field_name not in OSV.fields_reserved:
+            if field_name not in Model.fields_reserved:
                 cls_fields[field_name] = fields.generate_field(
                     self, field_name, field_data)
         # Case where no field 'name' exists, we generate one (which will be

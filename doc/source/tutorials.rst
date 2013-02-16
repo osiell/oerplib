@@ -75,16 +75,16 @@ and ``search`` there are convenient shortcuts available (see
 There is another way to perform all methods of a model, with the
 :func:`get <oerplib.OERP.get>` method, which provide an API
 almost syntactically identical to the `OpenERP` server side API
-(see :class:`oerplib.service.osv.OSV`)::
+(see :class:`oerplib.service.osv.Model`)::
 
-    >>> user_osv = oerp.get('res.users')
-    >>> user_osv.write([1], {'name': "Dupont D."})
+    >>> user_obj = oerp.get('res.users')
+    >>> user_obj.write([1], {'name': "Dupont D."})
     True
-    >>> context = user_osv.context_get()
+    >>> context = user_obj.context_get()
     >>> context
     {'lang': 'fr_FR', 'tz': False}
-    >>> product_osv = oerp.get('product.product')
-    >>> product_osv.name_get([3, 4])
+    >>> product_obj = oerp.get('product.product')
+    >>> product_obj.name_get([3, 4])
     [[3, '[PC1] PC Basic'], [4, u'[PC2] Basic+ PC (assembl\xe9 sur commande)']]
 
 If you run an `OpenERP` version `6.1` or above, the user context is
@@ -92,7 +92,7 @@ automatically sent.
 You can disable this behaviour with the :attr:`oerplib.OERP.config` property::
 
     >>> oerp.config['auto_context'] = False
-    >>> product_osv.name_get([3, 4])    # Without context, lang 'en_US' by default
+    >>> product_obj.name_get([3, 4])    # Without context, lang 'en_US' by default
     [[3, '[PC1] Basic PC'], [4, '[PC2] Basic+ PC (assembly on order)']]
 
 .. note::
@@ -103,9 +103,9 @@ Here is another example of how to install a module (you have to be logged
 as an administrator to perform this task). The ``button_immediate_install``
 method used here is available since `OpenERP v6.1`::
 
-    >>> module_osv = oerp.get('ir.module.module')
-    >>> module_id = module_osv.search([('name', '=', 'purchase')])
-    >>> module_osv.button_immediate_install(module_id)
+    >>> module_obj = oerp.get('ir.module.module')
+    >>> module_id = module_obj.search([('name', '=', 'purchase')])
+    >>> module_obj.button_immediate_install(module_id)
 
 .. _browse-records:
 
@@ -130,7 +130,7 @@ records are generated on the fly::
     for addr in partner.address:
         print(addr.name)
 
-You can browse objects through a :class:`model <oerplib.service.osv.OSV>`
+You can browse objects through a :class:`model <oerplib.service.osv.Model>`
 too. In fact, both methods are strictly identical,
 :func:`oerplib.OERP.browse` is simply a shortcut to the other::
 
