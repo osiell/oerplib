@@ -224,8 +224,6 @@ to ensure data integrity::
 One2Many and Many2Many
 ''''''''''''''''''''''
 
-.. versionadded:: 0.6.0
-
 ``one2many`` and ``many2many`` fields can be updated by providing
 a list of tuple as specified in the `OpenERP` documentation::
 
@@ -235,8 +233,6 @@ a list of tuple as specified in the `OpenERP` documentation::
 
 Reference
 '''''''''
-
-.. versionadded:: 0.6.0
 
 To update a ``reference`` field, you have to use either a string or a browsable
 record as below::
@@ -309,11 +305,9 @@ The method will return the path to the generated temporary report file.
 Manage databases
 ----------------
 
-.. versionadded:: 0.4.0
-
-You can manage ``OpenERP`` databases with the :attr:`oerplib.OERP.db` property.
+You can manage `OpenERP` databases with the :attr:`oerplib.OERP.db` property.
 It offers you a dynamic access to all methods of the ``/db`` RPC service in
-order to list, create, drop, dump and restore databases.
+order to list, create, drop, dump, restore databases and so on.
 
 .. note::
     You have not to be logged in to perform database management tasks.
@@ -333,7 +327,7 @@ Let's create a new database::
 
     >>> database_id = oerp.db.create('super_admin_passwd', 'test_db', False, 'fr_FR', 'admin')
 
-The creation process may take some time on the ``OpenERP`` server, and you have
+The creation process may take some time on the `OpenERP` server, and you have
 to wait before using the new database. The state of the creation process is
 returned by the
 :func:`get_progress <oerplib.service.db.DB.get_progress>` method::
@@ -355,9 +349,6 @@ is available :class:`here <oerplib.service.db.DB>`.
 
 Change the timeout
 ------------------
-
-.. versionadded:: 0.6.0
-.. versionchanged:: 0.7.0
 
 By default, the timeout is set to 120 seconds for all RPC requests.
 If your requests need a higher timeout, you can set it through the

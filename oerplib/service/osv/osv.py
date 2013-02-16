@@ -53,8 +53,8 @@ class OSV(collections.Mapping):
             yield self.browse(o_id, context)
 
     def browse(self, ids, context=None):
-        """Browse one record or several records (if `ids` is a list of IDs)
-        of `model`. The fields and values for such objects are generated
+        """Browse one or several records (if `ids` is a list of IDs)
+        from `model`. The fields and values for such objects are generated
         dynamically.
 
         >>> oerp.get('res.partner').browse(1)

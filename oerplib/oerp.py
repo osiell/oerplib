@@ -361,8 +361,8 @@ class OERP(object):
     # ------------------------- #
 
     def browse(self, model, ids, context=None):
-        """Browse one record or several records (if `ids` is a list of IDs)
-        of `model`. The fields and values for such objects are generated
+        """Browse one or several records (if `ids` is a list of IDs)
+        from `model`. The fields and values for such objects are generated
         dynamically.
 
         >>> oerp.browse('res.partner', 1)
