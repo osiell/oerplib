@@ -415,7 +415,7 @@ def generate_field(osv, name, data):
     elif data['type'] == 'datetime':
         field = DateTimeField(osv, name, data)
     elif data['type'] in ['char', 'float', 'integer',
-                          'boolean', 'text', 'binary']:
+                          'boolean', 'text', 'binary', 'html']:
         field = ValueField(osv, name, data)
     else:
         txt = (u"Can't instanciate the field '{field_name}', "
