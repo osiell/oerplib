@@ -1,8 +1,9 @@
-v0.7.0, 2012-xx-xx:
+v0.7.0, 2013-02-18:
     - User context is sent automatically (OpenERP >= 6.1),
     - Able to use named parameters with OSV methods (OpenERP >= 6.1),
     - Auto-detect the OpenERP server version (enable or disable some features
       according to the version),
+    - Add support for 'html' type fields,
     - [REGRESSION] one2many and many2many descriptor attributes now return a
       generator to iterate on 'browse_record' instead of a list,
     - [REGRESSION] 'osv_name' parameter of some functions has been renamed
