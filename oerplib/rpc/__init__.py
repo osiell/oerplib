@@ -11,7 +11,7 @@ Here is an example of how to use it:
     Get a `RPC` connector object::
 
     >>> from oerplib import rpc
-    >>> cnt = rpc.get_connector('localhost', 8070, 'netrpc')
+    >>> cnt = rpc.get_connector('localhost', 8069, 'xmlrpc')
 
     Login and retrieve ID of the user connected::
 
@@ -44,14 +44,18 @@ def get_connector(server, port=8069, protocol='xmlrpc',
     """Return a `RPC` connector to interact with an `OpenERP` server.
     Supported protocols are:
 
-        - 'xmlrpc': Standard XML-RPC protocol (default),
-        - 'xmlrpc+ssl': XML-RPC protocol over SSL,
-        - 'netrpc': Net-RPC protocol made by `OpenERP`.
+        - ``xmlrpc``: Standard XML-RPC protocol (default),
+        - ``xmlrpc+ssl``: XML-RPC protocol over SSL,
+        - ``netrpc``: Net-RPC protocol made by `OpenERP` (deprecated since
+          `OpenERP v7.0`).
 
-    If the ``version`` parameter is set to `None`, the last API supported will
+    If the `version` parameter is set to `None`, the last API supported will
     be use to send requests to `OpenERP`. Otherwise, you can force the
     API to use with the corresponding string version
-    (e.g.: ``'6.0', '6.1', '7.0', ...``).
+    (e.g.: ``'6.0', '6.1', '7.0', ...``):
+
+        >>> from oerplib import rpc
+        >>> cnt = rpc.get_connector('localhost', 8069, 'xmlrpc', version='6.1')
     """
     if protocol not in PROTOCOLS:
         txt = ("The protocol '{0}' is not supported. "
