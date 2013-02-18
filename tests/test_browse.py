@@ -56,7 +56,7 @@ class TestBrowse(unittest.TestCase):
         self.assertEqual(False, result.id)
 
     def test_browse_with_wrong_id(self):
-        # Handle exception (execute a 'browse' without args)
+        # Handle exception (execute a 'browse' with wrong ID)
         self.assertRaises(
             oerplib.error.RPCError,
             self.oerp.browse,
@@ -78,15 +78,6 @@ class TestBrowse(unittest.TestCase):
             'res.users',
             "wrong_arg")  # Wrong arg
 
-    def test_write_record_char(self):
-        backup_name = self.user.name
-        self.user.name = "Charly"
-        self.oerp.write_record(self.user)
-        self.assertEqual(self.user.name, "Charly")
-        self.user.name = backup_name
-        self.oerp.write_record(self.user)
-        self.assertEqual(self.user.name, backup_name)
-
     def test_reset(self):
         # Check the result returned
         self.user.name = "Charly"
@@ -98,5 +89,137 @@ class TestBrowse(unittest.TestCase):
         self.user.name = "Charly"
         self.oerp.refresh(self.user)
         self.assertEqual(self.user.name, "Administrator")
+
+    def test_write_record_char(self):
+        backup_name = self.user.name
+        self.user.name = "Charly"
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.name, "Charly")
+        self.user.name = backup_name
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.name, backup_name)
+
+    def test_write_record_boolean(self):
+        self.user.active = False
+        self.user.active = True
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.active, True)
+
+    def test_write_record_float(self):
+        partner = self.user.company_id.partner_id
+        partner.credit_limit = False
+        self.oerp.write_record(partner)
+        self.assertEqual(partner.credit_limit, 0.0)
+        partner.credit_limit = 0.0
+        self.oerp.write_record(partner)
+        self.assertEqual(partner.credit_limit, 0.0)
+
+    def test_write_record_integer(self):
+        cur = self.oerp.browse('res.currency', 1)
+        backup_accuracy = cur.accuracy
+        cur.accuracy = False
+        self.oerp.write_record(cur)
+        self.assertEqual(cur.accuracy, 0)
+        cur.accuracy = backup_accuracy
+        self.oerp.write_record(cur)
+        self.assertEqual(cur.accuracy, backup_accuracy)
+
+    def test_write_record_selection(self):
+        self.user.context_tz = False
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.context_tz, False)
+        self.user.context_tz = 'Europe/Paris'
+        self.oerp.write_record(self.user)
+        self.assertEqual(self.user.context_tz, 'Europe/Paris')
+
+    def test_write_record_date(self):
+        partner = self.user.company_id.partner_id
+        partner.date = False
+        self.oerp.write_record(partner)
+        self.assertEqual(partner.date, False)
+        partner.date = '2012-01-01'
+        self.oerp.write_record(partner)
+        self.assertEqual(partner.date, datetime.date(2012, 1, 1))
+        partner.date = datetime.date(2012, 1, 1)
+        self.oerp.write_record(partner)
+        self.assertEqual(partner.date, datetime.date(2012, 1, 1))
+
+    #def test_write_record_datetime(self):
+    #    bank_st_obj = self.oerp.get('account.bank.statement')
+    #    bank_st_id = bank_st_obj.create({'journal_id': 1})
+    #    bank_st = bank_st_obj.browse(bank_st_id)
+    #    bank_st.closing_date = False
+    #    self.oerp.write_record(bank_st)
+    #    self.assertEqual(bank_st.closing_date, False)
+    #    bank_st.closing_date = '2012-01-01 0:0:0'
+    #    self.oerp.write_record(bank_st)
+    #    self.assertEqual(bank_st.closing_date, datetime.datetime(2012, 1, 1))
+    #    bank_st.closing_st = datetime.datetime(2012, 1, 1)
+    #    self.oerp.write_record(bank_st)
+    #    self.assertEqual(bank_st.closing_date, datetime.datetime(2012, 1, 1))
+    #    version = self.oerp.db.server_version()
+    #    # OpenERP 5.0.X
+    #    if version[:3] in ['5.0']:
+    #        act = self.oerp.browse('ir.actions.todo', 1)
+    #        act.start_date = False
+    #        self.oerp.write_record(act)
+    #        self.assertEqual(act.start_date, False)
+    #        act.start_date = '2012-01-01 0:0:0'
+    #        self.oerp.write_record(act)
+    #        self.assertEqual(act.start_date, datetime.datetime(2012, 1, 1))
+    #        act.start_date = datetime.datetime(2012, 1, 1)
+    #        self.oerp.write_record(act)
+    #        self.assertEqual(act.start_date, datetime.datetime(2012, 1, 1))
+    #    # OpenERP 6.0.X
+    #    elif version[:3] in ['6.0']:
+    #        # TODO
+    #        pass
+
+    def test_write_record_many2many(self):
+        backup_groups = [grp for grp in self.user.groups_id]
+        # False
+        self.user.groups_id = False
+        self.oerp.write_record(self.user)
+        self.assertEqual(list(self.user.groups_id), backup_groups)
+        # []
+        self.user.groups_id = []
+        self.oerp.write_record(self.user)
+        self.assertEqual(list(self.user.groups_id), backup_groups)
+        # [(6, 0, ...)]
+        self.user.groups_id = [(6, 0, [grp.id for grp in backup_groups])]
+        self.oerp.write_record(self.user)
+        self.assertEqual(list(self.user.groups_id), backup_groups)
+
+    #def test_write_record_many2one(self):
+    #    addr = self.oerp.get('res.partner.address').browse(1)
+    #    backup_partner = addr.partner_id
+    #    addr.partner_id = False
+    #    self.oerp.write_record(addr)
+    #    self.assertEqual(addr.partner_id, False)
+    #    addr.partner_id = backup_partner
+    #    self.oerp.write_record(addr)
+    #    self.assertEqual(addr.partner_id.id, backup_partner.id)
+    #    addr.partner_id = backup_partner.id
+    #    self.oerp.write_record(addr)
+    #    self.assertEqual(addr.partner_id.id, backup_partner.id)
+
+    #def test_write_record_one2many(self):
+    #    partner = self.user.company_id.partner_id
+    #    backup_address = [addr for addr in partner.address]
+    #    # False
+    #    partner.address = False
+    #    self.oerp.write_record(partner)
+    #    self.assertEqual(list(partner.address), backup_address)
+    #    # []
+    #    partner.address = []
+    #    self.oerp.write_record(partner)
+    #    self.assertEqual(list(partner.address), backup_address)
+    #    # [(1, ID, { values })]
+    #    addr_id = list(partner.address)[0].id
+    #    partner.address = [(1, addr_id, {'name': u"OERPLib-test"})]
+    #    self.oerp.write_record(partner)
+    #    self.assertEqual(list(partner.address), backup_address)
+    #    addr = list(partner.address)[0]
+    #    self.assertEqual(addr.name, u"OERPLib-test")
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
