@@ -54,8 +54,8 @@ See the documentation for more details.
 Supported OpenERP versions
 --------------------------
 
-`OERPLib` is known to work with `OpenERP` server v5.0, v6.0, v6.1 and v7.0
-(and above?).
+`OERPLib` has been tested on `OpenERP` server v5.0, v6.0, v6.1 and v7.0.
+It should work on next versions if `OpenERP` keeps a stable API.
 
 Supported Python versions
 -------------------------

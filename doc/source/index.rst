@@ -57,7 +57,8 @@ How does it work? See below::
     user.name = "Brian Jones"
     oerp.write_record(user)
 
-For more details, see the :ref:`tutorials <tutorials>` and the :ref:`API reference <reference>`.
+For more details, see the :ref:`tutorials <tutorials>` and the
+:ref:`API reference <reference>`.
 
 Download and install
 --------------------
@@ -77,8 +78,8 @@ Contents
 Supported OpenERP versions
 --------------------------
 
-`OERPLib` is known to work with `OpenERP` server v5.0, v6.0, v6.1 and v7.0
-(and above?).
+`OERPLib` has been tested on `OpenERP` server v5.0, v6.0, v6.1 and v7.0.
+It should work on next versions if `OpenERP` keeps a stable API.
 
 Supported Python versions
 -------------------------

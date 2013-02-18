@@ -12,6 +12,8 @@ def clean_version(version):
         >>> from oerplib.tools import clean_version
         >>> clean_version('7.0alpha-20121206-000102')
         '7.0'
+
+    :return: a cleaner version string
     """
     version = match_version.sub('', version.split('-')[0])
     return version
@@ -25,7 +27,6 @@ def detect_version(server, protocol, port, timeout=120):
         '7.0'
 
     :return: the version as string
-
     """
     from oerplib import rpc
     # Try to request OpenERP with the last API supported
@@ -58,6 +59,8 @@ def v(version):
         [6, 1]
         >>> v('7.0') < v('6.1')
         False
+
+    :return: the version as tuple
     """
     return [int(x) for x in clean_version(version).split(".")]
 
