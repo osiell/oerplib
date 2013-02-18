@@ -8,14 +8,13 @@ way to remotely pilot an `OpenERP` server.
 
 Features supported:
     - `XML-RPC` and `Net-RPC` protocols,
-    - access to all methods proposed by an `OSV` class (even ``browse``) with an
-      API similar to that can be found in `OpenERP` server,
+    - access to all methods proposed by an `OpenERP` model class
+      (even ``browse``) with an API similar to the server-side API,
+    - ability to use named parameters with such methods (`OpenERP` >= `6.1`),
+    - user context automatically sent (`OpenERP` >= `6.1`),
     - browse records,
-    - ability to use named parameters with `OSV` methods (`OpenERP` >= `6.1`),
-    - user context automatically sent with `OSV` methods (`OpenERP` >= `6.1`),
     - execute workflows,
     - manage databases,
-    - manage old-style wizards,
     - reports downloading.
 
 How does it work? See below::
