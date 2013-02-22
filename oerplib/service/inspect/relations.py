@@ -25,7 +25,8 @@ class Relations(object):
         self._blacklist = blacklist or []
         self._whitelist = whitelist or []
         self._rel_types = rel_types or ['many2one', 'many2many']
-        self._graph = pydot.Dot(graph_type='digraph')
+        self._graph = pydot.Dot(
+            graph_type='digraph', overlap="scalexy", splines="true")
         self._relations = {}
         # Generate the graphic
         self._draw(self._obj, 0, self._maxdepth)
@@ -68,17 +69,20 @@ class Relations(object):
                     self._draw(rel_obj, depth, maxdepth)
 
     def _create_node(self, obj, fields):
-        label = """<<table border="0" cellborder="0" cellpadding="0"
-                        bgcolor="white" width="100%%" height="100%%">
+        #attributes = "- %s<br/>".join(fields.keys())
+        attributes = ''.join(
+            ['<tr><td align="left" border="0">- %s</td></tr>' % f
+             for f in fields.keys()])
+        label = """<<table border="1" cellborder="0" cellpadding="0"
+                        cellspacing="0"
+                        bgcolor="white" height="100%%">
             <tr>
-                <td border="1" bgcolor="black" align="center">
+                <td border="0" bgcolor="#64629C" align="center">
                     <font color="white">%s</font>
                 </td>
             </tr>
-            <tr>
-                <td></td>
-            </tr>
-        </table>>""" % obj._name
+            %s
+        </table>>""" % (obj._name, attributes)
         return pydot.Node(obj._name, margin="0", shape="rectangle", label=label)
 
     def _create_edge(self, obj1, obj2, label, type_):
