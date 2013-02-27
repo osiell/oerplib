@@ -2,6 +2,7 @@
 """Provide the :class:`Inspect` which can output useful data from `OpenERP`."""
 
 from oerplib import error
+from oerplib.tools import v
 
 
 def check_pydot(func):
@@ -35,9 +36,15 @@ class Inspect(object):
         self._oerp = oerp
 
     @check_pydot
-    def relations(self, model, maxdepth=1, blacklist=None):
+    def relations(self, model, maxdepth=1, blacklist=None, whitelist=None,
+                  rel_types=None):
         """TODO"""
+        if v(self._oerp._version) < v('6.0'):
+            raise error.InternalError(
+                "'OERP.inspect.relations()' method is not supported for "
+                "OpenERP versions prior to 6.1")
         from oerplib.service.inspect.relations import Relations
-        return Relations(self._oerp, model, maxdepth, blacklist)
+        return Relations(
+            self._oerp, model, maxdepth, blacklist, whitelist, rel_types)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
