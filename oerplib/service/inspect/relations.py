@@ -79,8 +79,11 @@ class Relations(object):
             if (self._whitelist and obj._name not in self._whitelist) \
                     or (self._blacklist and obj._name in self._blacklist):
                 return
+        # Only increments depth for data models which are not already scanned
+        if obj._name not in self._relations:
+            print obj._name, depth
+            depth += 1
         # Scan relational fields of the data model
-        depth += 1
         fields = obj.fields_get()
         if obj._name not in self._relations:
             self._relations[obj._name] = {
