@@ -110,22 +110,25 @@ class Relations(object):
                     }
                 # one2many
                 elif data['type'] == 'one2many':
-                    rel_f = data['relation_field']
-                    # Case where the related m2o field has already been
-                    # registered
-                    if rel in self._relations \
-                            and rel_f in self._relations[rel]['relations']:
-                        if name not in self._relations[rel]['relations'][rel_f]:
-                            self._relations[rel]['relations'][rel_f]['o2m_fields'].append(name)
-                    # Otherwise, we will process the field later
+                    rel_f = data.get('relation_field', None)
+                    if rel_f:
+                        # Case where the related m2o field has already been
+                        # registered
+                        if rel in self._relations \
+                                and rel_f in self._relations[rel]['relations']:
+                            if name not in self._relations[rel]['relations'][rel_f]:
+                                self._relations[rel]['relations'][rel_f]['o2m_fields'].append(name)
+                        # Otherwise, we will process the field later
+                        else:
+                            if rel not in self._stack['o2m']:
+                                self._stack['o2m'][rel] = {}
+                            if obj._name not in self._stack['o2m'][rel]:
+                                self._stack['o2m'][rel][obj._name] = {}
+                            if rel_f not in self._stack['o2m'][rel][obj._name]:
+                                self._stack['o2m'][rel][obj._name][rel_f] = []
+                            self._stack['o2m'][rel][obj._name][rel_f].append(name)
                     else:
-                        if rel not in self._stack['o2m']:
-                            self._stack['o2m'][rel] = {}
-                        if obj._name not in self._stack['o2m'][rel]:
-                            self._stack['o2m'][rel][obj._name] = {}
-                        if rel_f not in self._stack['o2m'][rel][obj._name]:
-                            self._stack['o2m'][rel][obj._name][rel_f] = []
-                        self._stack['o2m'][rel][obj._name][rel_f].append(name)
+                        pass
                 # many2many
                 # TODO
                 # Scan relations recursively
