@@ -13,6 +13,7 @@ Reference
     ref_common
     ref_db
     ref_wizard
+    ref_inspect
     ref_rpc
     ref_tools
     ref_error

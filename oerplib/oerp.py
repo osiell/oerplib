@@ -12,7 +12,7 @@ from oerplib import config
 from oerplib import rpc
 from oerplib import error
 from oerplib.tools import detect_version
-from oerplib.service import common, db, wizard, osv
+from oerplib.service import common, db, wizard, osv, inspect
 
 
 class OERP(object):
@@ -48,6 +48,7 @@ class OERP(object):
         self._common = common.Common(self)
         self._db = db.DB(self)
         self._wizard = wizard.Wizard(self)
+        self._inspect = inspect.Inspect(self)
         self._version = version or detect_version(
             server, protocol, port, timeout)
         # Instanciate the OpenERP server connector
@@ -145,6 +146,13 @@ class OERP(object):
 
                        The wizard service (``/wizard`` RPC service).
                        See the :class:`oerplib.service.wizard.Wizard` class."""))
+
+    inspect = property(lambda self: self._inspect,
+                       doc=(""".. versionadded:: 0.8
+
+                       The inspect service (custom service).
+                       See the :class:`oerplib.service.inspect.Inspect`
+                       class."""))
 
     # RPC Connector timeout
     @property
