@@ -4,12 +4,12 @@ import os
 from distutils.core import setup
 
 name = 'OERPLib'
-version = '0.7.0'
+version = '0.8.0'
 description = 'OpenERP client library which allows to easily interact with an OpenERP server.'
 keywords = "openerp client xml-rpc xml_rpc xmlrpc net-rpc net_rpc netrpc oerplib communication lib library python service web webservice"
 author = u"ABF Osiell - Sebastien Alix"
 author_email = 'sebastien.alix@osiell.com'
-url = 'http://packages.python.org/OERPLib/'
+url = 'http://pythonhosted.org/OERPLib/'
 download_url = 'http://pypi.python.org/packages/source/O/OERPLib/OERPLib-%s.tar.gz' % version
 license = 'LGPL v3'
 doc_build_dir = 'doc/build'
@@ -31,7 +31,7 @@ try:
             'source_dir': ('setup.py', doc_source_dir),
             'build_dir': ('setup.py', doc_build_dir),
             'builder': ('setup.py', 'html'),
-         }}
+        }}
 except Exception:
     print("No Sphinx module found. You have to install Sphinx "
           "to be able to generate the documentation.")
@@ -48,7 +48,8 @@ setup(name=name,
       packages=['oerplib',
                 'oerplib.rpc',
                 'oerplib.service',
-                'oerplib.service.osv'],
+                'oerplib.service.osv',
+                'oerplib.service.inspect'],
       license=license,
       cmdclass=cmdclass,
       command_options=command_options,
@@ -57,7 +58,7 @@ setup(name=name,
           "Programming Language :: Python",
           "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
           "Topic :: Software Development :: Libraries :: Python Modules",
-          ],
+      ],
       )
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
