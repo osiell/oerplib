@@ -66,11 +66,11 @@ class Relations(object):
             'color_required': 'blue',
             'space_between_models': 0.25,
         }
+        self._config.update(config or {})
         # Dot graph
         self._graph = pydot.Dot(
             graph_type='digraph', overlap='scalexy', splines='true',
             nodesep=str(self._config['space_between_models']))
-        self._config.update(config or {})
         # Store relations between data models:
         self._relations = {}
         self._stack = {'o2m': {}}
@@ -236,7 +236,7 @@ class Relations(object):
         name_color = data.get('required') \
             and self._config['color_required'] \
             or self._config['color_{0}'.format(data['type'])]
-        label = "<<font color='{color}'>{name}</font>".format(
+        label = "<      <font color='{color}'>{name}</font>".format(
             color=name_color, name=data['name'])
         rel_name = obj2._name
         # many2one arrow
@@ -253,11 +253,11 @@ class Relations(object):
             rel_name = data.get('third_table') or 'CALCULATED'
             m2m_table = self._config['show_many2many_table'] \
                 and '({rel_name})'.format(rel_name=rel_name) or ''
-            label = "<<font color='{color}'>{name}<br/>{m2m_t}</font>".format(
-                    color=name_color, name=data['name'], m2m_t=m2m_table)
+            label = "<      <font color='{color}'>{name}<br/>{m2m_t}</font>".format(
+                color=name_color, name=data['name'], m2m_t=m2m_table)
             #self._graph.add_node(self._create_node(rel_name, 'm2m_table'))
         # Generate and return the edge
-        label = label + ">"
+        label = label + "      >"
         kwargs = {
             'label': label,
             'labeldistance': '10.0',
