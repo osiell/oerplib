@@ -53,6 +53,7 @@ class Inspect(object):
         the graph. Here the list of options and their default values:
 
             - ``relation_types: ['many2one', 'one2many', 'many2many']``,
+            - ``show_model_attrs: True``,
             - ``show_many2many_table: False``,
             - ``color_many2one: #0E2548``,
             - ``color_one2many: #008200``,

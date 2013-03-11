@@ -57,6 +57,7 @@ class Relations(object):
         self._config = {
             'relation_types': ['many2one', 'one2many', 'many2many'],
             'show_many2many_table': False,
+            'show_model_attrs': True,
             'color_many2one': '#0E2548',
             'color_one2many': '#008200',
             'color_many2many': '#6E0004',
@@ -181,13 +182,14 @@ class Relations(object):
         for model, data in self._relations.iteritems():
             # Generate the layout of the relation
             attrs = []
-            for k, v in data['fields'].iteritems():
-                color = v.get('required') \
-                    and self._config['color_required'] \
-                    or self._config['color_normal']
-                attr = TPL_MODEL_ATTR.format(
-                    name=k, color=color, type_=v['type'])
-                attrs.append(attr)
+            if self._config['show_model_attrs']:
+                for k, v in data['fields'].iteritems():
+                    color = v.get('required') \
+                        and self._config['color_required'] \
+                        or self._config['color_normal']
+                    attr = TPL_MODEL_ATTR.format(
+                        name=k, color=color, type_=v['type'])
+                    attrs.append(attr)
             tpl = TPL_MODEL.format(
                 color_model_title=self._config['color_model_title'],
                 bgcolor_model_title=self._config['bgcolor_model_title'],
