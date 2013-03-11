@@ -4,7 +4,7 @@ related to an instance of :class:`OERP <oerplib.OERP>`
 """
 
 import collections
-import os
+import os, stat
 from ConfigParser import SafeConfigParser
 
 from oerplib import error
@@ -70,6 +70,6 @@ def save(name, data, rc_file='~/.oerplibrc'):
     for k, v in data.iteritems():
         conf.set(name, k, str(v))
     with open(os.path.expanduser(rc_file), 'wb') as file_:
-        os.chmod(os.path.expanduser(rc_file), 0600)
+        os.chmod(os.path.expanduser(rc_file), stat.S_IREAD)
         conf.write(file_)
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
