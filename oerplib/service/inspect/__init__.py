@@ -46,7 +46,6 @@ class Inspect(object):
             ...     'res.users',
             ...     maxdepth=4,
             ...     blacklist=['ir*'],
-            ...     rel_types=['many2one', 'many2many']
             ... ).write('res_users.png', format='png')
 
         `config` is a dictionary of options to override some attributes of
@@ -63,6 +62,7 @@ class Inspect(object):
             - ``bgcolor_model: white``,
             - ``color_normal: black``,
             - ``color_required: blue``
+            - ``space_between_models: 0.25``,
 
         >>> oerp.inspect.relations(
         ...     'res.users',

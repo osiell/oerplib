@@ -51,8 +51,6 @@ class Relations(object):
         self._maxdepth = maxdepth
         self._blacklist = map(elt2regex, blacklist or [])
         self._whitelist = map(elt2regex, whitelist or [])
-        self._graph = pydot.Dot(
-            graph_type='digraph', overlap="scalexy", splines="true")
         # Configuration options
         self._config = {
             'relation_types': ['many2one', 'one2many', 'many2many'],
@@ -66,7 +64,12 @@ class Relations(object):
             'bgcolor_model': 'white',
             'color_normal': 'black',
             'color_required': 'blue',
+            'space_between_models': 0.25,
         }
+        # Dot graph
+        self._graph = pydot.Dot(
+            graph_type='digraph', overlap='scalexy', splines='true',
+            nodesep=str(self._config['space_between_models']))
         self._config.update(config or {})
         # Store relations between data models:
         self._relations = {}
