@@ -47,7 +47,7 @@ class DB(object):
         Return a list of codes and names of language supported by `OpenERP`:
 
         >>> oerp.db.list_lang()
-        [['sq_AL', u'Albanian / Shqipëri'], ['ar_AR', 'Arabic / الْعَرَبيّة'], ...]
+        [['sq_AL', 'Albanian / Shqipëri'], ['ar_AR', 'Arabic / الْعَرَبيّة'], ...]
 
         :return: a list of pairs representing languages with their codes and
                  names
@@ -121,8 +121,8 @@ class DB(object):
         >>> oerp.db.get_progress('super_admin_passwd', database_id) # Just after the call to the 'create' method
         (0, [])
         >>> oerp.db.get_progress('super_admin_passwd', database_id) # Once the database is fully created
-        (1.0, [{'login': u'admin', 'password': u'admin', 'name': u'Administrator'},
-               {'login': u'demo', 'password': u'demo', 'name': u'Demo User'}])
+        (1.0, [{'login': 'admin', 'password': 'admin', 'name': 'Administrator'},
+               {'login': 'demo', 'password': 'demo', 'name': 'Demo User'}])
 
         The super administrator password `super_admin_passwd` of `OpenERP` is
         required to perform this action.
@@ -212,8 +212,8 @@ class DB(object):
         state.
 
         >>> oerp.db.create_and_wait('super_admin_passwd', 'test_db', False, 'fr_FR', 'my_admin_passwd')
-        [{'login': u'admin', 'password': u'my_admin_passwd', 'name': u'Administrateur'},
-         {'login': u'demo', 'password': u'demo', 'name': u'Demo User'}]
+        [{'login': 'admin', 'password': 'my_admin_passwd', 'name': 'Administrateur'},
+         {'login': 'demo', 'password': 'demo', 'name': 'Demo User'}]
 
         The super administrator password `super_admin_passwd` of `OpenERP` is
         required to perform this action.

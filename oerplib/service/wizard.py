@@ -39,7 +39,7 @@ class Wizard(object):
 
     .. method:: Wizard.execute(wiz_id, datas, action='init', context=None)
 
-        >>> oerp.wizard.execute(1, {'one_field': u"Value"})
+        >>> oerp.wizard.execute(1, {'one_field': "Value"})
 
     """
     def __init__(self, oerp):

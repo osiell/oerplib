@@ -176,8 +176,7 @@ class OERP(object):
     def _check_logged_user(self):
         """Check if a user is logged. Otherwise, an error is raised."""
         if not self._user:
-            raise error.Error(
-                u"User login required.")
+            raise error.Error("User login required.")
 
     def login(self, user='admin', passwd='admin', database=None):
         """Log in as the given `user` with the password `passwd` on the
@@ -195,7 +194,7 @@ class OERP(object):
         # Raise an error if no database was given
         self._database = database or self._database_default
         if not self._database:
-            raise error.Error(u"No database specified")
+            raise error.Error("No database specified")
         # Get the user's ID and generate the corresponding User record
         try:
             user_id = self.common.login(self._database, user, passwd)
@@ -218,7 +217,7 @@ class OERP(object):
                 return self._user
             else:
                 #FIXME: Raise an error?
-                raise error.RPCError(u"Wrong login ID or password")
+                raise error.RPCError("Wrong login ID or password")
 
     # ------------------------- #
     # -- Raw XML-RPC methods -- #
@@ -348,7 +347,7 @@ class OERP(object):
         """Print data in a temporary file and return the path of this one."""
         if 'result' not in data:
             raise error.InternalError(
-                u"Invalid data, the operation has been canceled.")
+                "Invalid data, the operation has been canceled.")
         content = base64.decodestring(data['result'])
         if data.get('code') == 'zlib':
             content = zlib.decompress(content)
@@ -434,7 +433,7 @@ class OERP(object):
         """Update `model` records identified by `ids` with the given values
         contained in the `vals` dictionary.
 
-        >>> oerp.write('res.users', [1], {'name': u"Administrator"})
+        >>> oerp.write('res.users', [1], {'name': "Administrator"})
         True
 
         :return: `True`
@@ -476,7 +475,7 @@ class OERP(object):
         :raise: :class:`oerplib.error.RPCError`
         """
         if not isinstance(browse_record, osv.BrowseRecord):
-            raise ValueError(u"An instance of BrowseRecord is required")
+            raise ValueError("An instance of BrowseRecord is required")
         return osv.Model(self, browse_record.__osv__['name'])._write_record(
             browse_record, context)
 
@@ -493,7 +492,7 @@ class OERP(object):
         :raise: :class:`oerplib.error.RPCError`
         """
         if not isinstance(browse_record, osv.BrowseRecord):
-            raise ValueError(u"An instance of BrowseRecord is required")
+            raise ValueError("An instance of BrowseRecord is required")
         return osv.Model(self, browse_record.__osv__['name'])._unlink_record(
             browse_record, context)
 
@@ -529,7 +528,7 @@ class OERP(object):
 
         """
         if not isinstance(browse_record, osv.BrowseRecord):
-            raise ValueError(u"Value is not a browse_record.")
+            raise ValueError("Value is not a browse_record.")
         return browse_record.__osv__['name']
 
     def get(self, model):

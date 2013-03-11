@@ -60,19 +60,19 @@ class BaseField(object):
         """Check the validity of a value for the field."""
         #if self.readonly:
         #    raise error.Error(
-        #        u"'{field_name}' field is readonly".format(
+        #        "'{field_name}' field is readonly".format(
         #            field_name=self.name))
         if value and self.size:
             if not isinstance(value, basestring):
-                raise ValueError(u"Value supplied has to be a string")
+                raise ValueError("Value supplied has to be a string")
             if len(value) > self.size:
                 raise ValueError(
-                    u"Lenght of the '{field_name}' is limited to {size}".format(
+                    "Lenght of the '{field_name}' is limited to {size}".format(
                         field_name=self.name,
                         size=self.size))
         if not value and self.required:
             raise ValueError(
-                u"'{field_name}' field is required".format(
+                "'{field_name}' field is required".format(
                     field_name=self.name))
         return value
 
@@ -96,8 +96,8 @@ class SelectionField(BaseField):
         selection = [val[0] for val in self.selection]
         if value and value not in selection:
             raise ValueError(
-                u"The value '{value}' supplied doesn't match with the possible "
-                u"values '{selection}' for the '{field_name}' field".format(
+                "The value '{value}' supplied doesn't match with the possible "
+                "values '{selection}' for the '{field_name}' field".format(
                     value=value,
                     selection=selection,
                     field_name=self.name,
@@ -137,7 +137,7 @@ class Many2ManyField(BaseField):
         if value:
             if not isinstance(value, list):
                 raise ValueError(
-                    u"The value supplied has to be a list or 'False'")
+                    "The value supplied has to be a list or 'False'")
         return super(Many2ManyField, self).check_value(value)
 
 
@@ -172,8 +172,8 @@ class Many2OneField(BaseField):
         elif value in [None, False]:
             o_rel = False
         else:
-            raise ValueError(u"Value supplied has to be an integer, "
-                             u"a browse_record object or False.")
+            raise ValueError("Value supplied has to be an integer, "
+                             "a browse_record object or False.")
         o_rel = self.check_value(o_rel)
         instance.__data__['values'][self.name] = o_rel and [o_rel.id, False]
         instance.__data__['fields_updated'].append(self.name)
@@ -182,8 +182,8 @@ class Many2OneField(BaseField):
         super(Many2OneField, self).check_value(value)
         if value and value.__osv__['name'] != self.relation:
             raise ValueError(
-                (u"Instance of '{model}' supplied doesn't match with the " +
-                 u"relation '{relation}' of the '{field_name}' field.").format(
+                ("Instance of '{model}' supplied doesn't match with the " +
+                 "relation '{relation}' of the '{field_name}' field.").format(
                      model=value.__osv__['name'],
                      relation=self.relation,
                      field_name=self.name))
@@ -222,7 +222,7 @@ class One2ManyField(BaseField):
         if value:
             if not isinstance(value, list):
                 raise ValueError(
-                    u"The value supplied has to be a list or 'False'")
+                    "The value supplied has to be a list or 'False'")
         return super(One2ManyField, self).check_value(value)
 
 
@@ -264,8 +264,8 @@ class ReferenceField(BaseField):
         selection = [val[0] for val in self.selection]
         if relation not in selection:
             raise ValueError(
-                (u"The value '{value}' supplied doesn't match with the possible"
-                 u" values '{selection}' for the '{field_name}' field").format(
+                ("The value '{value}' supplied doesn't match with the possible"
+                 " values '{selection}' for the '{field_name}' field").format(
                      value=relation,
                      selection=selection,
                      field_name=self.name,
@@ -285,12 +285,12 @@ class ReferenceField(BaseField):
             o_id = o_id.strip()
             #o_rel = instance.__class__.__oerp__.browse(relation, o_id)
             if not relation or not is_int(o_id):
-                raise ValueError(u"String not well formatted, expecting "
-                                 u"'{relation},{id}' format")
+                raise ValueError("String not well formatted, expecting "
+                                 "'{relation},{id}' format")
             self._check_relation(relation)
         else:
-            raise ValueError(u"Value supplied has to be a string or"
-                             u" a browse_record object.")
+            raise ValueError("Value supplied has to be a string or"
+                             " a browse_record object.")
         return value
 
 
@@ -418,8 +418,8 @@ def generate_field(osv, name, data):
                           'boolean', 'text', 'binary', 'html']:
         field = ValueField(osv, name, data)
     else:
-        txt = (u"Can't instanciate the field '{field_name}', "
-               u"'{field_type}' type unknown")
+        txt = ("Can't instanciate the field '{field_name}', "
+               "'{field_type}' type unknown")
         raise error.InternalError(
             txt.format(field_name=name, field_type=data['type']))
     return field

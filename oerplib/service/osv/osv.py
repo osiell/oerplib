@@ -167,7 +167,7 @@ class Model(collections.Mapping):
                     obj_data['raw_data'] = False
             if obj_data['raw_data'] is False:
                 raise error.RPCError(
-                    u"There is no '{model}' record with ID {obj_id}.".format(
+                    "There is no '{model}' record with ID {obj_id}.".format(
                         model=obj.__class__.__osv__['name'], obj_id=obj.id))
         # No ID: fields filled with default values
         else:
@@ -213,8 +213,8 @@ class Model(collections.Mapping):
             if v(self._oerp._version) < v('6.1'):
                 if kwargs:
                     raise error.RPCError(
-                        u"Named parameters are not supported by this version "
-                        u"of OpenERP")
+                        "Named parameters are not supported by this version "
+                        "of OpenERP")
                 result = self._oerp.execute(
                     self._browse_class.__osv__['name'], method, *args)
             else:

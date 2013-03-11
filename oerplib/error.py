@@ -11,7 +11,7 @@ class Error(Exception):
         self.oerp_traceback = oerp_traceback
 
     def __str__(self):
-        return u"{message}".format(message=self.message)
+        return "{message}".format(message=self.message)
 
 
 class RPCError(Error):

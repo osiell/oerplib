@@ -33,26 +33,26 @@ try:
     user_data = oerp.execute('res.users', 'read', user_ids[0])
 
     # Execute - write
-    oerp.execute('res.users', 'write', user_ids[0], {'name': u"Administrator"})
+    oerp.execute('res.users', 'write', user_ids[0], {'name': "Administrator"})
 
     # Execute - create
-    new_user_id = oerp.execute('res.users', 'create', {'login': u"New user"})
+    new_user_id = oerp.execute('res.users', 'create', {'login': "New user"})
 
     # ------------------------- #
     # -- Convenients methods -- #
     # ------------------------- #
 
     # Search IDs of a model that match criteria
-    assert oerp.user.id in oerp.search('res.users', [('name', 'ilike', u"Administrator"),])
+    assert oerp.user.id in oerp.search('res.users', [('name', 'ilike', "Administrator"),])
 
     # Create a record
-    new_user_id = oerp.create('res.users', {'login': u"new_user"})
+    new_user_id = oerp.create('res.users', {'login': "new_user"})
 
     # Read data of a record
     user_data = oerp.read('res.users', new_user_id)
 
     # Write a record
-    oerp.write('res.users', [new_user_id], {'name': u"New user"})
+    oerp.write('res.users', [new_user_id], {'name': "New user"})
 
     # Delete a record
     oerp.unlink('res.users', new_user_id)
