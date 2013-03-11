@@ -39,7 +39,7 @@ def match_in(elt, lst):
 class Relations(object):
     """Draw relations between models with `Graphviz`."""
     def __init__(self, oerp, model, maxdepth=1, blacklist=None, whitelist=None,
-                 rel_types=None, config=None):
+                 config=None):
         if blacklist and whitelist:
             raise error.InternalError(
                 "'blacklist' and 'whitelist' parameters can not be set "
@@ -51,11 +51,11 @@ class Relations(object):
         self._maxdepth = maxdepth
         self._blacklist = map(elt2regex, blacklist or [])
         self._whitelist = map(elt2regex, whitelist or [])
-        self._rel_types = rel_types or ['many2one', 'one2many', 'many2many']
         self._graph = pydot.Dot(
             graph_type='digraph', overlap="scalexy", splines="true")
         # Configuration options
         self._config = {
+            'relation_types': ['many2one', 'one2many', 'many2many'],
             'show_many2many_table': False,
             'color_many2one': '#0E2548',
             'color_one2many': '#008200',
@@ -105,7 +105,8 @@ class Relations(object):
                                if not v.get('relation')),
             }
         for name, data in fields.iteritems():
-            if 'relation' in data and data['type'] in self._rel_types:
+            if 'relation' in data \
+                    and data['type'] in self._config['relation_types']:
                 rel = data['relation']
                 # many2one
                 if data['type'] == 'many2one':

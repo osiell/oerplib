@@ -34,14 +34,13 @@ class Inspect(object):
     >>> oerp.inspect
     <oerplib.service.inspect.Inspect object at 0xb42fa84f>
 
-    .. automethod:: relations(model, maxdepth=1, blacklist=[], whitelist=[], rel_types=['many2one', 'one2many', 'many2many'], config={})
+    .. automethod:: relations(model, maxdepth=1, blacklist=[], whitelist=[], config={})
 
         Return a :class:`Relations <oerplib.service.inspect.relations.Relations>`
         object showing relations between data models, starting from `model`
         (depth = 0) and iterate recursively until reaching the `maxdepth` limit.
         `blacklist` and `whitelist` of models can be defined (a joker ``*`` can
-        be used to match several models like ``account*``) and types of
-        relations to display can be restricted with `rel_types`.
+        be used to match several models like ``account*``).
 
             >>> oerp.inspect.relations(
             ...     'res.users',
@@ -53,6 +52,7 @@ class Inspect(object):
         `config` is a dictionary of options to override some attributes of
         the graph. Here the list of options and their default values:
 
+            - ``relation_types: ['many2one', 'one2many', 'many2many']``,
             - ``show_many2many_table: False``,
             - ``color_many2one: #0E2548``,
             - ``color_one2many: #008200``,
@@ -74,14 +74,13 @@ class Inspect(object):
 
     @check_pydot
     def relations(self, model, maxdepth=1, blacklist=None, whitelist=None,
-                  rel_types=None, config=None):
+                  config=None):
         if v(self._oerp._version) < v('6.0'):
             raise error.InternalError(
                 "'OERP.inspect.relations()' method is not supported for "
                 "OpenERP versions prior to 6.1")
         from oerplib.service.inspect.relations import Relations
         return Relations(
-            self._oerp, model, maxdepth,
-            blacklist, whitelist, rel_types, config)
+            self._oerp, model, maxdepth, blacklist, whitelist, config)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
