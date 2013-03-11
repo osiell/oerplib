@@ -4,6 +4,10 @@ related to an instance of :class:`OERP <oerplib.OERP>`
 """
 
 import collections
+import os
+from ConfigParser import SafeConfigParser
+
+from oerplib import error
 
 
 class Config(collections.MutableMapping):
@@ -38,4 +42,34 @@ class Config(collections.MutableMapping):
     def __repr__(self):
         return self._options.__repr__()
 
+
+def get(name, rc_file='~/.oerplibrc'):
+    """TODO"""
+    conf = SafeConfigParser()
+    conf.read([os.path.expanduser(rc_file)])
+    if not conf.has_section(name):
+        raise error.InternalError(
+            "'{0}' configuration does not exist".format(name))
+    return {
+        'server': conf.get(name, 'server'),
+        'protocol': conf.get(name, 'protocol'),
+        'port': conf.getint(name, 'port'),
+        'timeout': conf.getint(name, 'timeout'),
+        'user': conf.get(name, 'user'),
+        'passwd': conf.get(name, 'passwd'),
+        'database': conf.get(name, 'database'),
+    }
+
+
+def save(name, data, rc_file='~/.oerplibrc'):
+    """TODO"""
+    conf = SafeConfigParser()
+    conf.read([os.path.expanduser(rc_file)])
+    if not conf.has_section(name):
+        conf.add_section(name)
+    for k, v in data.iteritems():
+        conf.set(name, k, str(v))
+    with open(os.path.expanduser(rc_file), 'wb') as file_:
+        os.chmod(os.path.expanduser(rc_file), 0600)
+        conf.write(file_)
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

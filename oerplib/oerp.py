@@ -542,4 +542,17 @@ class OERP(object):
         """
         return osv.Model(self, model)
 
+    def save(self, name, rc_file='~/.oerplibrc'):
+        """TODO"""
+        data = {
+            'server': self.server,
+            'protocol': self.protocol,
+            'port': self.port,
+            'timeout': self.config['timeout'],
+            'user': self.user.login,
+            'passwd': self.user.password,
+            'database': self.database,
+        }
+        config.save(name, data, rc_file)
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

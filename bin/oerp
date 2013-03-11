@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+import sys
+import code
+
+import oerplib
+
+
+def main(argv):
+    if len(argv) == 1 or len(argv) > 2:
+        raise ValueError("Please specify a session")
+    # Get configuration data
+    data = oerplib.config.get(argv[1])
+    # Create the 'oerp' session
+    oerp = False
+    oerp = oerplib.OERP(
+        server=data['server'],
+        protocol=data['protocol'],
+        port=data['port'],
+        database=data['database'])
+    oerp.login(user=data['user'], passwd=data['passwd'])
+    # Open a interactive Python shell
+    title = '{user}@{server}:{database}'.format(
+        user=data['user'], server=data['server'], database=data['database'])
+    local = {'oerplib': oerplib, 'oerp': oerp}
+    code.interact(title, local=local)
+
+if __name__ == '__main__':
+    main(sys.argv)
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
