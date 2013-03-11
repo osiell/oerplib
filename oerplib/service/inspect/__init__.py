@@ -66,8 +66,13 @@ class Inspect(object):
 
         >>> oerp.inspect.relations(
         ...     'res.users',
-        ...     config={'show_many2many_table': True}
+        ...     config={'show_model_attrs': False}
         ... ).write('res_users.png', format='png')
+
+        .. note::
+            With `OpenERP` < `6.0`, `many2one` and `one2many` relationships can
+            not be bound together. Hence, a `one2many` relationship based on a
+            `many2one` will draw a separate arrow.
 
     """
     def __init__(self, oerp):
@@ -76,10 +81,6 @@ class Inspect(object):
     @check_pydot
     def relations(self, model, maxdepth=1, blacklist=None, whitelist=None,
                   config=None):
-        if v(self._oerp._version) < v('6.0'):
-            raise error.InternalError(
-                "'OERP.inspect.relations()' method is not supported for "
-                "OpenERP versions prior to 6.1")
         from oerplib.service.inspect.relations import Relations
         return Relations(
             self._oerp, model, maxdepth, blacklist, whitelist, config)
