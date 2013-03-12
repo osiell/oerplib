@@ -23,6 +23,10 @@ and install manually (replace `X.Y.Z` accordingly)::
     $ cd OERPLib-X.Y.Z
     $ python setup.py install
 
+Or for `Python 3`::
+
+    $ python3 setup.py install
+
 No dependency is required.
 
 Source code
@@ -42,7 +46,8 @@ Run tests
 
 .. versionadded:: 0.4.0
 
-Unit tests depends on `unittest2` (Python 2.3+) or `unittest` (Python 2.7).
+Unit tests depends on `unittest2` (Python 2.3+) or `unittest`
+(Python 2.7 and 3.x).
 
 To run unit tests from the project directory, run the following command::
 

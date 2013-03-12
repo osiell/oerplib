@@ -2,6 +2,12 @@
 # -*- coding: UTF-8 -*-
 import os
 from distutils.core import setup
+try:
+    # 3.x
+    from distutils.command.build_py import build_py_2to3 as build_py
+except ImportError:
+    # 2.x
+    from distutils.command.build_py import build_py
 
 name = 'OERPLib'
 version = '0.8.0'
@@ -15,15 +21,15 @@ license = 'LGPL v3'
 doc_build_dir = 'doc/build'
 doc_source_dir = 'doc/source'
 
-cmdclass = {}
+cmdclass = {'build_py': build_py}
 command_options = {}
 # 'build_doc' option
 try:
     from sphinx.setup_command import BuildDoc
     if not os.path.exists(doc_build_dir):
         os.mkdir(doc_build_dir)
-    cmdclass = {'build_doc': BuildDoc}
-    command_options = {
+    cmdclass.update({'build_doc': BuildDoc})
+    command_options.update({
         'build_doc': {
             #'project': ('setup.py', name),
             'version': ('setup.py', version),
@@ -31,7 +37,7 @@ try:
             'source_dir': ('setup.py', doc_source_dir),
             'build_dir': ('setup.py', doc_build_dir),
             'builder': ('setup.py', 'html'),
-        }}
+        }})
 except Exception:
     print("No Sphinx module found. You have to install Sphinx "
           "to be able to generate the documentation.")

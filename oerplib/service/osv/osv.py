@@ -2,6 +2,7 @@
 """Provide the :class:`Model` class which allow to access dynamically to all
 methods proposed by an model of the `OpenERP` server."""
 
+import sys  # to check Python version at runtime
 import collections
 
 from oerplib.tools import v
@@ -87,7 +88,9 @@ class Model(collections.Mapping):
         # Retrieve server fields info and generate corresponding local fields
         fields_get = self._oerp.execute(self._name, 'fields_get')
         cls_name = self._name.replace('.', '_')
-        if type(cls_name) == unicode:
+        # Encode the class name for the Python2 'type()' function.
+        # No need to do this for Python3.
+        if type(cls_name) == unicode and sys.version_info < (3,):
             cls_name = cls_name.encode('utf-8')
         cls_fields = {}
         for field_name, field_data in fields_get.items():

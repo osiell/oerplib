@@ -59,7 +59,7 @@ It should work on next versions if `OpenERP` keeps a stable API.
 Supported Python versions
 -------------------------
 
-`OERPLib` support Python versions 2.6 and 2.7.
+`OERPLib` support Python versions 2.6, 2.7 and 3.x.
 
 Generate the documentation
 --------------------------
