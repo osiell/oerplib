@@ -1,3 +1,13 @@
+v0.8.0, 2013-XX-XX:
+    - Add support for Python 3 (with 2to3 tool),
+    - New service 'inspect' ('OERP.inspect') which allows to draw
+      relationship graph (output in any Graphviz supported formats),
+    - Able to save and load connection information in/from a separate
+      file ('~/.oerplibrc' by default),
+    - New command-line tool 'oerp' added, to open a Python shell with
+      a pre-configured 'OERP' instance (see previous point),
+    - Documentation updated.
+
 v0.7.0, 2013-02-18:
     - User context is sent automatically (OpenERP >= 6.1),
     - Able to use named parameters with OSV methods (OpenERP >= 6.1),
