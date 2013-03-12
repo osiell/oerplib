@@ -189,7 +189,7 @@ class OERP(object):
         u'Administrator'
 
         :return: the user connected as a browsable record
-        :raise: :class:`oerplib.error.RPCError`
+        :raise: :class:`oerplib.error.RPCError`, :class:`oerplib.error.Error`
         """
         # Raise an error if no database was given
         self._database = database or self._database_default
@@ -542,7 +542,21 @@ class OERP(object):
         return osv.Model(self, model)
 
     def save(self, name, rc_file='~/.oerplibrc'):
-        """TODO"""
+        """.. versionadded:: 0.8
+
+        Save session informations under the name `name`.
+        These informations are stored in the ``~/.oerplibrc`` file by default.
+
+            >>> import oerplib
+            >>> oerp = oerplib.OERP('localhost', protocol='xmlrpc', port=8069)
+            >>> oerp.login('admin', 'admin', 'db_name')
+            >>> oerp.save('foo')
+
+        Such informations can be loaded with the :func:`oerplib.load` function
+        by returning a pre-configured session of :class:`OERP <oerplib.OERP>`,
+        or with the `oerp` command line tool supplied with `oerplib`.
+        """
+        self._check_logged_user()
         data = {
             'server': self.server,
             'protocol': self.protocol,

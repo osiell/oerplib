@@ -347,6 +347,42 @@ However, `OERPLib` simplifies this by providing the
 Some documentation about methods offered by the `OpenERP` ``/db`` RPC service
 is available :class:`here <oerplib.service.db.DB>`.
 
+Save the session to open it quickly later
+-----------------------------------------
+
+Once you are authenticated with your :class:`OERP <oerplib.OERP>` instance, you
+can save these connection information under a code name and use this one to
+quickly instanciate a new :class:`OERP <oerplib.OERP>` class::
+
+    >>> import oerplib
+    >>> oerp = oerplib.OERP('localhost')
+    >>> user = oerp.login('admin', 'admin', 'my_database')
+    >>> oerp.save('foo')
+
+By default, these informations are stored in the ``~/.oerplibrc`` file. You can
+however use another file::
+
+    >>> oerp.save('foo', '~/my_own_oerplibrc')
+
+Then, use the :func:`oerplib.load` function::
+
+    >>> import oerplib
+    >>> oerp = oerplib.load('foo')
+
+Or, if you have saved your configuration in another file::
+
+    >>> oerp = oerplib.load('foo', '~/my_own_oerplibrc')
+
+Furthermore, `OERPLib` now provides a command-line tool named `oerp`. You can
+use it to open a `Python` shell with a :class:`OERP <oerplib.OERP>` instance
+pre-configured::
+
+    $ oerp foo
+    [admin@localhost:my_database]
+    >>> oerp
+    <oerplib.oerp.OERP object at 0xb763bbcc>
+
+
 Change the timeout
 ------------------
 

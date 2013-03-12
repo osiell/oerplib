@@ -21,7 +21,7 @@ def main(argv):
         database=data['database'])
     oerp.login(user=data['user'], passwd=data['passwd'])
     # Open a interactive Python shell
-    title = '{user}@{server}:{database}'.format(
+    title = '[{user}@{server}:{database}]'.format(
         user=data['user'], server=data['server'], database=data['database'])
     local = {'oerplib': oerplib, 'oerp': oerp}
     code.interact(title, local=local)
