@@ -11,6 +11,8 @@ __email__ = 'sebastien.alix@osiell.com'
 __licence__ = 'LGPL v3'
 __version__ = '0.8.0'
 
+__all__ = ['OERP', 'error']
+
 from oerplib.oerp import OERP
 from oerplib import error
 from oerplib import config
