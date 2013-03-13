@@ -52,10 +52,10 @@ class Common(object):
         Return information about the OpenERP Server.
 
         >>> oerp.common.about()
-        '\n\nOpenERP is an ERP+CRM program for small and medium businesses.\n\nThe whole source code is distributed under the terms of the\nGNU Public Licence.\n\n(c) 2003-TODAY, Fabien Pinckaers - Tiny sprl'
+        '\\n\\nOpenERP is an ERP+CRM program for small and medium businesses.\\n\\nThe whole source code is distributed under the terms of the\\nGNU Public Licence.\\n\\n(c) 2003-TODAY, Fabien Pinckaers - Tiny sprl'
 
         >>> oerp.common.about(True)
-        ['\n\nOpenERP is an ERP+CRM program for small and medium businesses.\n\nThe whole source code is distributed under the terms of the\nGNU Public Licence.\n\n(c) 2003-TODAY, Fabien Pinckaers - Tiny sprl', '5.0.16']
+        ['\\n\\nOpenERP is an ERP+CRM program for small and medium businesses.\\n\\nThe whole source code is distributed under the terms of the\\nGNU Public Licence.\\n\\n(c) 2003-TODAY, Fabien Pinckaers - Tiny sprl', '5.0.16']
 
         :param: extended: if True then return version info
         :return: string if extended is False else tuple
