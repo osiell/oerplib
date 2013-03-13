@@ -373,16 +373,6 @@ Or, if you have saved your configuration in another file::
 
     >>> oerp = oerplib.load('foo', '~/my_own_oerplibrc')
 
-Furthermore, `OERPLib` now provides a command-line tool named `oerp`. You can
-use it to open a `Python` shell with a :class:`OERP <oerplib.OERP>` instance
-pre-configured::
-
-    $ oerp foo
-    [admin@localhost:my_database]
-    >>> oerp
-    <oerplib.oerp.OERP object at 0xb763bbcc>
-
-
 Change the timeout
 ------------------
 
