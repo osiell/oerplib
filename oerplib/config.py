@@ -1,17 +1,21 @@
 # -*- coding: UTF-8 -*-
 """This module contains the ``Config`` class which manage the configuration
-related to an instance of :class:`OERP <oerplib.OERP>`
+related to an instance of :class:`OERP <oerplib.OERP>`, and others useful
+functions used internally.
 """
 
 import collections
-import os, stat
+import os
+import stat
 from ConfigParser import SafeConfigParser
 
 from oerplib import error
 
 
 class Config(collections.MutableMapping):
-    """"""
+    """Class which manage the configuration of an
+    :class:`OERP <oerplib.OERP>` instance.
+    """
     def __init__(self, oerp, options):
         super(Config, self).__init__()
         self._oerp = oerp
@@ -44,11 +48,15 @@ class Config(collections.MutableMapping):
 
 
 def get(name, rc_file='~/.oerplibrc'):
-    """TODO"""
+    """Return the session configuration identified by `name`
+    from the `rc_file` file.
+
+    :raise: :class:`oerplib.error.Error`
+    """
     conf = SafeConfigParser()
     conf.read([os.path.expanduser(rc_file)])
     if not conf.has_section(name):
-        raise error.InternalError(
+        raise error.Error(
             "'{0}' configuration does not exist".format(name))
     return {
         'server': conf.get(name, 'server'),
@@ -61,8 +69,19 @@ def get(name, rc_file='~/.oerplibrc'):
     }
 
 
+def list(rc_file='~/.oerplibrc'):
+    """Return a list of all configurations available in the
+    `rc_file` file.
+    """
+    conf = SafeConfigParser()
+    conf.read([os.path.expanduser(rc_file)])
+    return conf.sections()
+
+
 def save(name, data, rc_file='~/.oerplibrc'):
-    """TODO"""
+    """Save the `data` session configuration under the name `name`.
+    in the `rc_file` file.
+    """
     conf = SafeConfigParser()
     conf.read([os.path.expanduser(rc_file)])
     if not conf.has_section(name):

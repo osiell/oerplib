@@ -544,7 +544,7 @@ class OERP(object):
     def save(self, name, rc_file='~/.oerplibrc'):
         """.. versionadded:: 0.8
 
-        Save session informations under the name `name`.
+        Save the session configuration under the name `name`.
         These informations are stored in the ``~/.oerplibrc`` file by default.
 
             >>> import oerplib
