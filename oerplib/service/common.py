@@ -35,12 +35,14 @@ class Common(object):
         >>> oerp.common.login('test_db', 'admin', 'admin_passwd')
         1
 
-        :return: the user's ID
+        :return: the user's ID or `False`
 
     .. method:: Common.authenticate(db, login, password, user_agent_env)
 
-        >>> oerp.common.authenticate('test_db', 'admin', 'admin_passwd', TODO)
-        TODO
+        >>> oerp.common.authenticate('test_db', 'admin', 'admin_passwd', {})
+        1
+
+        :return: the user's ID or `False`
 
     .. method:: Common.version()
 
@@ -57,8 +59,8 @@ class Common(object):
         >>> oerp.common.about(True)
         ['\\n\\nOpenERP is an ERP+CRM program for small and medium businesses.\\n\\nThe whole source code is distributed under the terms of the\\nGNU Public Licence.\\n\\n(c) 2003-TODAY, Fabien Pinckaers - Tiny sprl', '5.0.16']
 
-        :param: extended: if True then return version info
-        :return: string if extended is False else tuple
+        :param: extended: if `True` then return version info
+        :return: string if extended is `False` else tuple
 
     .. method:: Common.timezone_get(db, login, password)
 
@@ -90,8 +92,7 @@ class Common(object):
 
     .. method:: Common.set_loglevel(loglevel, logger=None)
 
-        >>> oerp.common.set_loglevel(TODO)
-        True
+        >>> oerp.common.set_loglevel('DEBUG')
 
     .. method:: Common.get_stats()
 
@@ -115,10 +116,17 @@ class Common(object):
         >>> oerp.common.get_os_time()
         (0.01, 0.0, 0.0, 0.0, 17873633.129999999)
 
-    .. method:: Common.get_sql_count()
+    .. method:: Common.get_sqlcount()
 
-        >>> oerp.common.get_sql_count()
-        TODO
+        >>> oerp.common.get_sqlcount()
+
+    .. method:: Common.get_available_updates(super_admin_password, contract_id, contract_password)
+
+        >>> oerp.common.get_available_updates('super_admin_passwd', 'MY_CONTRACT_ID', 'MY_CONTRACT_PASSWORD')
+
+    .. method:: Common.get_migration_scripts(super_admin_password, contract_id, contract_password)
+
+        >>> oerp.common.get_migration_scripts('super_admin_passwd', 'MY_CONTRACT_ID', 'MY_CONTRACT_PASSWORD')
 
     """
     def __init__(self, oerp):
