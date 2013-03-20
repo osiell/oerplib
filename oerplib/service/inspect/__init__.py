@@ -34,18 +34,20 @@ class Inspect(object):
     >>> oerp.inspect
     <oerplib.service.inspect.Inspect object at 0xb42fa84f>
 
-    .. automethod:: relations(model, maxdepth=1, blacklist=[], whitelist=[], config={})
+    .. automethod:: relations(model, maxdepth=1, whitelist=[], blacklist=[], config={})
 
         Return a :class:`Relations <oerplib.service.inspect.relations.Relations>`
         object showing relations between data models, starting from `model`
         (depth = 0) and iterate recursively until reaching the `maxdepth` limit.
-        `blacklist` and `whitelist` of models can be defined (a joker ``*`` can
-        be used to match several models like ``account*``).
+        `whitelist` and `blacklist` of models can be defined (a joker ``*`` can
+        be used to match several models like ``account*``), the whitelist
+        is processed before the blacklist.
 
             >>> oerp.inspect.relations(
             ...     'res.users',
             ...     maxdepth=4,
-            ...     blacklist=['ir*'],
+            ...     whitelist=['res*'],
+            ...     blacklist=['res.users', 'res.company'],
             ... ).write('res_users.png', format='png')
 
         `config` is a dictionary of options to override some attributes of
@@ -79,10 +81,10 @@ class Inspect(object):
         self._oerp = oerp
 
     @check_pydot
-    def relations(self, model, maxdepth=1, blacklist=None, whitelist=None,
+    def relations(self, model, maxdepth=1, whitelist=None, blacklist=None,
                   config=None):
         from oerplib.service.inspect.relations import Relations
         return Relations(
-            self._oerp, model, maxdepth, blacklist, whitelist, config)
+            self._oerp, model, maxdepth, whitelist, blacklist, config)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

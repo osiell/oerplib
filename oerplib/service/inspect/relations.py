@@ -54,19 +54,14 @@ def match_in(elt, lst):
 
 class Relations(object):
     """Draw relations between models with `Graphviz`."""
-    def __init__(self, oerp, model, maxdepth=1, blacklist=None, whitelist=None,
+    def __init__(self, oerp, model, maxdepth=1, whitelist=None, blacklist=None,
                  config=None):
-        if blacklist and whitelist:
-            raise error.InternalError(
-                "'blacklist' and 'whitelist' parameters can not be set "
-                "simultaneously")
-                #"Blacklist and whitelist parameters can't be defined together.")
         self._oerp = oerp
         self._model = model
         self._obj = self._oerp.get(model)
         self._maxdepth = maxdepth
-        self._blacklist = map(elt2regex, blacklist or [])
         self._whitelist = map(elt2regex, whitelist or [])
+        self._blacklist = map(elt2regex, blacklist or [])
         # Configuration options
         self._config = {
             'relation_types': ['many2one', 'one2many', 'many2many'],
@@ -105,13 +100,14 @@ class Relations(object):
         # has already been scanned
         if depth > self._maxdepth or obj._name in self._relations:
             return
-        # Skip blacklisted models (or models which are not present in the
-        # whitelist)
+        # Check the whitelist, then the blacklist
         if obj._name != self._model:
-            if (self._whitelist and not match_in(obj._name, self._whitelist)) \
-                    or (self._blacklist and match_in(
-                        obj._name, self._blacklist)):
-                return
+            if self._whitelist:
+                if not match_in(obj._name, self._whitelist):
+                    return
+            if self._blacklist:
+                if match_in(obj._name, self._blacklist):
+                    return
         # Only increments depth for data models which are not already scanned
         if obj._name not in self._relations:
             depth += 1
