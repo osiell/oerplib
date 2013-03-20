@@ -15,12 +15,28 @@ TPL_MODEL = """<
         </td>
     </tr>
     {attrs}
+    {relations_r}
 </table>>"""
 
 TPL_MODEL_ATTR = """
 <tr>
     <td align="left" border="0">- <font color="{color}">{name}</font></td>
     <td align="left" border="0"> <font color="{color}">{type_}</font></td>
+</tr>
+"""
+
+TPL_MODEL_HEADER_REL_R = """
+<tr><td> </td></tr>
+<tr>
+    <td align="center"
+        border="0"
+        colspan="2"><font color="{color}">[Recursive relations]</font></td>
+</tr>
+"""
+
+TPL_MODEL_REL_R = """
+<tr>
+    <td align="left" border="0" colspan="2">- {name}</td>
 </tr>
 """
 
@@ -104,6 +120,7 @@ class Relations(object):
         if obj._name not in self._relations:
             self._relations[obj._name] = {
                 'relations': {},
+                'relations_r': {},  # Recursive relations
                 'obj': obj,
                 'fields': dict((k, v) for k, v in fields.iteritems()
                                if not v.get('relation')),
@@ -112,6 +129,8 @@ class Relations(object):
             if 'relation' in data \
                     and data['type'] in self._config['relation_types']:
                 rel = data['relation']
+                # where to store the relation?
+                store_type = obj._name == rel and 'relations_r' or 'relations'
                 # many2one
                 if data['type'] == 'many2one':
                     # Check if related one2many fields have been registered
@@ -122,7 +141,7 @@ class Relations(object):
                         and self._stack['o2m'][obj._name][rel][name] \
                         or []
                     # Add the field
-                    self._relations[obj._name]['relations'][name] = {
+                    self._relations[obj._name][store_type][name] = {
                         'type': 'many2one',
                         'relation': rel,
                         'name': name,
@@ -139,11 +158,11 @@ class Relations(object):
                         # Case where the related m2o field has already been
                         # registered
                         if rel in self._relations \
-                                and rel_f in self._relations[rel]['relations']:
+                                and rel_f in self._relations[rel][store_type]:
                             if name not in self._relations[
-                                    rel]['relations'][rel_f]:
+                                    rel][store_type][rel_f]:
                                 self._relations[
-                                    rel]['relations'][
+                                    rel][store_type][
                                         rel_f]['o2m_fields'].append(name)
                         # Otherwise, we will process the field later (when the
                         # m2o field will be scanned)
@@ -160,7 +179,7 @@ class Relations(object):
                     # (calculated by a function, or a related field) the
                     # relation is stored as a standalone one2many
                     else:
-                        self._relations[obj._name]['relations'][name] = {
+                        self._relations[obj._name][store_type][name] = {
                             'type': 'one2many',
                             'relation': rel,
                             'name': name,
@@ -169,7 +188,7 @@ class Relations(object):
                 elif data['type'] == 'many2many':
                     rel_columns = data.get('related_columns')
                     rel_columns = rel_columns and tuple(rel_columns) or None
-                    self._relations[obj._name]['relations'][name] = {
+                    self._relations[obj._name][store_type][name] = {
                         'type': 'many2many',
                         'relation': rel,
                         'name': name,
@@ -183,7 +202,7 @@ class Relations(object):
     def _draw_relations(self):
         """Generate the graphic."""
         for model, data in self._relations.iteritems():
-            # Generate the layout of the relation
+            # Generate attributes of the model
             attrs = []
             if self._config['show_model_attrs']:
                 for k, v in data['fields'].iteritems():
@@ -193,15 +212,28 @@ class Relations(object):
                     attr = TPL_MODEL_ATTR.format(
                         name=k, color=color, type_=v['type'])
                     attrs.append(attr)
+            # Generate recursive relations of the model
+            relations_r = []
+            if data['relations_r']:
+                header_rel_r = TPL_MODEL_HEADER_REL_R.format(
+                    color=self._config['color_normal'])
+                relations_r.append(header_rel_r)
+            for name, data2 in data['relations_r'].iteritems():
+                label = self._generate_relation_label(data2)
+                rel_r = TPL_MODEL_REL_R.format(name=label)
+                relations_r.append(rel_r)
+            # Generate the layout of the model
             tpl = TPL_MODEL.format(
                 color_model_title=self._config['color_model_title'],
                 bgcolor_model_title=self._config['bgcolor_model_title'],
                 bgcolor_model=self._config['bgcolor_model'],
-                name=model, attrs=''.join(attrs))
-            # Add the relation to the graph
+                name=model,
+                attrs=''.join(attrs),
+                relations_r=''.join(relations_r))
+            # Add the model to the graph
             node = (data['obj']._name, 'relation', tpl)
             self._graph.add_node(self._create_node(*node))
-            # Draw edges
+            # Draw relations of the model
             for name, data2 in data['relations'].iteritems():
                 if data2['relation'] in self._relations:
                     rel_obj = self._relations[data2['relation']]['obj']
@@ -233,12 +265,23 @@ class Relations(object):
         """Generate a `pydot.Edge` object, representing a relation between
         `obj1` and `obj2`.
         """
+        label = self._generate_relation_label(data, space=6, closing_tag=True)
+        kwargs = {
+            'label': label,
+            'labeldistance': '10.0',
+            'color': self._config['color_{0}'.format(data['type'])],
+            'fontcolor': self._config['color_{0}'.format(data['type'])],
+            #'arrowhead': data['type'] == 'many2many' and 'none' or 'normal',
+        }
+        return pydot.Edge(obj1._name, obj2._name, **kwargs)
+
+    def _generate_relation_label(self, data, space=0, closing_tag=False):
+        """Generate a HTML label based for the relation described by `data`."""
         name_color = data.get('required') \
             and self._config['color_required'] \
             or self._config['color_{0}'.format(data['type'])]
-        label = "<      <font color='{color}'>{name}</font>".format(
-            color=name_color, name=data['name'])
-        rel_name = obj2._name
+        label = "{space}<font color='{color}'>{name}</font>".format(
+            color=name_color, name=data['name'], space=' ' * space)
         # many2one arrow
         if data['type'] == 'many2one' and data['o2m_fields']:
             label = "{label} <font color='{color}'>← {o2m}</font>".format(
@@ -250,22 +293,18 @@ class Relations(object):
             pass
         # many2many arrow
         if data['type'] == 'many2many':
-            rel_name = data.get('third_table') or 'CALCULATED'
-            m2m_table = self._config['show_many2many_table'] \
-                and '({rel_name})'.format(rel_name=rel_name) or ''
-            label = "<      <font color='{color}'>{name}<br/>{m2m_t}</font>".format(
-                color=name_color, name=data['name'], m2m_t=m2m_table)
+            m2m_table = ''
+            if self._config['show_many2many_table']:
+                rel_name = data.get('third_table') or 'CALCULATED'
+                m2m_table = '({rel_name})'.format(rel_name=rel_name)
+            label = "{space}<font color='{color}'>{name}<br/>{m2m_t}</font>".format(
+                color=name_color, name=data['name'],
+                m2m_t=m2m_table, space=' ' * space)
             #self._graph.add_node(self._create_node(rel_name, 'm2m_table'))
-        # Generate and return the edge
-        label = label + "      >"
-        kwargs = {
-            'label': label,
-            'labeldistance': '10.0',
-            'color': self._config['color_{0}'.format(data['type'])],
-            'fontcolor': self._config['color_{0}'.format(data['type'])],
-            #'arrowhead': data['type'] == 'many2many' and 'none' or 'normal',
-        }
-        return pydot.Edge(obj1._name, obj2._name, **kwargs)
+        label = label + "{space}".format(space=' ' * space)
+        if closing_tag:
+            label = "<{label}>".format(label=label)
+        return label
 
     def write(self, *args, **kwargs):
         """Write the resulting graph in a file.
