@@ -4,7 +4,6 @@ import re
 
 import pydot
 
-from oerplib import error
 
 TPL_MODEL = """<
 <table cellborder="0" cellpadding="0" cellspacing="0"
@@ -18,19 +17,19 @@ TPL_MODEL = """<
     {relations_r}
 </table>>"""
 
-TPL_MODEL_ATTR = """
-<tr>
-    <td align="left" border="0">- <font color="{color}">{name}</font></td>
-    <td align="left" border="0"> <font color="{color}">{type_}</font></td>
-</tr>
-"""
-
-TPL_MODEL_HEADER_REL_R = """
+TPL_MODEL_SUBTITLE = """
 <tr><td> </td></tr>
 <tr>
     <td align="center"
         border="0"
-        colspan="2"><font color="{color}">[Recursive relations]</font></td>
+        colspan="2"><font color="{color}">[{title}]</font></td>
+</tr>
+"""
+
+TPL_MODEL_ATTR = """
+<tr>
+    <td align="left" border="0">- <font color="{color}">{name}</font></td>
+    <td align="left" border="0"> <font color="{color}">{type_}</font></td>
 </tr>
 """
 
@@ -41,8 +40,9 @@ TPL_MODEL_REL_R = """
 """
 
 
-def elt2regex(elt):
-    return re.compile(elt.replace('*', '.*'))
+def pattern2regex(pattern):
+    pattern = "^{0}$".format(pattern.replace('*', '.*'))
+    return re.compile(pattern)
 
 
 def match_in(elt, lst):
@@ -55,23 +55,25 @@ def match_in(elt, lst):
 class Relations(object):
     """Draw relations between models with `Graphviz`."""
     def __init__(self, oerp, model, maxdepth=1, whitelist=None, blacklist=None,
-                 config=None):
+                 attrs_whitelist=None, attrs_blacklist=None, config=None):
         self._oerp = oerp
         self._model = model
         self._obj = self._oerp.get(model)
         self._maxdepth = maxdepth
-        self._whitelist = map(elt2regex, whitelist or [])
-        self._blacklist = map(elt2regex, blacklist or [])
+        self._whitelist = map(pattern2regex, whitelist or [])
+        self._blacklist = map(pattern2regex, blacklist or [])
+        self._attrs_whitelist = map(pattern2regex, attrs_whitelist or [])
+        self._attrs_blacklist = map(pattern2regex, attrs_blacklist or [])
         # Configuration options
         self._config = {
             'relation_types': ['many2one', 'one2many', 'many2many'],
             'show_many2many_table': False,
-            'show_model_attrs': True,
             'color_many2one': '#0E2548',
             'color_one2many': '#008200',
             'color_many2many': '#6E0004',
             'bgcolor_model_title': '#64629C',
             'color_model_title': 'white',
+            'color_model_subtitle': '#3E3D60',
             'bgcolor_model': 'white',
             'color_normal': 'black',
             'color_required': 'blue',
@@ -199,8 +201,19 @@ class Relations(object):
         """Generate the graphic."""
         for model, data in self._relations.iteritems():
             # Generate attributes of the model
+            attrs_ok = False
             attrs = []
-            if self._config['show_model_attrs']:
+            if self._attrs_whitelist \
+                    and match_in(model, self._attrs_whitelist):
+                attrs_ok = True
+            if self._attrs_blacklist \
+                    and match_in(model, self._attrs_blacklist):
+                attrs_ok = False
+            if attrs_ok:
+                subtitle = TPL_MODEL_SUBTITLE.format(
+                    color=self._config['color_model_subtitle'],
+                    title="Attributes")
+                attrs.append(subtitle)
                 for k, v in data['fields'].iteritems():
                     color = v.get('required') \
                         and self._config['color_required'] \
@@ -211,9 +224,10 @@ class Relations(object):
             # Generate recursive relations of the model
             relations_r = []
             if data['relations_r']:
-                header_rel_r = TPL_MODEL_HEADER_REL_R.format(
-                    color=self._config['color_normal'])
-                relations_r.append(header_rel_r)
+                subtitle = TPL_MODEL_SUBTITLE.format(
+                    color=self._config['color_model_subtitle'],
+                    title="Recursive relations")
+                relations_r.append(subtitle)
             for name, data2 in data['relations_r'].iteritems():
                 label = self._generate_relation_label(data2)
                 rel_r = TPL_MODEL_REL_R.format(name=label)

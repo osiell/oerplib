@@ -4,7 +4,6 @@ from `OpenERP`.
 """
 
 from oerplib import error
-from oerplib.tools import v
 
 
 def check_pydot(func):
@@ -34,27 +33,34 @@ class Inspect(object):
     >>> oerp.inspect
     <oerplib.service.inspect.Inspect object at 0xb42fa84f>
 
-    .. automethod:: relations(model, maxdepth=1, whitelist=[], blacklist=[], config={})
+    .. automethod:: relations(model, maxdepth=1, whitelist=[], blacklist=[], attrs_whitelist=[], attrs_blacklist=[], config={})
 
         Return a :class:`Relations <oerplib.service.inspect.relations.Relations>`
         object showing relations between data models, starting from `model`
         (depth = 0) and iterate recursively until reaching the `maxdepth` limit.
-        `whitelist` and `blacklist` of models can be defined (a joker ``*`` can
-        be used to match several models like ``account*``), the whitelist
-        is processed before the blacklist.
+
+        `whitelist` and `blacklist` of models can be defined with patterns
+        (a joker ``*`` can be used to match several models like ``account*``),
+        the whitelist is processed before the blacklist.
+
+        In the same way, displaying attributes can be defined for each model
+        with ``attrs_whitelist`` and ``attrs_blacklist``. By default, model
+        attributes are not displayed, unless the ``'*'`` pattern is supplied in
+        ``attrs_whitelist``, or if only the ``attrs_blacklist`` if defined.
 
             >>> oerp.inspect.relations(
             ...     'res.users',
             ...     maxdepth=4,
             ...     whitelist=['res*'],
-            ...     blacklist=['res.users', 'res.company'],
+            ...     blacklist=['res.users'],
+            ...     attrs_whitelist=['*'],
+            ...     attrs_blacklist=['res.partner', 'res.company'],
             ... ).write('res_users.png', format='png')
 
         `config` is a dictionary of options to override some attributes of
         the graph. Here the list of options and their default values:
 
             - ``relation_types: ['many2one', 'one2many', 'many2many']``,
-            - ``show_model_attrs: True``,
             - ``show_many2many_table: False``,
             - ``color_many2one: #0E2548``,
             - ``color_one2many: #008200``,
@@ -68,7 +74,7 @@ class Inspect(object):
 
         >>> oerp.inspect.relations(
         ...     'res.users',
-        ...     config={'show_model_attrs': False}
+        ...     config={'relation_types': ['many2one']}
         ... ).write('res_users.png', format='png')
 
         .. note::
@@ -82,9 +88,10 @@ class Inspect(object):
 
     @check_pydot
     def relations(self, model, maxdepth=1, whitelist=None, blacklist=None,
-                  config=None):
+                  attrs_whitelist=None, attrs_blacklist=None, config=None):
         from oerplib.service.inspect.relations import Relations
         return Relations(
-            self._oerp, model, maxdepth, whitelist, blacklist, config)
+            self._oerp, model, maxdepth, whitelist, blacklist,
+            attrs_whitelist, attrs_blacklist, config)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
