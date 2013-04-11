@@ -67,6 +67,7 @@ class Inspect(object):
             - ``color_many2many: #6E0004``,
             - ``bgcolor_model_title: #64629C``,
             - ``color_model_title: white``,
+            - ``color_model_subtitle': #3E3D60``,
             - ``bgcolor_model: white``,
             - ``color_normal: black``,
             - ``color_required: blue``
