@@ -10,7 +10,7 @@ from oerplib import error
 from oerplib.service.osv import fields, browse
 
 
-class Model(collections.Mapping):
+class Model(object):
     """.. versionadded:: 0.5
 
     Represent a data model from the `OpenERP` server.

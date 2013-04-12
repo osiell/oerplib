@@ -26,6 +26,7 @@ class TestOSV(unittest.TestCase):
         # Check the result returned
         model = self.oerp.get('res.users')
         model.name_get(self.user.id)
+        self.oerp.get('ir.sequence').get('fake.code')  # Return False
 
     def test_model_method_without_args(self):
         # Handle exception (execute a 'name_get' with without args)

@@ -8,6 +8,12 @@ v0.8.0, 2013-XX-XX:
       a pre-configured 'OERP' instance (see previous point),
     - Documentation updated.
 
+v0.7.1, 2013-04-12:
+    Bug fixes:
+    - Dictionary interface of OSV/Model class conflicts with OSV methods
+      (Bug #1167796)
+    - Fixed the documentation (formatting error about the 'common' service)
+
 v0.7.0, 2013-02-18:
     - User context is sent automatically (OpenERP >= 6.1),
     - Able to use named parameters with OSV methods (OpenERP >= 6.1),
