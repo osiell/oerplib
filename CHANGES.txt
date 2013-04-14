@@ -1,3 +1,8 @@
+v0.7.2, 2013-04-15:
+    Bug fixes:
+    - Unable to make any request if the 'base_crypt' module is installed
+      (Bug #1168977)
+
 v0.7.1, 2013-04-12:
     Bug fixes:
     - Dictionary interface of OSV/Model class conflicts with OSV methods
