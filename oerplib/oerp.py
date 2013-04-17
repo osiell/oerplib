@@ -44,7 +44,8 @@ class OERP(object):
         self._port = port
         self._protocol = protocol
         self._database = self._database_default = database
-        self._user = None
+        self._uid = None
+        self._password = None
         self._common = common.Common(self)
         self._db = db.DB(self)
         self._wizard = wizard.Wizard(self)
@@ -175,8 +176,8 @@ class OERP(object):
     # able to auto-document decorated methods.
     def _check_logged_user(self):
         """Check if a user is logged. Otherwise, an error is raised."""
-        if not self._user:
-            raise error.Error("User login required.")
+        if not self._uid or not self._password:
+            raise error.Error(u"User login required.")
 
     def login(self, user='admin', passwd='admin', database=None):
         """Log in as the given `user` with the password `passwd` on the
@@ -202,16 +203,8 @@ class OERP(object):
             raise error.RPCError(exc.message, exc.oerp_traceback)
         else:
             if user_id:
-                #NOTE: create a fake User record just to execute the
-                # first query : browse the real User record
-                self._user = type('FakeUser',
-                                  (osv.BrowseRecord,),
-                                  {'id': None,
-                                   'login': None,
-                                   'password': None})
-                self._user.id = user_id
-                self._user.login = user
-                self._user.password = passwd
+                self._uid = user_id
+                self._password = passwd
                 self._context = self.execute('res.users', 'context_get')
                 self._user = self.browse('res.users', user_id, self._context)
                 return self._user
@@ -237,8 +230,8 @@ class OERP(object):
         # Execute the query
         try:
             return self._connector.object.execute(
-                self._database, self._user.id,
-                self._user.password,
+                self._database, self._uid,
+                self._password,
                 model, method, *args)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
@@ -265,8 +258,7 @@ class OERP(object):
         kwargs = kwargs or {}
         try:
             return self._connector.object.execute_kw(
-                self._database, self._user.id,
-                self._user.password,
+                self._database, self._uid, self._password,
                 model, method, args, kwargs)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
@@ -281,9 +273,9 @@ class OERP(object):
         self._check_logged_user()
         # Execute the workflow query
         try:
-            self._connector.object.exec_workflow(self._database, self._user.id,
-                                                 self._user.password,
-                                                 model, signal, obj_id)
+            self._connector.object.exec_workflow(
+                self._database, self._uid, self._password,
+                model, signal, obj_id)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
 
