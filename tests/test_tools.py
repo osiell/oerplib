@@ -23,7 +23,7 @@ class TestTools(unittest.TestCase):
     def test_detect_version(self):
         version = tools.detect_version(
             ARGS.server, ARGS.protocol, ARGS.port)
-        self.assertIsInstance(version, basestring)
+        self.assertIsInstance(version, str)
 
     def test_v_numeric(self):
         self.assertEqual(tools.v('7.0'), [7, 0])
