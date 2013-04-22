@@ -64,4 +64,16 @@ def get_connector(server, port=8069, protocol='xmlrpc',
         raise error.ConnectorError(txt)
     return PROTOCOLS[protocol](server, port, timeout, version)
 
+
+def get_json_connector(server, port=8069, timeout=120,
+                       version=None, ssl=False):
+    """Return a `JSON-RPC` connector to interact with an `OpenERP` server.
+
+    The `JSON-RPC` protocol can not be used in the same way that `XML-RPC`
+    and `Net-RPC`, the `API` is completely different.
+    """
+    if ssl:
+        return connector.ConnectorJSONRPCSSL(server, port, timeout, version)
+    return connector.ConnectorJSONRPC(server, port, timeout, version)
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

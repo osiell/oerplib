@@ -3,7 +3,7 @@
 
 import abc
 
-from oerplib.rpc import error, service
+from oerplib.rpc import error, service, jsonrpclib
 from oerplib.tools import v
 
 
@@ -67,5 +67,19 @@ class ConnectorNetRPC(Connector):
             self, service_name, self.server, self.port)
         setattr(self, service_name, srv)
         return srv
+
+
+class ConnectorJSONRPC(jsonrpclib.AuthProxy):
+    """Connector class using JSON-RPC protocol."""
+    def __init__(self, server, port, timeout, version):
+        super(ConnectorJSONRPC, self).__init__(
+            server, port, timeout, ssl=False)
+
+
+class ConnectorJSONRPCSSL(jsonrpclib.AuthProxy):
+    """Connector class using JSON-RPC protocol over SSL."""
+    def __init__(self, server, port, timeout, version):
+        super(ConnectorJSONRPC, self).__init__(
+            server, port, timeout, ssl=True)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
