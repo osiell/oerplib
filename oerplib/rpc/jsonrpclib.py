@@ -59,7 +59,7 @@ class AuthProxy(Proxy):
 
 class URLBuilder(object):
     """Auto-builds an URL while getting its attributes.
-    Used by :class:`Proxy` and :class:`Proxy` classes.
+    Used by :class:`Proxy` and :class:`AuthProxy` classes.
     """
     def __init__(self, rpc, url=None):
         self._rpc = rpc
