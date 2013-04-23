@@ -40,6 +40,11 @@ class OERP(object):
 
     def __init__(self, server='localhost', database=None, protocol='xmlrpc',
                  port=8069, timeout=120, version=None):
+        if protocol not in ['xmlrpc', 'xmlrpc+ssl', 'netrpc']:
+            txt = ("The protocol '{0}' is not supported by the OERP class. "
+                   "Please choose a protocol among these ones: {1}")
+            txt = txt.format(protocol, ['xmlrpc', 'xmlrpc+ssl', 'netrpc'])
+            raise error.InternalError(txt)
         self._server = server
         self._port = port
         self._protocol = protocol
