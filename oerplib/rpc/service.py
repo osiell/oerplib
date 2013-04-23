@@ -2,7 +2,7 @@
 
 import xmlrpclib
 
-from oerplib.rpc import socket_netrpc, xmlrpclib_custom, error
+from oerplib.rpc import netrpclib, xmlrpclib_custom, error
 
 
 class ServiceXMLRPC(object):
@@ -44,7 +44,7 @@ class ServiceNetRPC(object):
     def __getattr__(self, method):
         def rpc_method(*args):
             try:
-                sock = socket_netrpc.NetRPC(timeout=self._connector.timeout)
+                sock = netrpclib.NetRPC(timeout=self._connector.timeout)
                 sock.connect(self._server, self._port)
                 sock.send((self._name, method, ) + args)
                 result = sock.receive()
@@ -53,7 +53,7 @@ class ServiceNetRPC(object):
             #NOTE: exception raised with these kind of requests:
             #   - execute('fake.model', 'search', [])
             #   - execute('sale.order', 'fake_method')
-            except socket_netrpc.NetRPCError as exc:
+            except netrpclib.NetRPCError as exc:
                 # faultCode: error message
                 # faultString: OpenERP server traceback (following the OpenERP
                 # server version used, a bad request can produce a

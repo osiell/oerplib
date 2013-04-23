@@ -50,20 +50,91 @@ And here the `JSON-RPC` way:
     {u'jsonrpc': u'2.0', u'id': 454236230,
      u'result': [{u'id': 42, u'comment': False, u'ean13': False, u'property_account_position': False, ...}]}
 
-
-This sub-module is used by `OERPLib` to execute all queries while abstracting
-the protocol used.
-
 """
+from oerplib.rpc import error, service, jsonrpclib
+from oerplib.tools import v
 
-from oerplib.rpc import connector, error
+
+class Connector(object):
+    """Connector base class defining the interface used
+    to interact with an `OpenERP` server.
+    """
+    def __init__(self, server, port=8069, timeout=120, version=None):
+        self.server = server
+        try:
+            int(port)
+        except ValueError:
+            txt = "The port '{0}' is invalid. An integer is required."
+            txt = txt.format(port)
+            raise error.ConnectorError(txt)
+        else:
+            self.port = port
+        self.timeout = timeout
+        self.version = version
+
+
+class ConnectorXMLRPC(Connector):
+    """Connector class using the `XML-RPC` protocol."""
+    def __init__(self, server, port=8069, timeout=120, version=None):
+        super(ConnectorXMLRPC, self).__init__(
+            server, port, timeout, version)
+        # OpenERP < 6.1
+        if self.version and v(self.version) < v('6.1'):
+            self._url = 'http://{server}:{port}/xmlrpc'.format(
+                server=self.server, port=self.port)
+        # OpenERP >= 6.1
+        else:
+            self._url = 'http://{server}:{port}/openerp/xmlrpc/1'.format(
+                server=self.server, port=self.port)
+
+    def __getattr__(self, service_name):
+        url = self._url + '/' + service_name
+        srv = service.ServiceXMLRPC(self, service_name, url)
+        setattr(self, service_name, srv)
+        return srv
+
+
+class ConnectorXMLRPCSSL(ConnectorXMLRPC):
+    """Connector class using the `XML-RPC` protocol over SSL."""
+    def __init__(self, server, port=8069, timeout=120, version=None):
+        super(ConnectorXMLRPCSSL, self).__init__(
+            server, port, timeout, version)
+        self._url = self._url.replace('http', 'https')
+
+
+class ConnectorNetRPC(Connector):
+    """Connector class using the `Net-RPC` protocol."""
+    def __init__(self, server, port=8070, timeout=120, version=None):
+        super(ConnectorNetRPC, self).__init__(
+            server, port, timeout, version)
+
+    def __getattr__(self, service_name):
+        srv = service.ServiceNetRPC(
+            self, service_name, self.server, self.port)
+        setattr(self, service_name, srv)
+        return srv
+
+
+class ConnectorJSONRPC(jsonrpclib.AuthProxy):
+    """Connector class using the `JSON-RPC` protocol."""
+    def __init__(self, server, port=8069, timeout=120, version=None):
+        super(ConnectorJSONRPC, self).__init__(
+            server, port, timeout, ssl=False)
+
+
+class ConnectorJSONRPCSSL(jsonrpclib.AuthProxy):
+    """Connector class using the `JSON-RPC` protocol over `SSL`."""
+    def __init__(self, server, port=8069, timeout=120, version=None):
+        super(ConnectorJSONRPC, self).__init__(
+            server, port, timeout, ssl=True)
+
 
 PROTOCOLS = {
-    'xmlrpc': connector.ConnectorXMLRPC,
-    'xmlrpc+ssl': connector.ConnectorXMLRPCSSL,
-    'jsonrpc': connector.ConnectorJSONRPC,
-    'jsonrpc+ssl': connector.ConnectorJSONRPCSSL,
-    'netrpc': connector.ConnectorNetRPC,
+    'xmlrpc': ConnectorXMLRPC,
+    'xmlrpc+ssl': ConnectorXMLRPCSSL,
+    'jsonrpc': ConnectorJSONRPC,
+    'jsonrpc+ssl': ConnectorJSONRPCSSL,
+    'netrpc': ConnectorNetRPC,
 }
 
 
