@@ -10,10 +10,11 @@ class Proxy(object):
     """The :class:`Proxy` class provides a dynamic access
     to all JSON methods.
     """
-    def __init__(self, host, port, timeout=120, ssl=False):
+    def __init__(self, host, port, timeout=120, ssl=False, deserialize=True):
         self._root_url = "{http}{host}:{port}".format(
             http=(ssl and "https://" or "http://"), host=host, port=port)
         self._timeout = timeout
+        self._deserialize = deserialize
         self._builder = URLBuilder(self)
         cookie_jar = cookielib.CookieJar()
         self._opener = urllib2.build_opener(
@@ -33,8 +34,9 @@ class Proxy(object):
         request.add_header('Content-Type', 'application/json')
         request.add_data(data)
         response = self._opener.open(request, timeout=self._timeout)
-        result = json.load(response)
-        return result
+        if not self._deserialize:
+            return response
+        return json.load(response)
 
 
 class AuthProxy(Proxy):
@@ -42,16 +44,17 @@ class AuthProxy(Proxy):
     simplifies request handling by adding automatically the ``session_id``
     parameter once the user is authenticated.
     """
-    def __init__(self, host, port, timeout=120, ssl=False):
-        super(AuthProxy, self).__init__(host, port, timeout, ssl)
+    def __init__(self, host, port, timeout=120, ssl=False, deserialize=True):
+        super(AuthProxy, self).__init__(host, port, timeout, ssl, deserialize)
         self._session_id = None
 
     def __call__(self, url, params):
         # Add the 'session_id' parameter if necessary
         if url == 'web/session/authenticate':
-            result = super(AuthProxy, self).__call__(url, params)
+            response = super(AuthProxy, self).__call__(url, params)
+            result = self._deserialize and response or json.load(response)
             self._session_id = result and result['result']['session_id']
-            return result
+            return response
         elif self._session_id and 'session_id' not in params:
             params['session_id'] = self._session_id
         return super(AuthProxy, self).__call__(url, params)
