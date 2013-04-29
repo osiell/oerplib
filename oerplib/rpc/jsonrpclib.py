@@ -23,6 +23,11 @@ class Proxy(object):
     def __getattr__(self, name):
         return getattr(self._builder, name)
 
+    def __getitem__(self, url):
+        if url and url[0] == '/':
+            url = url[1:]
+        return getattr(self._builder, url)
+
     def __call__(self, url, params):
         data = json.dumps({
             "jsonrpc": "2.0",
