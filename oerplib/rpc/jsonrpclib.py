@@ -24,9 +24,7 @@ class Proxy(object):
         return getattr(self._builder, name)
 
     def __getitem__(self, url):
-        if url and url[0] == '/':
-            url = url[1:]
-        return getattr(self._builder, url)
+        return self._builder[url]
 
     def __call__(self, url, params):
         data = json.dumps({
@@ -76,6 +74,13 @@ class URLBuilder(object):
     def __getattr__(self, path):
         new_url = self._url and '/'.join([self._url, path]) or path
         return URLBuilder(self._rpc, new_url)
+
+    def __getitem__(self, path):
+        if path and path[0] == '/':
+            path = path[1:]
+        if path and path[-1] == '/':
+            path = path[:-1]
+        return getattr(self, path)
 
     def __call__(self, **kwargs):
         return self._rpc(self._url, kwargs)

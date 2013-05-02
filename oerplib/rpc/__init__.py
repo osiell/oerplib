@@ -56,6 +56,12 @@ And here the `JSON-RPC` way:
     {u'jsonrpc': u'2.0', u'id': 328686288,
      u'result': [{u'id': 42, u'comment': False, u'ean13': False, u'property_account_position': False, ...}]}
 
+    Or like this:
+
+    >>> cnt.proxy['web']['dataset'].call(model='res.partner', method='read', args=[[42]])
+    {u'jsonrpc': u'2.0', u'id': 102320639,
+     u'result': [{u'id': 42, u'comment': False, u'ean13': False, u'property_account_position': False, ...}]}
+
 """
 from oerplib.rpc import error, service, jsonrpclib
 from oerplib.tools import v
