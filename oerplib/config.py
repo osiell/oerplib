@@ -47,6 +47,24 @@ class Config(collections.MutableMapping):
         return self._options.__repr__()
 
 
+def get_all(rc_file='~/.oerplibrc'):
+    """Return session configurations from the `rc_file` file."""
+    conf = SafeConfigParser()
+    conf.read([os.path.expanduser(rc_file)])
+    sessions = {}
+    for name in conf.sections():
+        sessions[name] = {
+            'server': conf.get(name, 'server'),
+            'protocol': conf.get(name, 'protocol'),
+            'port': conf.getint(name, 'port'),
+            'timeout': conf.getint(name, 'timeout'),
+            'user': conf.get(name, 'user'),
+            'passwd': conf.get(name, 'passwd'),
+            'database': conf.get(name, 'database'),
+        }
+    return sessions
+
+
 def get(name, rc_file='~/.oerplibrc'):
     """Return the session configuration identified by `name`
     from the `rc_file` file.
