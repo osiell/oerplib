@@ -109,4 +109,19 @@ def save(name, data, rc_file='~/.oerplibrc'):
     with open(os.path.expanduser(rc_file), 'wb') as file_:
         os.chmod(os.path.expanduser(rc_file), stat.S_IREAD | stat.S_IWRITE)
         conf.write(file_)
+
+
+def remove(name, rc_file='~/.oerplibrc'):
+    """Remove the session configuration identified by `name`
+    from the `rc_file` file.
+
+    :raise: :class:`oerplib.error.Error`
+    """
+    conf = SafeConfigParser()
+    conf.read([os.path.expanduser(rc_file)])
+    res = conf.remove_section(name)
+    with open(os.path.expanduser(rc_file), 'wb') as file_:
+        conf.write(file_)
+    return res
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
