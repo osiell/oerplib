@@ -19,6 +19,7 @@ from test_execute_kw import TestExecuteKw
 from test_browse import TestBrowse
 from test_osv import TestOSV
 from test_timeout import TestTimeout
+from test_config import TestConfig
 
 from oerplib.tools import v
 
@@ -71,6 +72,10 @@ if __name__ == '__main__':
 
     # Test socket timeout
     loader = unittest.TestLoader().loadTestsFromTestCase(TestTimeout)
+    suite.addTest(loader)
+
+    # Test configuration saving
+    loader = unittest.TestLoader().loadTestsFromTestCase(TestConfig)
     suite.addTest(loader)
 
     #---------------
