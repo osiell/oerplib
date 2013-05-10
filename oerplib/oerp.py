@@ -560,7 +560,7 @@ class OERP(object):
             'port': self.port,
             'timeout': self.config['timeout'],
             'user': self.user.login,
-            'passwd': self.user.password,
+            'passwd': self._password,
             'database': self.database,
         }
         config.save(name, data, rc_file)
