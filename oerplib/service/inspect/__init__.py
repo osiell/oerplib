@@ -95,11 +95,11 @@ class Inspect(object):
             self._oerp, model, maxdepth, whitelist, blacklist,
             attrs_whitelist, attrs_blacklist, config)
 
-    def list_on_change(self, models):
+    def scan_on_change(self, models):
         """List all `on_change` methods detected among `models`.
         The detection is made from the view descriptions related to the models.
         """
-        from oerplib.service.inspect.on_change import list_on_change
-        return list_on_change(self._oerp, models)
+        from oerplib.service.inspect.on_change import scan_on_change
+        return scan_on_change(self._oerp, models)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

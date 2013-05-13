@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
-"""Provides the :func:`list_on_changes` function."""
+"""Provides the :func:`scan_on_change` function."""
 import xml.etree.ElementTree
 import re
 
 ON_CHANGE_RE = re.compile('^(.*?)\((.*)\)$')
 
 
-def list_on_change(oerp, models):
+def scan_on_change(oerp, models):
     """List all `on_change` methods detected among `models`.
     The detection is made from the view descriptions related to the models.
     """
@@ -43,7 +43,6 @@ def _scan_view(model, view_name, view_data, result):
     for elt in xml_root.findall(".//field"):
         if 'on_change' not in elt.attrib:
             continue
-    #for elt in xml_root.findall(".//field[@on_change]"):
         match = ON_CHANGE_RE.match(elt.attrib['on_change'])
         if match:
             func = match.group(1)
