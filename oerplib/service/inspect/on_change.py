@@ -38,7 +38,12 @@ def _scan_view(model, view_name, view_data, result):
         result[model] = {}
     # Scan the main view description
     xml_root = xml.etree.ElementTree.fromstring(view_data['arch'])
-    for elt in xml_root.findall(".//field[@on_change]"):
+    # NOTE: Python 2.6 does not support full XPath, it is
+    # why the ".//field" pattern is used instead of ".//field[@on_change]"
+    for elt in xml_root.findall(".//field"):
+        if 'on_change' not in elt.attrib:
+            continue
+    #for elt in xml_root.findall(".//field[@on_change]"):
         match = ON_CHANGE_RE.match(elt.attrib['on_change'])
         if match:
             func = match.group(1)
