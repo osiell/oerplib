@@ -2,11 +2,13 @@
 """Provide the :class:`Inspect` class which can output useful data
 from `OpenERP`.
 """
+from functools import wraps
 
 from oerplib import error
 
 
 def check_pydot(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         try:
             import pydot
@@ -96,8 +98,51 @@ class Inspect(object):
             attrs_whitelist, attrs_blacklist, config)
 
     def scan_on_change(self, models):
-        """List all `on_change` methods detected among `models`.
-        The detection is made from the view descriptions related to the models.
+        """Scan all `on_change` methods detected among views of `models`.
+
+            >>> oerp.inspect.scan_on_change(['sale.order'])
+            {'sale.order': {
+                'onchange_partner_id': {
+                    'args': ['partner_id'],
+                    'fields': ['partner_id'],
+                    'views': ['sale.view_order_form']},
+                'onchange_partner_order_id': {
+                    'args': ['partner_order_id', 'partner_invoice_id', 'partner_shipping_id'],
+                    'fields': ['partner_order_id'],
+                    'views': ['sale.view_order_form']},
+                'onchange_pricelist_id': {
+                    'args': ['pricelist_id', 'order_line'],
+                    'fields': ['pricelist_id'],
+                    'views': ['sale.view_order_form']},
+                'onchange_shop_id': {
+                    'args': ['shop_id'],
+                    'fields': ['shop_id'],
+                    'views': ['sale.view_order_form']},
+                'shipping_policy_change': {
+                    'args': ['order_policy'],
+                    'fields': ['order_policy'],
+                    'views': ['sale.view_order_form']}},
+             'sale.order.line': {
+                'product_id_change': {
+                    'args': ['parent.pricelist_id',
+                             'product_id',
+                             'product_uom_qty',
+                             'product_uom',
+                             'product_uos_qty',
+                             'product_uos',
+                             'name',
+                             'parent.partner_id',
+                             False,
+                             True,
+                             'parent.date_order',
+                             'product_packaging',
+                             'parent.fiscal_position',
+                             False,
+                             'context'],
+                    'fields': ['product_id', 'product_uom_qty'],
+                    'views': ['sale.view_order_form']},
+                ...
+             }}
         """
         from oerplib.service.inspect.on_change import scan_on_change
         return scan_on_change(self._oerp, models)

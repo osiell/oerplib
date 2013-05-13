@@ -7,9 +7,7 @@ ON_CHANGE_RE = re.compile('^(.*?)\((.*)\)$')
 
 
 def scan_on_change(oerp, models):
-    """List all `on_change` methods detected among `models`.
-    The detection is made from the view descriptions related to the models.
-    """
+    """Scan all `on_change` methods detected among views of `models`."""
     result = {}
     view_obj = oerp.get('ir.ui.view')
     model_data_obj = oerp.get('ir.model.data')
