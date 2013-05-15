@@ -98,49 +98,38 @@ class Inspect(object):
             attrs_whitelist, attrs_blacklist, config)
 
     def scan_on_change(self, models):
-        """Scan all `on_change` methods detected among views of `models`.
+        """Scan all `on_change` methods detected among views of `models`, and
+        returns a dictionary formatted as
+        ``{model: {on_change: {view_name: field: [args]}}}``
 
             >>> oerp.inspect.scan_on_change(['sale.order'])
             {'sale.order': {
                 'onchange_partner_id': {
-                    'args': ['partner_id'],
-                    'fields': ['partner_id'],
-                    'views': ['sale.view_order_form']},
+                    'sale.view_order_form': {
+                        'partner_id': ['partner_id']}},
                 'onchange_partner_order_id': {
-                    'args': ['partner_order_id', 'partner_invoice_id', 'partner_shipping_id'],
-                    'fields': ['partner_order_id'],
-                    'views': ['sale.view_order_form']},
+                    'sale.view_order_form': {
+                        'partner_order_id': ['partner_order_id', 'partner_invoice_id', 'partner_shipping_id']}},
                 'onchange_pricelist_id': {
-                    'args': ['pricelist_id', 'order_line'],
-                    'fields': ['pricelist_id'],
-                    'views': ['sale.view_order_form']},
+                    'sale.view_order_form': {
+                        'pricelist_id': ['pricelist_id', 'order_line']}},
                 'onchange_shop_id': {
-                    'args': ['shop_id'],
-                    'fields': ['shop_id'],
-                    'views': ['sale.view_order_form']},
+                    'sale.view_order_form': {
+                        'shop_id': ['shop_id']}},
                 'shipping_policy_change': {
-                    'args': ['order_policy'],
-                    'fields': ['order_policy'],
-                    'views': ['sale.view_order_form']}},
+                    'sale.view_order_form': {
+                        'order_policy': ['order_policy']}}},
              'sale.order.line': {
                 'product_id_change': {
-                    'args': ['parent.pricelist_id',
-                             'product_id',
-                             'product_uom_qty',
-                             'product_uom',
-                             'product_uos_qty',
-                             'product_uos',
-                             'name',
-                             'parent.partner_id',
-                             False,
-                             True,
-                             'parent.date_order',
-                             'product_packaging',
-                             'parent.fiscal_position',
-                             False,
-                             'context'],
-                    'fields': ['product_id', 'product_uom_qty'],
-                    'views': ['sale.view_order_form']},
+                    'sale.view_order_form': {
+                        'product_id': [
+                            'parent.pricelist_id', 'product_id', 'product_uom_qty', 'product_uom',
+                            'product_uos_qty', 'product_uos', 'name', 'parent.partner_id', False, True,
+                            'parent.date_order', 'product_packaging', 'parent.fiscal_position', False, 'context'],
+                        'product_uom_qty': [
+                            'parent.pricelist_id', 'product_id', 'product_uom_qty', 'product_uom',
+                            'product_uos_qty', 'product_uos', 'name', 'parent.partner_id', False, False,
+                            'parent.date_order', 'product_packaging', 'parent.fiscal_position', True, 'context']}},
                 ...
              }}
         """

@@ -47,20 +47,14 @@ def _scan_view(model, view_name, view_data, result):
             args = [arg.strip() for arg in match.group(2).split(',')]
             field = elt.attrib['name']
             if func not in result[model]:
-                result[model][func] = {
-                    'args': [],
-                    'fields': [],
-                    'views': [],
-                }
-            if field not in result[model][func]['fields']:
-                result[model][func]['fields'].append(field)
-            if view_name not in result[model][func]['views']:
-                result[model][func]['views'].append(view_name)
-            # We keep the longest signature found for this on_change
-            if not result[model][func]['args'] \
-                    or len(result[model][func]['args']) < len(args):
+                result[model][func] = {}
+            if view_name not in result[model][func]:
+                result[model][func][view_name] = {}
+            if field not in result[model][func][view_name]:
+                result[model][func][view_name][field] = []
+            if args and args not in result[model][func][view_name][field]:
                 args = map(_clean_arg, args)
-                result[model][func]['args'] = args
+                result[model][func][view_name][field] = args
     # Scan recursively all other sub-descriptions defined in the view
     for field_name, field_data in view_data['fields'].iteritems():
         if field_data.get('views') and field_data['views'].get('form'):
