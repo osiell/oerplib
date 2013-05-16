@@ -347,6 +347,83 @@ However, `OERPLib` simplifies this by providing the
 Some documentation about methods offered by the `OpenERP` ``/db`` RPC service
 is available :class:`here <oerplib.service.db.DB>`.
 
+Inspect the metadata of OpenERP
+-------------------------------
+
+Draw a graph of the relationships between models
+''''''''''''''''''''''''''''''''''''''''''''''''
+
+The :func:`relations <oerplib.service.inspect.Inspect.relations>` method will help you
+to generate a graphic of such relationships::
+
+    >>> graph = oerp.inspect.relations('res.partner')
+    >>> graph.write('res_partner_v1.png', format='png')
+
+.. figure:: _static/inspect_relations_1.png
+    :width: 100%
+
+    Legend:
+
+    +--------------------------------------------+-----------------------------+
+    | Color                                      | Meaning                     |
+    +============================================+=============================+
+    | .. raw:: html                              | many2one                    |
+    |                                            |                             |
+    |    <font color="#0E2548">partner_id</font> |                             |
+    +--------------------------------------------+-----------------------------+
+    | .. raw:: html                              | one2many                    |
+    |                                            |                             |
+    |    <font color="#008200">bank_ids</font>   |                             |
+    +--------------------------------------------+-----------------------------+
+    | .. raw:: html                              | many2many                   |
+    |                                            |                             |
+    |    <font color="#6E0004">company_ids</font>|                             |
+    +--------------------------------------------+-----------------------------+
+
+By default, only the direct relationships of the model ``res.partner`` are shown
+(this behaviour can be changed with the ``maxdepth`` parameter), and model
+attributes are hidden.
+You can control the models to be displayed through the ``whitelist`` and
+``blacklist`` parameters. For instance, assume that you only want data models
+whose name begins with `res.partner`:
+
+.. note::
+    The whitelist has a higher priority than the blacklist
+
+
+::
+
+    >>> graph = oerp.inspect.relations('res.partner', whitelist=['res.partner*'])  # Notice the use of wildcard here
+    >>> graph.write('res_partner_v2.png', format='png')
+
+.. image:: _static/inspect_relations_2.png
+    :width: 50%
+
+To display attributes, use the ``attrs_whitelist`` parameter. A wildcard is used here to show
+attributes of all models (but you can specify which models you want)::
+
+    >>> graph = oerp.inspect.relations('res.partner', whitelist=['res.partner*'], attrs_whitelist=['*'])
+    >>> graph.write('res_partner_v3.png', format='png')
+
+.. figure:: _static/inspect_relations_3.png
+    :width: 50%
+
+    Legend:
+
+    +--------------------------------------------+-----------------------------+
+    | Color                                      | Meaning                     |
+    +============================================+=============================+
+    | .. raw:: html                              | required                    |
+    |                                            |                             |
+    |    <font color="blue">name</font>          |                             |
+    +--------------------------------------------+-----------------------------+
+
+Scan the views of data models to list `on_change` methods
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+TODO
+
+
 Save the session to open it quickly later
 -----------------------------------------
 
