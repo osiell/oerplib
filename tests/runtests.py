@@ -20,6 +20,7 @@ from test_browse import TestBrowse
 from test_osv import TestOSV
 from test_timeout import TestTimeout
 from test_config import TestConfig
+from test_inspect import TestInspect
 
 from oerplib.tools import v
 
@@ -76,6 +77,10 @@ if __name__ == '__main__':
 
     # Test configuration saving
     loader = unittest.TestLoader().loadTestsFromTestCase(TestConfig)
+    suite.addTest(loader)
+
+    # Test inspect service
+    loader = unittest.TestLoader().loadTestsFromTestCase(TestInspect)
     suite.addTest(loader)
 
     #---------------
