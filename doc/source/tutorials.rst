@@ -388,7 +388,7 @@ You can control the models to be displayed through the ``whitelist`` and
 whose name begins with `res.partner`:
 
 .. note::
-    The whitelist has a higher priority than the blacklist
+    The blacklist has a higher priority than the whitelist
 
 
 ::
