@@ -5,4 +5,5 @@ include README.txt
 include doc/Makefile doc/make.bat
 recursive-include doc/source *
 recursive-include examples *
-recursive-include tests *
+recursive-include tests *.py
+prune tests/__pycache__
