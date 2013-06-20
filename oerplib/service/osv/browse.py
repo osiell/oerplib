@@ -21,7 +21,7 @@ class BrowseRecord(object):
     record (it is not recommended to edit them)::
 
         >>> user.__data__
-        {'fields_updated': [],
+        {'updated_values': {},
          'raw_data': {'action_id': False,
                       'active': True,
                       'company_id': [1, 'Your Company'],
@@ -47,7 +47,7 @@ class BrowseRecord(object):
 
     def __init__(self, o_id):
         self._id = o_id
-        self.__data__ = {'values': {}, 'raw_data': {}, 'fields_updated': []}
+        self.__data__ = {'values': {}, 'raw_data': {}, 'updated_values': {}}
 
     @property
     def id(self):

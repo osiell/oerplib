@@ -20,6 +20,43 @@ def is_int(value):
         return False
 
 
+def oerp_tuple_in(iterable):
+    """Return `True` if `iterable` contains an expected tuple like
+    ``(6, 0, IDS)`` (and so on).
+
+        >>> oerp_tuple_in([0, 1, 2])        # Simple list
+        False
+        >>> oerp_tuple_in([(6, 0, [42])])   # List of tuples
+        True
+        >>> oerp_tuple_in([[1, 42]])        # List of lists
+        True
+    """
+    if not iterable:
+        return False
+    def is_oerp_tuple(elt):
+        try:
+            return elt[:1][0] in [1, 2, 3, 4, 5] \
+                    or elt[:2] in [(6, 0), [6, 0], (0, 0), [0, 0]]
+        except:
+            return False
+    return any(is_oerp_tuple(elt) for elt in iterable)
+
+
+def records2ids(iterable):
+    """Replace `browse_records` contained in `iterable` by their
+    corresponding IDs:
+
+        >>> groups = list(oerp.user.groups_id)
+        >>> records2ids(groups)
+        [1, 2, 3, 14, 17, 18, 19, 7, 8, 9, 5, 20, 21, 22, 23]
+    """
+    def record2id(elt):
+        if isinstance(elt, browse.BrowseRecord):
+            return elt.id
+        return elt
+    return map(record2id, iterable)
+
+
 class BaseField(object):
     """Field which all other fields inherit.
     Manage common metadata.
@@ -84,12 +121,13 @@ class SelectionField(BaseField):
         self.selection = 'selection' in data and data['selection'] or False
 
     def __get__(self, instance, owner):
+        if self.name in instance.__data__['updated_values']:
+            return instance.__data__['updated_values'][self.name]
         return instance.__data__['values'][self.name]
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        instance.__data__['values'][self.name] = value
-        instance.__data__['fields_updated'].append(self.name)
+        instance.__data__['updated_values'][self.name] = value
 
     def check_value(self, value):
         super(SelectionField, self).check_value(value)
@@ -122,6 +160,20 @@ class Many2ManyField(BaseField):
                 instance.__osv__['name'],
                 [instance.id], [self.name])[0][self.name]
             instance.__data__['values'][self.name] = ids
+        # Take updated values into account
+        if self.name in instance.__data__['updated_values']:
+            ids = ids or []
+            values = instance.__data__['updated_values'][self.name]
+            # Handle OERP tuples to update 'ids'
+            for value in values:
+                if value[0] == 6 and value[2]:
+                    ids = value[2]
+                elif value[0] == 5:
+                    ids = []
+                elif value[0] == 4 and value[1]:
+                    ids.append(value[1])
+                elif value[0] == 3 and value[1] and value[1] in ids:
+                    ids.remove(value[1])
         if ids:
             context = instance.__data__['context'].copy()
             context.update(self.context)
@@ -130,8 +182,11 @@ class Many2ManyField(BaseField):
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        instance.__data__['values'][self.name] = value
-        instance.__data__['fields_updated'].append(self.name)
+        if value and not oerp_tuple_in(value):
+            value = [(6, 0, records2ids(value))]
+        elif not value:
+            value = [(5, )]
+        instance.__data__['updated_values'][self.name] = value
 
     def check_value(self, value):
         if value:
@@ -151,6 +206,9 @@ class Many2OneField(BaseField):
 
     def __get__(self, instance, owner):
         id_ = instance.__data__['values'][self.name]
+        if self.name in instance.__data__['updated_values']:
+            id_ = instance.__data__['updated_values'][self.name]
+            # FIXME if id_ is a browse_record
         # None value => get the value on the fly
         if id_ is None:
             id_ = instance.__oerp__.read(
@@ -175,8 +233,8 @@ class Many2OneField(BaseField):
             raise ValueError("Value supplied has to be an integer, "
                              "a browse_record object or False.")
         o_rel = self.check_value(o_rel)
-        instance.__data__['values'][self.name] = o_rel and [o_rel.id, False]
-        instance.__data__['fields_updated'].append(self.name)
+        instance.__data__['updated_values'][self.name] = \
+            o_rel and [o_rel.id, False]
 
     def check_value(self, value):
         super(Many2OneField, self).check_value(value)
@@ -207,6 +265,20 @@ class One2ManyField(BaseField):
                 instance.__osv__['name'],
                 [instance.id], [self.name])[0][self.name]
             instance.__data__['values'][self.name] = ids
+        # Take updated values into account
+        if self.name in instance.__data__['updated_values']:
+            ids = ids or []
+            values = instance.__data__['updated_values'][self.name]
+            # Handle OERP tuples to update 'ids'
+            for value in values:
+                if value[0] == 6 and value[2]:
+                    ids = value[2]
+                elif value[0] == 5:
+                    ids = []
+                elif value[0] == 4 and value[1]:
+                    ids.append(value[1])
+                elif value[0] == 3 and value[1] and value[1] in ids:
+                    ids.remove(value[1])
         if ids:
             context = instance.__data__['context'].copy()
             context.update(self.context)
@@ -215,8 +287,11 @@ class One2ManyField(BaseField):
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        instance.__data__['values'][self.name] = value
-        instance.__data__['fields_updated'].append(self.name)
+        if value and not oerp_tuple_in(value):
+            value = [(6, 0, records2ids(value))]
+        elif not value:
+            value = [(5, )]
+        instance.__data__['updated_values'][self.name] = value
 
     def check_value(self, value):
         if value:
@@ -238,6 +313,8 @@ class ReferenceField(BaseField):
 
     def __get__(self, instance, owner):
         value = instance.__data__['values'][self.name]
+        if self.name in instance.__data__['updated_values']:
+            value = instance.__data__['updated_values'][self.name]
         # None value => get the value on the fly
         if value is None:
             value = instance.__oerp__.read(
@@ -257,8 +334,7 @@ class ReferenceField(BaseField):
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        instance.__data__['values'][self.name] = value
-        instance.__data__['fields_updated'].append(self.name)
+        instance.__data__['updated_values'][self.name] = value
 
     def _check_relation(self, relation):
         selection = [val[0] for val in self.selection]
@@ -303,6 +379,8 @@ class DateField(BaseField):
 
     def __get__(self, instance, owner):
         value = instance.__data__['values'][self.name]
+        if self.name in instance.__data__['updated_values']:
+            value = instance.__data__['updated_values'][self.name]
         try:
             res = datetime.datetime.strptime(value, self.pattern).date()
         except Exception:  # ValueError, TypeError
@@ -311,8 +389,7 @@ class DateField(BaseField):
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        instance.__data__['values'][self.name] = value
-        instance.__data__['fields_updated'].append(self.name)
+        instance.__data__['updated_values'][self.name] = value
 
     def check_value(self, value):
         super(DateField, self).check_value(value)
@@ -342,6 +419,8 @@ class DateTimeField(BaseField):
 
     def __get__(self, instance, owner):
         value = instance.__data__['values'][self.name]
+        if self.name in instance.__data__['updated_values']:
+            value = instance.__data__['updated_values'][self.name]
         try:
             res = datetime.datetime.strptime(value, self.pattern)
         except Exception:  # ValueError, TypeError
@@ -350,8 +429,7 @@ class DateTimeField(BaseField):
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        instance.__data__['values'][self.name] = value
-        instance.__data__['fields_updated'].append(self.name)
+        instance.__data__['updated_values'][self.name] = value
 
     def check_value(self, value):
         super(DateTimeField, self).check_value(value)
@@ -385,12 +463,13 @@ class ValueField(BaseField):
         super(ValueField, self).__init__(osv, name, data)
 
     def __get__(self, instance, owner):
+        if self.name in instance.__data__['updated_values']:
+            return instance.__data__['updated_values'][self.name]
         return instance.__data__['values'][self.name]
 
     def __set__(self, instance, value):
         value = self.check_value(value)
-        instance.__data__['values'][self.name] = value
-        instance.__data__['fields_updated'].append(self.name)
+        instance.__data__['updated_values'][self.name] = value
 
 
 def generate_field(osv, name, data):

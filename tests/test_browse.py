@@ -151,22 +151,31 @@ class TestBrowse(unittest.TestCase):
     #    pass
 
     def test_write_record_many2many(self):
-        backup_groups = [grp for grp in self.user.groups_id]
+        backup_groups = list(self.user.groups_id)
         # False
         self.user.groups_id = False
+        self.assertEqual(list(self.user.groups_id), [])
         self.oerp.write_record(self.user)
-        self.assertEqual(list(self.user.groups_id), backup_groups)
+        self.assertEqual(list(self.user.groups_id), [])
         # []
         self.user.groups_id = []
+        self.assertEqual(list(self.user.groups_id), [])
         self.oerp.write_record(self.user)
+        self.assertEqual(list(self.user.groups_id), [])
+        # [(6, 0, IDS)]
+        self.user.groups_id = [(6, 0, [1, 2])]
+        self.assertEqual([grp.id for grp in self.user.groups_id], [1, 2])
+        self.oerp.write_record(self.user)
+        self.assertEqual([grp.id for grp in self.user.groups_id], [1, 2])
+        # Restore the original value
+        self.user.groups_id = backup_groups
         self.assertEqual(list(self.user.groups_id), backup_groups)
-        # [(6, 0, ...)]
-        self.user.groups_id = [(6, 0, [grp.id for grp in backup_groups])]
         self.oerp.write_record(self.user)
         self.assertEqual(list(self.user.groups_id), backup_groups)
 
     def test_write_record_many2one(self):
         self.user.action_id = 1
+        self.assertEqual(self.user.action_id.id, 1)
         self.oerp.write_record(self.user)
         self.assertEqual(self.user.action_id.id, 1)
         action = self.oerp.get('ir.actions.actions').browse(1)
@@ -186,23 +195,28 @@ class TestBrowse(unittest.TestCase):
             self.assertEqual(self.user.action_id, False)
 
     def test_write_record_one2many(self):
-        model_obj = self.oerp.get('ir.model')
-        model = model_obj.browse(1)
-        backup_access = [acc for acc in model.access_ids]
+        partner_obj = self.oerp.get('res.partner')
+        partner = partner_obj.browse(1)
+        backup_childs = [acc for acc in partner.child_ids]
         # False
-        model.access_ids = False
-        self.oerp.write_record(model)
-        self.assertEqual(list(model.access_ids), backup_access)
+        partner.child_ids = False
+        self.assertEqual(list(partner.child_ids), [])
+        self.oerp.write_record(partner)
+        self.assertEqual(list(partner.child_ids), [])
         # []
-        model.access_ids = []
-        self.oerp.write_record(model)
-        self.assertEqual(list(model.access_ids), backup_access)
-        # [(1, ID, { values })]
-        access_id = list(model.access_ids)[0].id
-        model.access_ids = [(1, access_id, {'name': "OERPLib-test"})]
-        self.oerp.write_record(model)
-        self.assertEqual(list(model.access_ids), backup_access)
-        access = list(model.access_ids)[0]
-        self.assertEqual(access.name, "OERPLib-test")
+        partner.child_ids = []
+        self.assertEqual(list(partner.child_ids), [])
+        self.oerp.write_record(partner)
+        self.assertEqual(list(partner.child_ids), [])
+        # [(6, 0, IDS)]
+        partner.child_ids = [(6, 0, [1])]
+        self.assertEqual([acc.id for acc in partner.child_ids], [1])
+        self.oerp.write_record(partner)
+        self.assertEqual([acc.id for acc in partner.child_ids], [1])
+        # Restore the original value
+        partner.child_ids = backup_childs
+        self.assertEqual(list(partner.child_ids), backup_childs)
+        self.oerp.write_record(partner)
+        self.assertEqual(list(partner.child_ids), backup_childs)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -115,10 +115,10 @@ class Model(object):
         """Send values of fields updated to the OpenERP server."""
         obj_data = obj.__data__
         vals = {}
-        for field_name in obj_data['fields_updated']:
+        for field_name in obj_data['updated_values']:
             if field_name in obj_data['raw_data']:
                 field = self._browse_class.__osv__['columns'][field_name]
-                field_value = obj.__data__['values'][field_name]
+                field_value = obj.__data__['updated_values'][field_name]
                 # Many2One fields
                 if isinstance(field, fields.Many2OneField):
                     vals[field_name] = field_value and field_value[0]
@@ -193,7 +193,7 @@ class Model(object):
 
         """
         obj_data = obj.__data__
-        obj_data['fields_updated'] = []
+        obj_data['updated_values'] = {}
         # Load fields and their values
         for field in self._browse_class.__osv__['columns'].values():
             if field.name in obj_data['raw_data']:

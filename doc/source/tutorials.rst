@@ -225,11 +225,46 @@ One2Many and Many2Many
 ''''''''''''''''''''''
 
 ``one2many`` and ``many2many`` fields can be updated by providing
-a list of tuple as specified in the `OpenERP` documentation::
+a list of tuple as specified in the `OpenERP` documentation, a list of records,
+a list of record IDs or an empty list or ``False``::
 
-    >>> user = oerp.browse('res.users', 1)
+With a standard `OpenERP` tuple, no magic here::
+
+    >>> user = oerp.get('res.users').browse(1)
     >>> user.groups_id = [(6, 0, [8, 5, 6, 4])]
     >>> oerp.write_record(user)
+
+With a list of records::
+
+    >>> user = oerp.get('res.users').browse(1)
+    >>> groups = oerp.get('res.groups').browse([8, 5, 6, 4])
+    >>> user.groups_id = list(groups)
+    >>> oerp.write_record(user)
+
+With a list of record IDs::
+
+    >>> user = oerp.get('res.users').browse(1)
+    >>> groups = oerp.get('res.groups').browse([8, 5, 6, 4])
+    >>> user.groups_id = [grp.id for grp in groups]
+    >>> oerp.write_record(user)
+
+The last two examples are equivalent to the first (they generate a
+``(6, 0, IDS)`` tuple).
+
+However, if you set an empty list or ``False``, a ``(5, )`` tuple will be
+generated to cut the relation between records::
+
+    >>> user = oerp.get('res.users').browse(1)
+    >>> user.groups_id = []
+    >>> list(user.groups_id)
+    []
+    >>> user.__data__['updated_values']['groups_id']
+    [(5,)]
+    >>> user.groups_id = False
+    >>> list(user.groups_id)
+    []
+    >>> user.__data__['updated_values']['groups_id']
+    [(5,)]
 
 Reference
 '''''''''
