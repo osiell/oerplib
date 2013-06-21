@@ -226,7 +226,7 @@ One2Many and Many2Many
 
 ``one2many`` and ``many2many`` fields can be updated by providing
 a list of tuple as specified in the `OpenERP` documentation, a list of records,
-a list of record IDs or an empty list or ``False``::
+a list of record IDs or an empty list or ``False``:
 
 With a standard `OpenERP` tuple, no magic here::
 
@@ -267,7 +267,7 @@ generated to cut the relation between records::
 
 Another facility provided by `OERPLib` is adding and removing objects using
 `Python` operators ``+=`` and ``-=``. As usual, you can add an ID,
-a record, or a list of them::
+a record, or a list of them:
 
 With a list of records::
 
@@ -418,6 +418,10 @@ Inspect the metadata of OpenERP
 Draw a graph of the relationships between models
 ''''''''''''''''''''''''''''''''''''''''''''''''
 
+.. warning::
+    This functionality requires the installation of `pydot <http://code.google.com/p/pydot/>`_.
+
+
 The :func:`relations <oerplib.service.inspect.Inspect.relations>` method will help you
 to generate a graphic of such relationships::
 
@@ -458,20 +462,20 @@ whose name begins with `res.partner`:
 
 ::
 
-    >>> graph = oerp.inspect.relations('res.partner', whitelist=['res.partner*'])  # Notice the use of wildcard here
+    >>> graph = oerp.inspect.relations('res.partner', whitelist=['res.partner*'], blacklist=['res.partner.address'])  # Notice the use of wildcard here
     >>> graph.write('res_partner_v2.png', format='png')
 
 .. image:: _static/inspect_relations_2.png
-    :width: 50%
+    :width: 500px
 
 To display attributes, use the ``attrs_whitelist`` parameter. A wildcard is used here to show
 attributes of all models (but you can specify which models you want)::
 
-    >>> graph = oerp.inspect.relations('res.partner', whitelist=['res.partner*'], attrs_whitelist=['*'])
+    >>> graph = oerp.inspect.relations('res.partner', whitelist=['res.partner*'], blacklist=['res.partner.address'], attrs_whitelist=['*'])
     >>> graph.write('res_partner_v3.png', format='png')
 
 .. figure:: _static/inspect_relations_3.png
-    :width: 50%
+    :width: 450px
 
     Legend:
 
@@ -486,7 +490,18 @@ attributes of all models (but you can specify which models you want)::
 Scan the views of data models to list `on_change` methods
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-TODO
+`on_change` functions of a model can be listed with the
+:func:`scan_on_change <oerplib.service.inspect.Inspect.scan_on_change>` method.
+Each detected function can be present on several views::
+
+    >>> oerp.inspect.scan_on_change(['res.partner'])
+    {'res.partner': {'onchange_address': {'base.view_partner_form': {'parent_id': ['use_parent_address', 'parent_id'],
+                                                                     'use_parent_address': ['use_parent_address', 'parent_id']}},
+                     'onchange_state': {'base.view_partner_form': {'state_id': ['state_id']}},
+                     'onchange_type': {'base.view_partner_form': {'is_company': ['is_company']},
+                                       'base.view_partner_simple_form': {'is_company': ['is_company']}}}}
+
+The dictionary returned is formatted as follows: ``{model: {on_change: {view_name: field: [args]}}}``
 
 
 Save the session to open it quickly later
