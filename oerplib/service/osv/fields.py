@@ -54,7 +54,7 @@ def records2ids(iterable):
         if isinstance(elt, browse.BrowseRecord):
             return elt.id
         return elt
-    return map(record2id, iterable)
+    return [record2id(elt) for elt in iterable]
 
 
 class BaseField(object):
@@ -153,13 +153,16 @@ class Many2ManyField(BaseField):
 
     def __get__(self, instance, owner):
         """Return a generator to iterate on ``browse_record`` instances."""
-        ids = instance.__data__['values'][self.name]
+        ids = None
+        if instance.__data__['values'][self.name]:
+            ids = instance.__data__['values'][self.name][:]
         # None value => get the value on the fly
         if ids is None:
-            ids = instance.__oerp__.read(
+            orig_ids = instance.__oerp__.read(
                 instance.__osv__['name'],
                 [instance.id], [self.name])[0][self.name]
-            instance.__data__['values'][self.name] = ids
+            instance.__data__['values'][self.name] = orig_ids
+            ids = orig_ids and orig_ids[:] or []
         # Take updated values into account
         if self.name in instance.__data__['updated_values']:
             ids = ids or []
@@ -170,14 +173,19 @@ class Many2ManyField(BaseField):
                     ids = value[2]
                 elif value[0] == 5:
                     ids = []
-                elif value[0] == 4 and value[1]:
+                elif value[0] == 4 and value[1] and value[1] not in ids:
                     ids.append(value[1])
                 elif value[0] == 3 and value[1] and value[1] in ids:
                     ids.remove(value[1])
         if ids:
             context = instance.__data__['context'].copy()
             context.update(self.context)
-            return instance.__oerp__.browse(self.relation, ids, context)
+            return browse.BrowseRecordIterator(
+                model=instance.__oerp__.get(self.relation),
+                ids=ids,
+                context=context,
+                parent=instance,
+                parent_field=self)
         return iter(())
 
     def __set__(self, instance, value):
@@ -258,13 +266,16 @@ class One2ManyField(BaseField):
 
     def __get__(self, instance, owner):
         """Return a generator to iterate on ``browse_record`` instances."""
-        ids = instance.__data__['values'][self.name]
+        ids = None
+        if instance.__data__['values'][self.name]:
+            ids = instance.__data__['values'][self.name][:]
         # None value => get the value on the fly
         if ids is None:
-            ids = instance.__oerp__.read(
+            orig_ids = instance.__oerp__.read(
                 instance.__osv__['name'],
                 [instance.id], [self.name])[0][self.name]
-            instance.__data__['values'][self.name] = ids
+            instance.__data__['values'][self.name] = orig_ids
+            ids = orig_ids and orig_ids[:] or []
         # Take updated values into account
         if self.name in instance.__data__['updated_values']:
             ids = ids or []
@@ -275,14 +286,19 @@ class One2ManyField(BaseField):
                     ids = value[2]
                 elif value[0] == 5:
                     ids = []
-                elif value[0] == 4 and value[1]:
+                elif value[0] == 4 and value[1] and value[1] not in ids:
                     ids.append(value[1])
                 elif value[0] == 3 and value[1] and value[1] in ids:
                     ids.remove(value[1])
         if ids:
             context = instance.__data__['context'].copy()
             context.update(self.context)
-            return instance.__oerp__.browse(self.relation, ids, context)
+            return browse.BrowseRecordIterator(
+                model=instance.__oerp__.get(self.relation),
+                ids=ids,
+                context=context,
+                parent=instance,
+                parent_field=self)
         return iter(())
 
     def __set__(self, instance, value):

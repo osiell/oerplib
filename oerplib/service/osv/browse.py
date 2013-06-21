@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 """This module provides the BrowseRecord class."""
+from oerplib import error
 
 
 class BrowseRecord(object):
@@ -81,5 +82,71 @@ class BrowseRecord(object):
         return isinstance(other, BrowseRecord)\
             and (self.__osv__['name'], self.id) !=\
                 (other.__osv__['name'], other.id)
+
+
+class BrowseRecordIterator(object):
+    """Iterator of browsable records.
+    In fact, it is a generator to return records one by one, and able to
+    increment/decrement records by overriding '+=' and '-=' operators.
+    """
+    def __init__(self, model, ids, context=None,
+                 parent=None, parent_field=None):
+        self.model = model
+        self.ids = ids
+        self.context = context
+        self.index = None
+        if self.ids:
+            self.index = 0
+        self.parent = parent
+        self.parent_field = parent_field
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        if self.index is None or self.index >= len(self.ids):
+            raise StopIteration
+        else:
+            id_ = self.ids[self.index]
+            self.index += 1
+            return self.model.browse(id_, context=self.context)
+
+    def __iadd__(self, records):
+        if not self.parent or not self.parent_field:
+            raise error.InternalError("No parent record to update")
+        try:
+            list(records)
+        except TypeError:
+            records = [records]
+        updated_values = self.parent.__data__['updated_values']
+        res = []
+        if updated_values.get(self.parent_field.name):
+            res = updated_values[self.parent_field.name][:]  # Copy
+        from oerplib.service.osv import fields
+        for id_ in fields.records2ids(records):
+            if (3, id_) in res:
+                res.remove((3, id_))
+            if (4, id_) not in res:
+                res.append((4, id_))
+        return res
+
+    def __isub__(self, records):
+        if not self.parent or not self.parent_field:
+            raise error.InternalError("No parent record to update")
+        try:
+            list(records)
+        except TypeError:
+            records = [records]
+        updated_values = self.parent.__data__['updated_values']
+        res = []
+        if updated_values.get(self.parent_field.name):
+            res = updated_values[self.parent_field.name][:]  # Copy
+        from oerplib.service.osv import fields
+        for id_ in fields.records2ids(records):
+            if (4, id_) in res:
+                res.remove((4, id_))
+            if (3, id_) not in res:
+                res.append((3, id_))
+        return res
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

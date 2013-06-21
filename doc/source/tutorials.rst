@@ -244,8 +244,7 @@ With a list of records::
 With a list of record IDs::
 
     >>> user = oerp.get('res.users').browse(1)
-    >>> groups = oerp.get('res.groups').browse([8, 5, 6, 4])
-    >>> user.groups_id = [grp.id for grp in groups]
+    >>> user.groups_id = [8, 5, 6, 4]
     >>> oerp.write_record(user)
 
 The last two examples are equivalent to the first (they generate a
@@ -265,6 +264,37 @@ generated to cut the relation between records::
     []
     >>> user.__data__['updated_values']['groups_id']
     [(5,)]
+
+Another facility provided by `OERPLib` is adding and removing objects using
+`Python` operators ``+=`` and ``-=``. As usual, you can add an ID,
+a record, or a list of them::
+
+With a list of records::
+
+    >>> user = oerp.get('res.users').browse(1)
+    >>> groups = oerp.get('res.groups').browse([4, 5])
+    >>> user.groups_id += list(groups)
+    >>> [g.id for g in user.groups_id]
+    [1, 2, 3, 4, 5]
+
+With a list of record IDs::
+
+    >>> user.groups_id += [4, 5]
+    >>> [g.id for g in user.groups_id]
+    [1, 2, 3, 4, 5]
+
+With an ID only::
+
+    >>> user.groups_id -= 4
+    >>> [g.id for g in user.groups_id]
+    [1, 2, 3, 5]
+
+With a record only::
+
+    >>> group = oerp.get('res.groups').browse(5)
+    >>> user.groups_id -= group
+    >>> [g.id for g in user.groups_id]
+    [1, 2, 3]
 
 Reference
 '''''''''

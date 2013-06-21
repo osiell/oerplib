@@ -45,14 +45,6 @@ class Model(object):
         self._name = model
         self._browse_class = self._generate_browse_class()
 
-    def _browse_generator(self, ids, context=None):
-        """Generator used by the
-        :func:`browse <oerplib.OERP.service.osv.Model.browse>` method.
-
-        """
-        for o_id in ids:
-            yield self.browse(o_id, context)
-
     def browse(self, ids, context=None):
         """Browse one or several records (if `ids` is a list of IDs)
         from `model`. The fields and values for such objects are generated
@@ -73,7 +65,11 @@ class Model(object):
 
         """
         if isinstance(ids, list):
-            return self._browse_generator(ids, context)
+            return browse.BrowseRecordIterator(self, ids, context=context)
+            #return browse.BrowseRecordIterator(
+            #    model=self,
+            #    ids=ids,
+            #    context=context)
         else:
             obj = self._browse_class(ids)
             self._refresh(obj, context)
@@ -199,8 +195,7 @@ class Model(object):
             if field.name in obj_data['raw_data']:
                 obj_data['values'][field.name] = \
                     obj_data['raw_data'][field.name]
-                setattr(obj.__class__, field.name,
-                        field)
+                setattr(obj.__class__, field.name, field)
 
     def _unlink_record(self, obj, context=None):
         """Delete the object from the OpenERP server."""
@@ -241,7 +236,7 @@ class Model(object):
 
     def __iter__(self):
         ids = self.search([])
-        return self._browse_generator(ids)
+        return browse.BrowseRecordIterator(self, ids)
 
     def __len__(self):
         return self._oerp.search(self._browse_class.__osv__['name'], count=True)
