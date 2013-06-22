@@ -155,18 +155,18 @@ class TestBrowse(unittest.TestCase):
         # False
         self.user.groups_id = False
         self.assertEqual(list(self.user.groups_id), [])
-        self.oerp.write_record(self.user)
-        self.assertEqual(list(self.user.groups_id), [])
+        self.oerp.reset(self.user)
         # []
         self.user.groups_id = []
         self.assertEqual(list(self.user.groups_id), [])
-        self.oerp.write_record(self.user)
-        self.assertEqual(list(self.user.groups_id), [])
+        self.oerp.reset(self.user)
         # [(6, 0, IDS)]
         self.user.groups_id = [(6, 0, [1, 2])]
-        self.assertEqual([grp.id for grp in self.user.groups_id], [1, 2])
+        self.assertIn(1, [grp.id for grp in self.user.groups_id])
+        self.assertIn(2, [grp.id for grp in self.user.groups_id])
         self.oerp.write_record(self.user)
-        self.assertEqual([grp.id for grp in self.user.groups_id], [1, 2])
+        self.assertIn(1, [grp.id for grp in self.user.groups_id])
+        self.assertIn(2, [grp.id for grp in self.user.groups_id])
         # Operator +=
         grp_obj = self.oerp.get('res.groups')
         self.user.groups_id += 4                        # ID
@@ -237,6 +237,8 @@ class TestBrowse(unittest.TestCase):
         partner_obj = self.oerp.get('res.partner')
         partner = partner_obj.browse(1)
         backup_childs = [acc for acc in partner.child_ids]
+        p1_id = partner_obj.create({'name': u"Test 1"})
+        p2_id = partner_obj.create({'name': u"Test 2"})
         # False
         partner.child_ids = False
         self.assertEqual(list(partner.child_ids), [])
@@ -248,48 +250,48 @@ class TestBrowse(unittest.TestCase):
         self.oerp.write_record(partner)
         self.assertEqual(list(partner.child_ids), [])
         # [(6, 0, IDS)]
-        partner.child_ids = [(6, 0, [1])]
-        self.assertEqual([acc.id for acc in partner.child_ids], [1])
+        partner.child_ids = [(6, 0, [p1_id])]
+        self.assertEqual([acc.id for acc in partner.child_ids], [p1_id])
         self.oerp.write_record(partner)
-        self.assertEqual([acc.id for acc in partner.child_ids], [1])
+        self.assertEqual([acc.id for acc in partner.child_ids], [p1_id])
         # Operator +=
-        partner.child_ids += 1                          # ID
-        self.assertIn(1, [pt.id for pt in partner.child_ids])
+        partner.child_ids += p2_id                      # ID
+        self.assertIn(p2_id, [pt.id for pt in partner.child_ids])
         self.oerp.reset(partner)
-        partner.child_ids += partner_obj.browse(1)      # Browse record
-        self.assertIn(1, [pt.id for pt in partner.child_ids])
+        partner.child_ids += partner_obj.browse(p2_id)  # Browse record
+        self.assertIn(p2_id, [pt.id for pt in partner.child_ids])
         self.oerp.reset(partner)
-        partner.child_ids += [1, 2]                     # List of IDs
+        partner.child_ids += [p1_id, p2_id]             # List of IDs
         partner_ids = [pt.id for pt in partner.child_ids]
-        self.assertIn(1, partner_ids)
-        self.assertIn(2, partner_ids)
+        self.assertIn(p1_id, partner_ids)
+        self.assertIn(p2_id, partner_ids)
         self.oerp.reset(partner)
-        partner.child_ids += list(partner_obj.browse([1, 2]))   # List of browse records
+        partner.child_ids += list(partner_obj.browse([p1_id, p2_id]))   # List of browse records
         partner_ids = [pt.id for pt in partner.child_ids]
-        self.assertIn(1, partner_ids)
-        self.assertIn(2, partner_ids)
+        self.assertIn(p1_id, partner_ids)
+        self.assertIn(p2_id, partner_ids)
         self.oerp.write_record(partner)
-        self.assertIn(1, partner_ids)
-        self.assertIn(2, partner_ids)
+        self.assertIn(p1_id, partner_ids)
+        self.assertIn(p2_id, partner_ids)
         # Operator -=
-        partner.child_ids -= 1                          # ID
-        self.assertNotIn(1, [pt.id for pt in partner.child_ids])
+        partner.child_ids -= p1_id                      # ID
+        self.assertNotIn(p1_id, [pt.id for pt in partner.child_ids])
         self.oerp.reset(partner)
-        partner.child_ids -= partner_obj.browse(1)      # Browse record
-        self.assertNotIn(1, [pt.id for pt in partner.child_ids])
+        partner.child_ids -= partner_obj.browse(p1_id)  # Browse record
+        self.assertNotIn(p1_id, [pt.id for pt in partner.child_ids])
         self.oerp.reset(partner)
-        partner.child_ids -= [1, 2]                     # List of IDs
+        partner.child_ids -= [p1_id, p2_id]             # List of IDs
         partner_ids = [pt.id for pt in partner.child_ids]
-        self.assertNotIn(1, partner_ids)
-        self.assertNotIn(2, partner_ids)
+        self.assertNotIn(p1_id, partner_ids)
+        self.assertNotIn(p2_id, partner_ids)
         self.oerp.reset(partner)
-        partner.child_ids -= list(partner_obj.browse([1, 2]))   # List of browse records
+        partner.child_ids -= list(partner_obj.browse([p1_id, p2_id]))   # List of browse records
         partner_ids = [pt.id for pt in partner.child_ids]
-        self.assertNotIn(1, partner_ids)
-        self.assertNotIn(2, partner_ids)
+        self.assertNotIn(p1_id, partner_ids)
+        self.assertNotIn(p2_id, partner_ids)
         self.oerp.write_record(partner)
-        self.assertNotIn(1, partner_ids)
-        self.assertNotIn(2, partner_ids)
+        self.assertNotIn(p1_id, partner_ids)
+        self.assertNotIn(p2_id, partner_ids)
         # Restore the original value
         partner.child_ids = backup_childs
         self.assertEqual(list(partner.child_ids), backup_childs)
