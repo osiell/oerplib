@@ -81,7 +81,7 @@ class Inspect(object):
         ... ).write('res_users.png', format='png')
 
         .. note::
-            With `OpenERP` < `6.0`, `many2one` and `one2many` relationships can
+            With `OpenERP` < `6.1`, `many2one` and `one2many` relationships can
             not be bound together. Hence, a `one2many` relationship based on a
             `many2one` will draw a separate arrow.
 
