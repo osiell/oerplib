@@ -21,7 +21,9 @@ Features supported:
     - browse records,
     - execute workflows,
     - manage databases,
-    - reports downloading.
+    - reports downloading,
+    - inspection capabilities (draw graphs of relations between models,
+      list 'on_change' methods from model views, ...).
 
 Quick start
 -----------
@@ -84,7 +86,8 @@ It should work on next versions if `OpenERP` keeps a stable API.
 Supported Python versions
 -------------------------
 
-`OERPLib` support Python versions 2.6, 2.7 and 3.x.
+`OERPLib` support Python versions 2.6, 2.7. Experimental support for
+Python 3 (not production ready).
 
 License
 -------

@@ -1,11 +1,14 @@
 v0.8.0, 2013-XX-XX:
-    - Add experimental support for Python 3 (with 2to3 tool),
     - New service 'inspect' ('OERP.inspect') which allows to draw
-      relationship graph (output in any Graphviz supported formats),
+      relationship graph (output in any Graphviz supported formats)
+      and to detect 'on_change' methods of data models,
     - Able to save and load connection information in/from a separate
       file ('~/.oerplibrc' by default),
-    - JSON-RPC connector added in 'oerplib.rpc' (but the 'OERP' class does
+    - JSON-RPC connector added in 'oerplib.rpc' (the 'OERP' class does
       not support it),
+    - Add experimental support for Python 3 (with 2to3 tool), Net-RPC protocol
+      and save/load connection information are known to be non-functional
+      with Python 3,
     - one2many and many2many fields on browse records improved
       (able to set easily IDs or records with '='/'+='/'-=' operators),
     - Documentation updated.
