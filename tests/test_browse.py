@@ -237,8 +237,8 @@ class TestBrowse(unittest.TestCase):
         partner_obj = self.oerp.get('res.partner')
         partner = partner_obj.browse(1)
         backup_childs = [acc for acc in partner.child_ids]
-        p1_id = partner_obj.create({'name': u"Test 1"})
-        p2_id = partner_obj.create({'name': u"Test 2"})
+        p1_id = partner_obj.create({'name': "Test 1"})
+        p2_id = partner_obj.create({'name': "Test 2"})
         # False
         partner.child_ids = False
         self.assertEqual(list(partner.child_ids), [])
