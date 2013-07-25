@@ -9,7 +9,7 @@ TPL_MODEL = """<
 <table cellborder="0" cellpadding="0" cellspacing="0"
        border="1" bgcolor="{bgcolor_model}" height="100%%">
     <tr>
-        <td border="0" bgcolor="{bgcolor_model_title}" align="center" colspan="2">
+        <td border="0" bgcolor="{bgcolor_model_title}" align="center" colspan="3">
             <font color="{color_model_title}">{name}</font>
         </td>
     </tr>
@@ -22,20 +22,21 @@ TPL_MODEL_SUBTITLE = """
 <tr>
     <td align="center"
         border="0"
-        colspan="2"><font color="{color}">[{title}]</font></td>
+        colspan="3"><font color="{color}">[{title}]</font></td>
 </tr>
 """
 
 TPL_MODEL_ATTR = """
 <tr>
-    <td align="left" border="0">- <font color="{color}">{name}</font></td>
-    <td align="left" border="0"> <font color="{color}">{type_}</font></td>
+    <td align="left" border="0">- <font color="{color_name}">{name}</font></td>
+    <td align="left" border="0">{flags}</td>
+    <td align="left" border="0"> <font color="{color_type}">{type}</font> </td>
 </tr>
 """
 
 TPL_MODEL_REL_R = """
 <tr>
-    <td align="left" border="0" colspan="2">- {name}</td>
+    <td align="left" border="0" colspan="3">- {name}</td>
 </tr>
 """
 
@@ -77,6 +78,7 @@ class Relations(object):
             'bgcolor_model': 'white',
             'color_normal': 'black',
             'color_required': 'blue',
+            'color_function': '#7D7D7D',
             'space_between_models': 0.25,
         }
         self._config.update(config or {})
@@ -129,6 +131,12 @@ class Relations(object):
                 rel = data['relation']
                 # where to store the relation?
                 store_type = obj._name == rel and 'relations_r' or 'relations'
+                # flags
+                flags = {
+                    'required': data.get('required'),
+                    'function': data.get('function'),
+                    'fnct_inv': data.get('fnct_inv'),
+                }
                 # many2one
                 if data['type'] == 'many2one':
                     # Check if related one2many fields have been registered
@@ -145,6 +153,7 @@ class Relations(object):
                         'name': name,
                         'o2m_fields': o2m_fields,
                     }
+                    self._relations[obj._name][store_type][name].update(flags)
                 # one2many
                 elif data['type'] == 'one2many':
                     # 'relation_field' key may be missing for 'one2many'
@@ -182,6 +191,8 @@ class Relations(object):
                             'relation': rel,
                             'name': name,
                         }
+                        self._relations[obj._name][store_type][name].update(
+                            flags)
                 # many2many
                 elif data['type'] == 'many2many':
                     rel_columns = data.get('related_columns')
@@ -193,6 +204,7 @@ class Relations(object):
                         'third_table': data.get('third_table'),
                         'related_columns': None,
                     }
+                    self._relations[obj._name][store_type][name].update(flags)
                 # Scan relations recursively
                 rel_obj = self._oerp.get(rel)
                 self._build_relations(rel_obj, depth)
@@ -215,11 +227,21 @@ class Relations(object):
                     title="Attributes")
                 attrs.append(subtitle)
                 for k, v in data['fields'].iteritems():
-                    color = v.get('required') \
-                        and self._config['color_required'] \
-                        or self._config['color_normal']
-                    attr = TPL_MODEL_ATTR.format(
-                        name=k, color=color, type_=v['type'])
+                    tpl_data = {
+                        'name': k,
+                        'type': v['type'],
+                        'color_name': self._config['color_normal'],
+                        'color_type': self._config['color_normal'],
+                        'flags': self._generate_flags_label(v),
+                    }
+                    if v.get('function'):
+                        tpl_data['color_name'] = self._config['color_function']
+                        #tpl_data['color_type'] = self._config['color_function']
+                    if v.get('fnct_inv'):
+                        tpl_data['color_name'] = self._config['color_normal']
+                    if v.get('required'):
+                        tpl_data['color_name'] = self._config['color_required']
+                    attr = TPL_MODEL_ATTR.format(**tpl_data)
                     attrs.append(attr)
             # Generate recursive relations of the model
             relations_r = []
@@ -285,6 +307,22 @@ class Relations(object):
         }
         return pydot.Edge(obj1._name, obj2._name, **kwargs)
 
+    def _generate_flags_label(self, data):
+        """Generate a HTML label for status flags of a field
+        described by `data`.
+        """
+        flags = []
+        if data.get('required'):
+            flags.append("<font color='{color}'>R</font>".format(
+                color=self._config['color_required']))
+        if data.get('function'):
+            name = data.get('fnct_inv') and "Fw" or "F"
+            flags.append("<font color='{color}'>{name}</font>".format(
+                name=name, color=self._config['color_function']))
+        if flags:
+            return " &#91;{0}&#93;".format(' '.join(flags))
+        return ""
+
     def _generate_relation_label(self, data, space=0, closing_tag=False):
         """Generate a HTML label based for the relation described by `data`."""
         name_color = data.get('required') \
@@ -311,7 +349,11 @@ class Relations(object):
                 color=name_color, name=data['name'],
                 m2m_t=m2m_table, space=' ' * space)
             #self._graph.add_node(self._create_node(rel_name, 'm2m_table'))
+        # flags
+        label += self._generate_flags_label(data)
+        # add space on the right
         label = label + "{space}".format(space=' ' * space)
+        # closing tag
         if closing_tag:
             label = "<{label}>".format(label=label)
         return label

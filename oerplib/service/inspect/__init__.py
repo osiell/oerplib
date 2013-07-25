@@ -73,6 +73,7 @@ class Inspect(object):
             - ``bgcolor_model: white``,
             - ``color_normal: black``,
             - ``color_required: blue``
+            - ``color_function: #D9602E``
             - ``space_between_models: 0.25``,
 
         >>> oerp.inspect.relations(
