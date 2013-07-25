@@ -30,7 +30,7 @@ TPL_MODEL_ATTR = """
 <tr>
     <td align="left" border="0">- <font color="{color_name}">{name}</font></td>
     <td align="left" border="0">{flags}</td>
-    <td align="left" border="0"> <font color="{color_type}">{type}</font> </td>
+    <td align="left" border="0"> <font color="{color_type}">{type_}</font> </td>
 </tr>
 """
 
@@ -42,11 +42,15 @@ TPL_MODEL_REL_R = """
 
 
 def pattern2regex(pattern):
+    """Return a regular expression corresponding to `pattern` (simpler
+    representation of the regular expression).
+    """
     pattern = "^{0}$".format(pattern.replace('*', '.*'))
     return re.compile(pattern)
 
 
 def match_in(elt, lst):
+    """Return `True` if `elt` is matching one of a pattern in `lst`."""
     for regex in lst:
         if regex.match(elt):
             return True
@@ -61,10 +65,12 @@ class Relations(object):
         self._model = model
         self._obj = self._oerp.get(model)
         self._maxdepth = maxdepth
-        self._whitelist = map(pattern2regex, whitelist or [])
-        self._blacklist = map(pattern2regex, blacklist or [])
-        self._attrs_whitelist = map(pattern2regex, attrs_whitelist or [])
-        self._attrs_blacklist = map(pattern2regex, attrs_blacklist or [])
+        self._whitelist = [pattern2regex(model) for model in (whitelist or [])]
+        self._blacklist = [pattern2regex(model) for model in (blacklist or [])]
+        self._attrs_whitelist = [pattern2regex(model)
+                                 for model in (attrs_whitelist or [])]
+        self._attrs_blacklist = [pattern2regex(model)
+                                 for model in (attrs_blacklist or [])]
         # Configuration options
         self._config = {
             'relation_types': ['many2one', 'one2many', 'many2many'],
@@ -227,21 +233,19 @@ class Relations(object):
                     title="Attributes")
                 attrs.append(subtitle)
                 for k, v in data['fields'].iteritems():
-                    tpl_data = {
-                        'name': k,
-                        'type': v['type'],
-                        'color_name': self._config['color_normal'],
-                        'color_type': self._config['color_normal'],
-                        'flags': self._generate_flags_label(v),
-                    }
+                    color_name = color_type = self._config['color_normal']
                     if v.get('function'):
-                        tpl_data['color_name'] = self._config['color_function']
-                        #tpl_data['color_type'] = self._config['color_function']
+                        color_name = self._config['color_function']
+                        #color_type = self._config['color_function']
                     if v.get('fnct_inv'):
-                        tpl_data['color_name'] = self._config['color_normal']
+                        color_name = self._config['color_normal']
                     if v.get('required'):
-                        tpl_data['color_name'] = self._config['color_required']
-                    attr = TPL_MODEL_ATTR.format(**tpl_data)
+                        color_name = self._config['color_required']
+                    attr = TPL_MODEL_ATTR.format(
+                        name=k, type_=v['type'],
+                        color_name=color_name,
+                        color_type=color_type,
+                        flags=self._generate_flags_label(v))
                     attrs.append(attr)
             # Generate recursive relations of the model
             relations_r = []
@@ -250,7 +254,7 @@ class Relations(object):
                     color=self._config['color_model_subtitle'],
                     title="Recursive relations")
                 relations_r.append(subtitle)
-            for name, data2 in data['relations_r'].iteritems():
+            for data2 in data['relations_r'].itervalues():
                 label = self._generate_relation_label(data2)
                 rel_r = TPL_MODEL_REL_R.format(name=label)
                 relations_r.append(rel_r)
@@ -263,14 +267,14 @@ class Relations(object):
                 attrs=''.join(attrs),
                 relations_r=''.join(relations_r))
             # Add the model to the graph
-            node = (data['obj']._name, 'relation', tpl)
-            self._graph.add_node(self._create_node(*node))
+            node = self._create_node(data['obj']._name, 'relation', tpl)
+            self._graph.add_node(node)
             # Draw relations of the model
-            for name, data2 in data['relations'].iteritems():
+            for data2 in data['relations'].itervalues():
                 if data2['relation'] in self._relations:
                     rel_obj = self._relations[data2['relation']]['obj']
-                    edge = (data['obj'], rel_obj, data2)
-                    self._graph.add_edge(self._create_edge(*edge))
+                    edge = self._create_edge(data['obj'], rel_obj, data2)
+                    self._graph.add_edge(edge)
 
     def _create_node(self, name, type_, tpl=None):
         """Generate a `pydot.Node` object.
