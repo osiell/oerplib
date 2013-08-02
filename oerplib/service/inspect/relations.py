@@ -30,13 +30,15 @@ TPL_MODEL_ATTR = """
 <tr>
     <td align="left" border="0">- <font color="{color_name}">{name}</font></td>
     <td align="left" border="0">{flags}</td>
-    <td align="left" border="0"> <font color="{color_type}">{type_}</font> </td>
+    <td align="left" border="0"> <font color="{color_name}">{type_}</font> </td>
 </tr>
 """
 
-TPL_MODEL_REL_R = """
+TPL_MODEL_REL = """
 <tr>
-    <td align="left" border="0" colspan="3">- {name}</td>
+    <td align="left" border="0">- {name}</td>
+    <td align="left" border="0">{flags}</td>
+    <td align="left" border="0"> <font color="{color_name}">{type_}</font></td>
 </tr>
 """
 
@@ -233,18 +235,16 @@ class Relations(object):
                     title="Attributes")
                 attrs.append(subtitle)
                 for k, v in data['fields'].iteritems():
-                    color_name = color_type = self._config['color_normal']
+                    color_name = self._config['color_normal']
                     if v.get('function'):
                         color_name = self._config['color_function']
-                        #color_type = self._config['color_function']
                     if v.get('fnct_inv'):
                         color_name = self._config['color_normal']
-                    if v.get('required'):
-                        color_name = self._config['color_required']
+                    #if v.get('required'):
+                    #    color_name = self._config['color_required']
                     attr = TPL_MODEL_ATTR.format(
                         name=k, type_=v['type'],
                         color_name=color_name,
-                        color_type=color_type,
                         flags=self._generate_flags_label(v))
                     attrs.append(attr)
             # Generate recursive relations of the model
@@ -256,7 +256,11 @@ class Relations(object):
                 relations_r.append(subtitle)
             for data2 in data['relations_r'].itervalues():
                 label = self._generate_relation_label(data2)
-                rel_r = TPL_MODEL_REL_R.format(name=label)
+                flags = self._generate_flags_label(data2)
+                rel_r = TPL_MODEL_REL.format(
+                    name=label, flags=flags,
+                    color_name=self._config['color_normal'],
+                    type_=data2['type'])
                 relations_r.append(rel_r)
             # Generate the layout of the model
             tpl = TPL_MODEL.format(
@@ -301,7 +305,7 @@ class Relations(object):
         """Generate a `pydot.Edge` object, representing a relation between
         `obj1` and `obj2`.
         """
-        label = self._generate_relation_label(data, space=6, closing_tag=True)
+        label = self._generate_relation_label(data, space=6, on_arrow=True)
         kwargs = {
             'label': label,
             'labeldistance': '10.0',
@@ -327,11 +331,9 @@ class Relations(object):
             return " &#91;{0}&#93;".format(' '.join(flags))
         return ""
 
-    def _generate_relation_label(self, data, space=0, closing_tag=False):
+    def _generate_relation_label(self, data, space=0, on_arrow=False):
         """Generate a HTML label based for the relation described by `data`."""
-        name_color = data.get('required') \
-            and self._config['color_required'] \
-            or self._config['color_{0}'.format(data['type'])]
+        name_color = self._config['color_{0}'.format(data['type'])]
         label = "{space}<font color='{color}'>{name}</font>".format(
             color=name_color, name=data['name'], space=' ' * space)
         # many2one arrow
@@ -347,18 +349,19 @@ class Relations(object):
         if data['type'] == 'many2many':
             m2m_table = ''
             if self._config['show_many2many_table']:
-                rel_name = data.get('third_table') or 'CALCULATED'
-                m2m_table = '({rel_name})'.format(rel_name=rel_name)
-            label = "{space}<font color='{color}'>{name}<br/>{m2m_t}</font>".format(
+                if data.get('third_table'):
+                    m2m_table = '({table})'.format(
+                        table=data.get('third_table'))
+            label = "{space}<font color='{color}'>{name} {m2m_t}</font>".format(
                 color=name_color, name=data['name'],
                 m2m_t=m2m_table, space=' ' * space)
-            #self._graph.add_node(self._create_node(rel_name, 'm2m_table'))
         # flags
-        label += self._generate_flags_label(data)
+        if on_arrow:
+            label += self._generate_flags_label(data)
         # add space on the right
         label = label + "{space}".format(space=' ' * space)
         # closing tag
-        if closing_tag:
+        if on_arrow:
             label = "<{label}>".format(label=label)
         return label
 
