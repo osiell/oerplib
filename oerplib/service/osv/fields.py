@@ -509,7 +509,7 @@ def generate_field(osv, name, data):
         field = DateField(osv, name, data)
     elif data['type'] == 'datetime':
         field = DateTimeField(osv, name, data)
-    elif data['type'] in ['char', 'float', 'integer',
+    elif data['type'] in ['char', 'float', 'integer', 'integer_big',
                           'boolean', 'text', 'binary', 'html']:
         field = ValueField(osv, name, data)
     else:
