@@ -61,13 +61,14 @@ def match_in(elt, lst):
 
 class Relations(object):
     """Draw relations between models with `Graphviz`."""
-    def __init__(self, oerp, model, maxdepth=1, whitelist=None, blacklist=None,
+    def __init__(self, oerp, models, maxdepth=1, whitelist=None, blacklist=None,
                  attrs_whitelist=None, attrs_blacklist=None, config=None):
         self._oerp = oerp
-        self._model = model
-        self._obj = self._oerp.get(model)
+        self._models = models
         self._maxdepth = maxdepth
-        self._whitelist = [pattern2regex(model) for model in (whitelist or [])]
+        self._whitelist = [pattern2regex(model) for model in (models)]
+        self._whitelist.extend(
+            [pattern2regex(model) for model in (whitelist or [])])
         self._blacklist = [pattern2regex(model) for model in (blacklist or [])]
         self._attrs_whitelist = [pattern2regex(model)
                                  for model in (attrs_whitelist or [])]
@@ -97,8 +98,9 @@ class Relations(object):
         # Store relations between data models:
         self._relations = {}
         self._stack = {'o2m': {}}
-        # Build and draw relations
-        self._build_relations(self._obj, 0)
+        # Build and draw relations for each model
+        for model in models:
+            self._build_relations(self._oerp.get(model), 0)
         self._draw_relations()
 
     def _build_relations(self, obj, depth):
@@ -113,7 +115,7 @@ class Relations(object):
         if depth > self._maxdepth or obj._name in self._relations:
             return
         # Check the whitelist, then the blacklist
-        if obj._name != self._model:
+        if obj._name not in self._models:
             if self._whitelist:
                 if not match_in(obj._name, self._whitelist):
                     return

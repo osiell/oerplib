@@ -35,15 +35,17 @@ class Inspect(object):
     >>> oerp.inspect
     <oerplib.service.inspect.Inspect object at 0xb42fa84f>
 
-    .. automethod:: relations(model, maxdepth=1, whitelist=[], blacklist=[], attrs_whitelist=[], attrs_blacklist=[], config={})
+    .. automethod:: relations(models, maxdepth=1, whitelist=[], blacklist=[], attrs_whitelist=[], attrs_blacklist=[], config={})
 
         Return a :class:`Relations <oerplib.service.inspect.relations.Relations>`
-        object showing relations between data models, starting from `model`
+        object showing relations between data models, starting from `models`
         (depth = 0) and iterate recursively until reaching the `maxdepth` limit.
 
         `whitelist` and `blacklist` of models can be defined with patterns
         (a joker ``*`` can be used to match several models like ``account*``),
         the whitelist is processed before the blacklist.
+        All models declared in `models` are automatically integrated to the
+        `whitelist`.
 
         In the same way, displaying attributes can be defined for each model
         with ``attrs_whitelist`` and ``attrs_blacklist``. By default, model
@@ -51,7 +53,7 @@ class Inspect(object):
         ``attrs_whitelist``, or if only the ``attrs_blacklist`` if defined.
 
             >>> oerp.inspect.relations(
-            ...     'res.users',
+            ...     ['res.users'],
             ...     maxdepth=4,
             ...     whitelist=['res*'],
             ...     blacklist=['res.users'],
@@ -91,11 +93,11 @@ class Inspect(object):
         self._oerp = oerp
 
     @check_pydot
-    def relations(self, model, maxdepth=1, whitelist=None, blacklist=None,
+    def relations(self, models, maxdepth=1, whitelist=None, blacklist=None,
                   attrs_whitelist=None, attrs_blacklist=None, config=None):
         from oerplib.service.inspect.relations import Relations
         return Relations(
-            self._oerp, model, maxdepth, whitelist, blacklist,
+            self._oerp, models, maxdepth, whitelist, blacklist,
             attrs_whitelist, attrs_blacklist, config)
 
     def scan_on_change(self, models):
