@@ -139,4 +139,11 @@ class Inspect(object):
         from oerplib.service.inspect.on_change import scan_on_change
         return scan_on_change(self._oerp, models)
 
+    def modules(self, with_models=None, without_models=None,
+                restrict=False, config=None):
+        """TODO"""
+        from oerplib.service.inspect.modules import Modules
+        return Modules(
+            self._oerp, with_models, without_models, restrict, config)
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
