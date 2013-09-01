@@ -141,11 +141,13 @@ class Inspect(object):
 
     def modules(self, with_models=None, without_models=None,
                 restrict=False, config=None):
-        """TODO
+        """Return a :class:`Modules <oerplib.service.inspect.modules.Modules>`
+        object showing dependencies between modules related to the data models
+        supplied.
 
         .. note::
             With `OpenERP` `5.0`, data models can not be bound to their related
-            modules, and as such the `with_models' and 'without_models'
+            modules, and as such the `with_models` and `without_models`
             parameters are ignored.
 
         """

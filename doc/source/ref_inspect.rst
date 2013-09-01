@@ -6,3 +6,6 @@ oerplib.service.inspect
 
 .. autoclass:: oerplib.service.inspect.relations.Relations
     :members:
+
+.. autoclass:: oerplib.service.inspect.modules.Modules
+    :members:
