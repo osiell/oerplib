@@ -42,10 +42,9 @@ class Inspect(object):
         (depth = 0) and iterate recursively until reaching the `maxdepth` limit.
 
         `whitelist` and `blacklist` of models can be defined with patterns
-        (a joker ``*`` can be used to match several models like ``account*``),
-        the whitelist is processed before the blacklist.
-        All models declared in `models` are automatically integrated to the
-        `whitelist`.
+        (a joker ``*`` can be used to match several models like ``account*``).
+        The whitelist has a lower priority than the blacklist, and all models
+        declared in `models` are automatically integrated to the `whitelist`.
 
         In the same way, displaying attributes can be defined for each model
         with ``attrs_whitelist`` and ``attrs_blacklist``. By default, model
@@ -142,8 +141,34 @@ class Inspect(object):
     def modules(self, models=None, models_blacklist=None,
                 restrict=False, config=None):
         """Return a :class:`Modules <oerplib.service.inspect.modules.Modules>`
-        object showing dependencies between modules related to the data models
-        supplied.
+        object describing dependencies between modules related to the list of
+        `models`.
+
+        `models` and `models_blacklist` parameters can be defined with patterns
+        (a joker ``*`` can be used to match several models like ``account*``).
+        The whitelist (`models`) has a lower priority than the blacklist
+        (`models_blacklist`).
+
+            >>> oerp.inspect.modules(
+            ...     ['res.partner*'],
+            ...     ['res.partner.title', 'res.partner.bank'],
+            ... ).write('modules_res_partner.png', format='png')
+
+        TODO: restrict parameter
+
+        `config` is a dictionary of options to override some attributes of
+        the graph. Here the list of options and their default values:
+
+            - ``bgcolor_module_title: #DEDFDE``,
+            - ``color_module_title: black``,
+            - ``bgcolor_module_title_root: #A50018``,
+            - ``color_module_title_root: white``,
+            - ``bgcolor_module_title_highlight: #1F931F``,
+            - ``color_module_title_highlight: white``,
+            - ``bgcolor_module: white``,
+            - ``color_model: black``,
+            - ``color_comment: grey``,
+            - ``show_transient_models: False``,
 
         .. note::
             With `OpenERP` `5.0`, data models can not be bound to their related

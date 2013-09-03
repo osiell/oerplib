@@ -57,7 +57,7 @@ class Modules(object):
             'bgcolor_module': 'white',
             'color_model': 'black',
             'color_comment': 'grey',
-            'show_transient_models': True,
+            'show_transient_models': False,
         }
         self._config.update(config or {})
         # List of data models
