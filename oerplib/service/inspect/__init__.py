@@ -139,7 +139,7 @@ class Inspect(object):
         from oerplib.service.inspect.on_change import scan_on_change
         return scan_on_change(self._oerp, models)
 
-    def modules(self, with_models=None, without_models=None,
+    def modules(self, models=None, models_blacklist=None,
                 restrict=False, config=None):
         """Return a :class:`Modules <oerplib.service.inspect.modules.Modules>`
         object showing dependencies between modules related to the data models
@@ -147,12 +147,12 @@ class Inspect(object):
 
         .. note::
             With `OpenERP` `5.0`, data models can not be bound to their related
-            modules, and as such the `with_models` and `without_models`
+            modules, and as such the `models` and `models_blacklist`
             parameters are ignored.
 
         """
         from oerplib.service.inspect.modules import Modules
         return Modules(
-            self._oerp, with_models, without_models, restrict, config)
+            self._oerp, models, models_blacklist, restrict, config)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

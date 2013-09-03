@@ -42,7 +42,7 @@ class Modules(object):
     """Draw dependencies between modules. Models can be displayed in their
     respecting modules as well.
     """
-    def __init__(self, oerp, with_models=None, without_models=None,
+    def __init__(self, oerp, models=None, models_blacklist=None,
                  restrict=False, config=None):
         self._oerp = oerp
         self._restrict = restrict
@@ -62,7 +62,7 @@ class Modules(object):
         self._config.update(config or {})
         # List of data models
         self._models = self._get_models_data(
-            with_models or [], without_models or [])
+            models or [], models_blacklist or [])
         # List of modules computed according to the `restrict` parameter
         # (display all modules or only modules related to data models)
         self._modules, self._modules_full = self._get_modules(
@@ -80,9 +80,9 @@ class Modules(object):
         """Returns a dictionary of all modules used to draw the graph."""
         return self._modules
 
-    def _get_models_data(self, with_models, without_models):
+    def _get_models_data(self, models, models_blacklist):
         """Returns a dictionary `{MODEL: DATA, ...}` of models corresponding to
-        `with_models - without_models` patterns (whitelist substracted
+        `models - models_blacklist` patterns (whitelist substracted
         by a blacklist).
         """
         res = {}
@@ -90,17 +90,17 @@ class Modules(object):
         # bound a data model and its related modules.
         if v(self._oerp._version) <= v('6.0'):
             return res
-        with_models_patterns = \
-            [pattern2oerp(model) for model in (with_models)]
-        without_models_patterns = \
-            [pattern2oerp(model) for model in (without_models)]
-        if with_models:
+        models_patterns = \
+            [pattern2oerp(model) for model in (models)]
+        models_blacklist_patterns = \
+            [pattern2oerp(model) for model in (models_blacklist)]
+        if models:
             model_obj = self._oerp.get('ir.model')
             args = [('model', '=ilike', model)
-                    for model in with_models_patterns]
+                    for model in models_patterns]
             for _ in range(len(args) - 1):
                 args.insert(0, '|')
-            for model in without_models_patterns:
+            for model in models_blacklist_patterns:
                 args.append('!')
                 args.append(('model', '=ilike', model))
             ids = model_obj.search(args)
