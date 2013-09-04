@@ -22,8 +22,9 @@ Features supported:
     - execute workflows,
     - manage databases,
     - reports downloading,
-    - inspection capabilities (draw graphs of relations between models,
-      list 'on_change' methods from model views, ...).
+    - inspection capabilities (graphical output of relations between models and
+      dependencies between modules, list ``on_change`` methods from model
+      views...).
 
 Quick start
 -----------

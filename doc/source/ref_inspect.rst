@@ -4,8 +4,14 @@ oerplib.service.inspect
 .. automodule:: oerplib.service.inspect
     :members:
 
+oerplib.service.inspect.Relations
+'''''''''''''''''''''''''''''''''
+
 .. autoclass:: oerplib.service.inspect.relations.Relations
     :members:
 
-.. autoclass:: oerplib.service.inspect.modules.Modules
+oerplib.service.inspect.Dependencies
+''''''''''''''''''''''''''''''''''''
+
+.. autoclass:: oerplib.service.inspect.dependencies.Dependencies
     :members:

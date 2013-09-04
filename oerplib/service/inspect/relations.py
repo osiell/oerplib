@@ -369,8 +369,15 @@ class Relations(object):
 
     def write(self, *args, **kwargs):
         """Write the resulting graph in a file.
-        It is just a wrapper around the :func:`pydot.Dot.write` method. See the
-        `pydot` documentation for details.
+        It is just a wrapper around the :func:`pydot.Dot.write` method
+        (see the `pydot` documentation for details).
+        Below a common way to use it::
+
+            >>> graph = oerp.inspect.relations(['res.partner'])
+            >>> graph.write('relations_res_partner.png', format='png')
+        
+        About supported formats, consult the
+        `Graphviz documentation <http://www.graphviz.org/doc/info/output.html>`_.
         """
         return self._graph.write(*args, **kwargs)
 

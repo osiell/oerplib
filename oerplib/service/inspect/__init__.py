@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """Provide the :class:`Inspect` class which can output useful data
 from `OpenERP`.
+
+oerplib.service.inspect.Inspect
+'''''''''''''''''''''''''''''''
 """
 from functools import wraps
 
@@ -87,6 +90,53 @@ class Inspect(object):
             not be bound together. Hence, a `one2many` relationship based on a
             `many2one` will draw a separate arrow.
 
+
+    .. automethod:: dependencies(models, models_blacklist=[], restrict=False, config={})
+
+        Return a :class:`Dependencies <oerplib.service.inspect.dependencies.Dependencies>`
+        object describing dependencies between modules related to the list of
+        `models`.
+
+        `models` and `models_blacklist` parameters can be defined with patterns
+        (a joker ``*`` can be used to match several models like ``account*``).
+        The whitelist (`models`) has a lower priority than the blacklist
+        (`models_blacklist`).
+
+            >>> oerp.inspect.dependencies(
+            ...     ['res.partner*'],
+            ...     ['res.partner.title', 'res.partner.bank'],
+            ... ).write('dependencies_res_partner.png', format='png')
+
+        By default all modules are shown on the resulting graph, and `models`
+        are highlighted among them.
+        To hide "noisy" modules and restrict the resulting graph only to
+        data models that interest you, add the ``restrict=True`` parameter::
+
+            >>> oerp.inspect.dependencies(
+            ...     ['res.partner*'],
+            ...     ['res.partner.title', 'res.partner.bank'],
+            ...     restrict=True,
+            ... ).write('dependencies_res_partner.png', format='png')
+
+        `config` is a dictionary of options to override some attributes of
+        the graph. Here the list of options and their default values:
+
+            - ``bgcolor_module_title: #DEDFDE``,
+            - ``color_module_title: black``,
+            - ``bgcolor_module_title_root: #A50018``,
+            - ``color_module_title_root: white``,
+            - ``bgcolor_module_title_highlight: #1F931F``,
+            - ``color_module_title_highlight: white``,
+            - ``bgcolor_module: white``,
+            - ``color_model: black``,
+            - ``color_comment: grey``,
+            - ``show_transient_models: False``,
+
+        .. note::
+            With `OpenERP` `5.0`, data models can not be bound to their related
+            modules, and as such the `models` and `models_blacklist`
+            parameters are ignored.
+
     """
     def __init__(self, oerp):
         self._oerp = oerp
@@ -138,46 +188,10 @@ class Inspect(object):
         from oerplib.service.inspect.on_change import scan_on_change
         return scan_on_change(self._oerp, models)
 
-    def modules(self, models=None, models_blacklist=None,
-                restrict=False, config=None):
-        """Return a :class:`Modules <oerplib.service.inspect.modules.Modules>`
-        object describing dependencies between modules related to the list of
-        `models`.
-
-        `models` and `models_blacklist` parameters can be defined with patterns
-        (a joker ``*`` can be used to match several models like ``account*``).
-        The whitelist (`models`) has a lower priority than the blacklist
-        (`models_blacklist`).
-
-            >>> oerp.inspect.modules(
-            ...     ['res.partner*'],
-            ...     ['res.partner.title', 'res.partner.bank'],
-            ... ).write('modules_res_partner.png', format='png')
-
-        TODO: restrict parameter
-
-        `config` is a dictionary of options to override some attributes of
-        the graph. Here the list of options and their default values:
-
-            - ``bgcolor_module_title: #DEDFDE``,
-            - ``color_module_title: black``,
-            - ``bgcolor_module_title_root: #A50018``,
-            - ``color_module_title_root: white``,
-            - ``bgcolor_module_title_highlight: #1F931F``,
-            - ``color_module_title_highlight: white``,
-            - ``bgcolor_module: white``,
-            - ``color_model: black``,
-            - ``color_comment: grey``,
-            - ``show_transient_models: False``,
-
-        .. note::
-            With `OpenERP` `5.0`, data models can not be bound to their related
-            modules, and as such the `models` and `models_blacklist`
-            parameters are ignored.
-
-        """
-        from oerplib.service.inspect.modules import Modules
-        return Modules(
+    def dependencies(self, models=None, models_blacklist=None,
+                     restrict=False, config=None):
+        from oerplib.service.inspect.dependencies import Dependencies
+        return Dependencies(
             self._oerp, models, models_blacklist, restrict, config)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

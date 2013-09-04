@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Implements the `Modules` class used to compute dependencies between
-modules of an OpenERP server.
+"""Implements the :class:`Dependencies` class used to compute dependencies
+between modules of an OpenERP server.
 """
 import copy
 
@@ -38,7 +38,7 @@ def pattern2oerp(pattern):
     return pattern.replace('*', '%')
 
 
-class Modules(object):
+class Dependencies(object):
     """Draw dependencies between modules. Models can be displayed in their
     respecting modules as well.
     """
@@ -274,8 +274,15 @@ class Modules(object):
 
     def write(self, *args, **kwargs):
         """Write the resulting graph in a file.
-        It is just a wrapper around the :func:`pydot.Dot.write` method. See the
-        `pydot` documentation for details.
+        It is just a wrapper around the :func:`pydot.Dot.write` method
+        (see the `pydot` documentation for details).
+        Below a common way to use it::
+
+            >>> graph = oerp.inspect.dependencies(['res.partner'])
+            >>> graph.write('dependencies_res_partner.png', format='png')
+        
+        About supported formats, consult the
+        `Graphviz documentation <http://www.graphviz.org/doc/info/output.html>`_.
         """
         output = self._draw_graph()
         return output.write(*args, **kwargs)
