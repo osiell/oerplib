@@ -2,12 +2,6 @@
 # -*- coding: UTF-8 -*-
 import os
 from distutils.core import setup
-try:
-    # 3.x
-    from distutils.command.build_py import build_py_2to3 as build_py
-except ImportError:
-    # 2.x
-    from distutils.command.build_py import build_py
 
 name = 'OERPLib'
 version = '0.8.0'
@@ -21,7 +15,7 @@ license = 'LGPL v3'
 doc_build_dir = 'doc/build'
 doc_source_dir = 'doc/source'
 
-cmdclass = {'build_py': build_py}
+cmdclass = {}
 command_options = {}
 # 'build_doc' option
 try:
