@@ -42,7 +42,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'OERPLib'
-copyright = u'2011-Today, ABF Osiell'
+copyright = u'2011-Today, ABF Osiell, Sébastien Alix'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

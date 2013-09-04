@@ -425,8 +425,8 @@ Draw a graph of the relationships between models
 The :func:`relations <oerplib.service.inspect.Inspect.relations>` method will help you
 to generate a graphic of such relationships::
 
-    >>> graph = oerp.inspect.relations('res.partner')
-    >>> graph.write('res_partner_v1.png', format='png')
+    >>> graph = oerp.inspect.relations(['res.partner'])
+    >>> graph.write('rel_res_partner_v1.png', format='png')
 
 .. figure:: _static/inspect_relations_1.png
     :width: 100%
@@ -452,9 +452,9 @@ to generate a graphic of such relationships::
 By default, only the direct relationships of the model ``res.partner`` are shown
 (this behaviour can be changed with the ``maxdepth`` parameter), and model
 attributes are hidden.
-You can control the models to be displayed through the ``whitelist`` and
-``blacklist`` parameters. For instance, assume that you only want data models
-whose name begins with `res.partner`:
+You can control the displayed models through the ``whitelist`` and ``blacklist``
+parameters. For instance, assume that you only want data models whose name
+begins with `res.partner`:
 
 .. note::
     The blacklist has a higher priority than the whitelist
@@ -462,8 +462,8 @@ whose name begins with `res.partner`:
 
 ::
 
-    >>> graph = oerp.inspect.relations('res.partner', whitelist=['res.partner*'], blacklist=['res.partner.address'])  # Notice the use of wildcard here
-    >>> graph.write('res_partner_v2.png', format='png')
+    >>> graph = oerp.inspect.relations(['res.partner'], whitelist=['res.partner*'], blacklist=['res.partner.address'])  # Notice the use of wildcard here
+    >>> graph.write('rel_res_partner_v2.png', format='png')
 
 .. image:: _static/inspect_relations_2.png
     :width: 500px
@@ -471,8 +471,8 @@ whose name begins with `res.partner`:
 To display attributes, use the ``attrs_whitelist`` parameter. A wildcard is used here to show
 attributes of all models (but you can specify which models you want)::
 
-    >>> graph = oerp.inspect.relations('res.partner', whitelist=['res.partner*'], blacklist=['res.partner.address'], attrs_whitelist=['*'])
-    >>> graph.write('res_partner_v3.png', format='png')
+    >>> graph = oerp.inspect.relations(['res.partner'], whitelist=['res.partner*'], blacklist=['res.partner.address'], attrs_whitelist=['*'])
+    >>> graph.write('rel_res_partner_v3.png', format='png')
 
 .. figure:: _static/inspect_relations_3.png
     :width: 450px
@@ -486,6 +486,34 @@ attributes of all models (but you can specify which models you want)::
     |                                            |                             |
     |    <font color="blue">name</font>          |                             |
     +--------------------------------------------+-----------------------------+
+
+Draw a graph of the dependencies between modules
+''''''''''''''''''''''''''''''''''''''''''''''''
+
+.. warning::
+    This functionality requires the installation of `pydot <http://code.google.com/p/pydot/>`_.
+
+
+The :func:`dependencies <oerplib.service.inspect.Inspect.dependencies>` method
+will help you to generate a graphic of such dependencies::
+
+    >>> graph = oerp.inspect.dependencies(['res.partner'])
+    >>> graph.write('dep_res_partner_v1.png', format='png')
+
+.. figure:: _static/dep_res_partner_v1.png
+    :width: 100%
+
+By default all modules are shown on the resulting graph, and `models`
+are highlighted among them.
+To hide "noisy" modules and restrict the resulting graph only to
+data models that interest you, add the ``restrict=True`` parameter::
+
+    >>> graph = oerp.inspect.dependencies(['res.partner'], restrict=True)
+    >>> graph.write('dep_res_partner_v2.png', format='png')
+
+.. image:: _static/dep_res_partner_v2.png
+    :width: 500px
+
 
 Scan the views of data models to list `on_change` methods
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''

@@ -1,4 +1,3 @@
 Original Author
 ---------------
-Sébastien ALIX <sebastien.alix@osiell.com>
-
+Sébastien Alix <sebastien.alix@osiell.com>

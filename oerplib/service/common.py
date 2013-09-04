@@ -27,7 +27,7 @@ class Common(object):
 
         Method calls are purely dynamic, and the following documentation can be
         wrong if the API of `OpenERP` is changed between versions. Anyway, if
-        you known the API used by the `OpenERP` server for the ``/common`` RPC
+        you know the API used by the `OpenERP` server for the ``/common`` RPC
         service, it will work.
 
     .. method:: Common.login(db, login, password)
