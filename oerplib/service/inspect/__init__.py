@@ -82,7 +82,7 @@ class Inspect(object):
 
         >>> oerp.inspect.relations(
         ...     ['res.users'],
-        ...     config={'relation_types': ['many2one']}
+        ...     config={'relation_types': ['many2one']},  # Only show many2one relations
         ... ).write('res_users.png', format='png')
 
         .. note::
@@ -131,6 +131,12 @@ class Inspect(object):
             - ``color_model: black``,
             - ``color_comment: grey``,
             - ``show_transient_models: False``,
+
+        >>> oerp.inspect.dependencies(
+        ...     ['res.partner*'],
+        ...     ['res.partner.title', 'res.partner.bank'],
+        ...     config={'show_transient_models': True},  # Show TransientModel/osv_memory models
+        ... ).write('dependencies_res_partner.png', format='png')
 
         .. note::
             With `OpenERP` `5.0`, data models can not be bound to their related
