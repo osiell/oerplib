@@ -99,3 +99,15 @@ pre {
     -webkit-box-shadow: 1px 1px 1px #d8d8d8;
     -moz-box-shadow: 1px 1px 1px #d8d8d8;
 }
+
+li.toctree-l1 {
+    font-weight: bold;
+}
+
+li.toctree-l2 {
+    font-weight: normal;
+}
+
+li.toctree-l3 a.reference {
+    color: #3E3C3C;
+}
