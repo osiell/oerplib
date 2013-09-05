@@ -158,7 +158,7 @@ class Inspect(object):
     def scan_on_change(self, models):
         """Scan all `on_change` methods detected among views of `models`, and
         returns a dictionary formatted as
-        ``{model: {on_change: {view_name: field: [args]}}}``
+        ``{model: {on_change: {view_id: field: [args]}}}``
 
             >>> oerp.inspect.scan_on_change(['sale.order'])
             {'sale.order': {
