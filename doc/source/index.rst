@@ -60,8 +60,9 @@ How does it work? See below::
     user.name = "Brian Jones"
     oerp.write_record(user)
 
-For more details, see the :ref:`tutorials <tutorials>` and the
-:ref:`API reference <reference>`.
+For more details, see the :ref:`tutorials <tutorials>`, the
+:ref:`Frequently Asked Questions (FAQ) <faq>` and the
+:ref:`API reference <reference>` sections.
 
 Download and install
 --------------------
@@ -76,6 +77,7 @@ Contents
 
     download_install
     tutorials
+    faq
     reference
 
 Supported OpenERP versions
