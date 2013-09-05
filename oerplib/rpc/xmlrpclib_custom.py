@@ -6,8 +6,9 @@ import socket
 import sys
 from urlparse import urlparse
 
-TimeoutTransport = None  # Defined later
-TimeoutSafeTransport = None  # Defined later
+# Defined later following the version of Python used
+TimeoutTransport = None  
+TimeoutSafeTransport = None
 
 
 class TimeoutServerProxy(xmlrpclib.ServerProxy):
@@ -25,6 +26,9 @@ class TimeoutServerProxy(xmlrpclib.ServerProxy):
 
 if sys.version_info <= (2, 7):
     # Python 2.5 and 2.6
+
+    # -- xmlrpclib.Transport with timeout support --
+
     class TimeoutHTTPPy26(httplib.HTTP):
         def __init__(self, host='', port=None, strict=None,
                      timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
@@ -43,9 +47,32 @@ if sys.version_info <= (2, 7):
             conn = TimeoutHTTPPy26(host, timeout=self.timeout)
             return conn
 
-    # Define the TimeTransport class version to use
+    # -- xmlrpclib.SafeTransport with timeout support --
+
+    class TimeoutHTTPSPy26(httplib.HTTPS):
+        def __init__(self, host='', port=None, key_file=None, cert_file=None,
+                     strict=None, timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
+            if port == 0:
+                port = None
+            self._setup(self._connection_class(
+                host, port, key_file, cert_file, strict, timeout))
+            self.key_file = key_file
+            self.cert_file = cert_file
+
+    class TimeoutSafeTransportPy26(xmlrpclib.SafeTransport):
+        def __init__(self, timeout=socket._GLOBAL_DEFAULT_TIMEOUT,
+                     *args, **kwargs):
+            xmlrpclib.Transport.__init__(self, *args, **kwargs)
+            self.timeout = timeout
+
+        def make_connection(self, host):
+            host, extra_headers, x509 = self.get_host_info(host)
+            conn = TimeoutHTTPSPy26(host, timeout=self.timeout)
+            return conn
+
+    # Define the TimeTransport and TimeSafeTransport class version to use
     TimeoutTransport = TimeoutTransportPy26
-    TimeoutSafeTransport = TimeoutTransportPy26  # TODO
+    TimeoutSafeTransport = TimeoutSafeTransportPy26
 else:
     # Python 2.7 and 3.X
 
@@ -101,7 +128,7 @@ else:
                 self.timeout, chost)
             return self._connection[1]
 
-    # Define the TimeTransport class version to use
+    # Define the TimeTransport and TimeSafeTransport class version to use
     TimeoutTransport = TimeoutTransportPy27
     TimeoutSafeTransport = TimeoutSafeTransportPy27
 
