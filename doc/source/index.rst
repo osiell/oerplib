@@ -9,8 +9,8 @@ Welcome to OERPLib's documentation!
 Introduction
 ------------
 
-`OERPLib` is a client library to `OpenERP` server written in `Python`. It aims
-to provide an easy way to remotely pilot an `OpenERP` server.
+**OERPLib** is a `RPC` client library to **OpenERP** server written in Python.
+It aims to provide an easy way to remotely pilot an `OpenERP` server.
 
 Features supported:
     - `XML-RPC` and (legacy) `Net-RPC` protocols,
@@ -61,14 +61,9 @@ How does it work? See below::
     user.name = "Brian Jones"
     oerp.write_record(user)
 
-For more details, see the :ref:`tutorials <tutorials>`, the
+For more details and features, see the :ref:`tutorials <tutorials>`, the
 :ref:`Frequently Asked Questions (FAQ) <faq>` and the
 :ref:`API reference <reference>` sections.
-
-Download and install
---------------------
-
-See :ref:`download-install` section.
 
 Contents
 --------

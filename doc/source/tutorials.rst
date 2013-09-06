@@ -428,7 +428,7 @@ to generate a graphic of such relationships::
     >>> graph = oerp.inspect.relations(['res.partner'])
     >>> graph.write('rel_res_partner_v1.png', format='png')
 
-.. figure:: _static/inspect_relations_1.png
+.. figure:: _static/rel_res_partner_v1.png
     :width: 100%
 
     Legend:

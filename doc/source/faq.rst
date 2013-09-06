@@ -16,7 +16,7 @@ Then, just use the ``xmlrpc+ssl`` protocol with the port 443::
     >>> oerp.db.server_version()
     '7.saas~1'
 
-Update a record with an 'on_change' method
+Update a record with an `on_change` method
 ------------------------------------------
 
 `OERPLib` does not provide helpers for such methods currently.
@@ -43,8 +43,8 @@ To know what parameters to send to the ``on_change``, the
 :func:`scan_on_change <oerplib.service.inspect.Inspect.scan_on_change>` method
 can help you.
 
-Some OSV methods does not accept the 'context' parameter...
------------------------------------------------------------
+Some OSV methods does not accept the `context` parameter
+--------------------------------------------------------
 
 Since `OpenERP` 6.1, the ``context`` parameter can be sent automatically for
 each call to an `OSV/Model` method (this is the default behaviour since
