@@ -39,46 +39,4 @@ from oerplib.oerp import OERP
 from oerplib import error
 from oerplib import config
 
-
-def load(name, rc_file='~/.oerplibrc'):
-    """.. versionadded:: 0.8
-
-    Return a :class:`OERP` session pre-configured and connected
-    with informations identified by `name`:
-
-        >>> import oerplib
-        >>> oerp = oerplib.load('foo')
-
-    Such informations are stored with the :func:`OERP.save <oerplib.OERP.save>`
-    method.
-    """
-    data = config.get(name, rc_file)
-    oerp = OERP(
-        server=data['server'],
-        protocol=data['protocol'],
-        port=data['port'],
-        timeout=data['timeout'],
-    )
-    oerp.login(
-        user=data['user'], passwd=data['passwd'],
-        database=data['database'])
-    return oerp
-
-
-def list(rc_file='~/.oerplibrc'):
-    """.. versionadded:: 0.8
-
-    Return a list of all configurations available in the
-    `rc_file` file:
-
-        >>> import oerplib
-        >>> oerplib.list()
-        ['foo', 'bar']
-
-    Then, use the :func:`load` function with the desired configuration:
-
-        >>> oerp = oerplib.load('foo')
-    """
-    return config.list(rc_file)
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

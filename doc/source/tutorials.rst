@@ -549,14 +549,22 @@ however use another file::
 
     >>> oerp.save('foo', '~/my_own_oerplibrc')
 
-Then, use the :func:`oerplib.load` function::
+Then, use the :func:`oerplib.OERP.load` method::
 
     >>> import oerplib
-    >>> oerp = oerplib.load('foo')
+    >>> oerp = oerplib.OERP.load('foo')
 
 Or, if you have saved your configuration in another file::
 
-    >>> oerp = oerplib.load('foo', '~/my_own_oerplibrc')
+    >>> oerp = oerplib.OERP.load('foo', '~/my_own_oerplibrc')
+
+You can check available sessions with :func:`oerplib.OERP.list`, and remove
+them with :func:`oerplib.OERP.remove` ::
+
+    >>> oerplib.OERP.list()
+    ['foo']
+    >>> oerplib.OERP.remove('foo')
+    True
 
 Change the timeout
 ------------------

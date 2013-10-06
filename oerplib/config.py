@@ -73,6 +73,7 @@ def get_all(rc_file='~/.oerplibrc'):
     sessions = {}
     for name in conf.sections():
         sessions[name] = {
+            'type': conf.get(name, 'type'),
             'server': conf.get(name, 'server'),
             'protocol': conf.get(name, 'protocol'),
             'port': conf.getint(name, 'port'),
@@ -96,6 +97,7 @@ def get(name, rc_file='~/.oerplibrc'):
         raise error.Error(
             "'{0}' configuration does not exist".format(name))
     return {
+        'type': conf.get(name, 'type'),
         'server': conf.get(name, 'server'),
         'protocol': conf.get(name, 'protocol'),
         'port': conf.getint(name, 'port'),
@@ -106,13 +108,14 @@ def get(name, rc_file='~/.oerplibrc'):
     }
 
 
-def list(rc_file='~/.oerplibrc'):
-    """Return a list of all configurations available in the
-    `rc_file` file.
-    """
-    conf = SafeConfigParser()
-    conf.read([os.path.expanduser(rc_file)])
-    return conf.sections()
+#def list(rc_file='~/.oerplibrc'):
+#    """Return a list of all configurations available in the
+#    `rc_file` file.
+#    """
+#    conf = SafeConfigParser()
+#    conf.read([os.path.expanduser(rc_file)])
+#    # TODO
+#    return conf.sections()
 
 
 def save(name, data, rc_file='~/.oerplibrc'):
@@ -138,6 +141,9 @@ def remove(name, rc_file='~/.oerplibrc'):
     """
     conf = SafeConfigParser()
     conf.read([os.path.expanduser(rc_file)])
+    if not conf.has_section(name):
+        raise error.Error(
+            "'{0}' configuration does not exist".format(name))
     res = conf.remove_section(name)
     with open(os.path.expanduser(rc_file), 'wb') as file_:
         conf.write(file_)

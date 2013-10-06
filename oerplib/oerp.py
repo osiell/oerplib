@@ -574,6 +574,7 @@ class OERP(object):
         """
         self._check_logged_user()
         data = {
+            'type': self.__class__.__name__,
             'server': self.server,
             'protocol': self.protocol,
             'port': self.port,
@@ -583,5 +584,72 @@ class OERP(object):
             'database': self.database,
         }
         config.save(name, data, rc_file)
+
+    @classmethod
+    def load(cls, name, rc_file='~/.oerplibrc'):
+        """.. versionadded:: 0.8
+
+        Return a :class:`OERP` session pre-configured and connected
+        with informations identified by `name`:
+
+            >>> import oerplib
+            >>> oerp = oerplib.OERP.load('foo')
+
+        Such informations are stored with the :func:`OERP.save <oerplib.OERP.save>`
+        method.
+        """
+        data = config.get(name, cls.__name__, rc_file)
+        if data.get('type') != self.__class__.__name__:
+            raise error.Error(
+                "'{0}' configuration is not of type '{1}'".format(
+                    name, cls.__name__))
+        oerp = cls(
+            server=data['server'],
+            protocol=data['protocol'],
+            port=data['port'],
+            timeout=data['timeout'],
+        )
+        oerp.login(
+            user=data['user'], passwd=data['passwd'],
+            database=data['database'])
+        return oerp
+
+    @classmethod
+    def list(cls, rc_file='~/.oerplibrc'):
+        """.. versionadded:: 0.8
+
+        Return a list of all configurations available in the
+        `rc_file` file:
+
+            >>> import oerplib
+            >>> oerplib.OERP.list()
+            ['foo', 'bar']
+
+        Then, use the :func:`load` function with the desired configuration:
+
+            >>> oerp = oerplib.OERP.load('foo')
+        """
+        sessions = config.get_all(rc_file)
+        return [name for name, data in sessions.iteritems()
+                if data.get('type') == cls.__name__]
+        #return config.list(rc_file)
+
+    @classmethod
+    def remove(cls, name, rc_file='~/.oerplibrc'):
+        """.. versionadded:: 0.8
+
+        Remove the session configuration identified by `name`
+        from the `rc_file` file:
+
+            >>> import oerplib
+            >>> oerplib.OERP.remove('foo')
+            True
+        """
+        data = config.get(name, rc_file)
+        if data.get('type') != cls.__name__:
+            raise error.Error(
+                "'{0}' configuration is not of type '{1}'".format(
+                    name, cls.__name__))
+        return config.remove(name, rc_file)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

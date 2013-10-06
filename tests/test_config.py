@@ -26,21 +26,23 @@ class TestConfig(unittest.TestCase):
         os.remove(self.file_path)
 
     def test_config_list(self):
-        result = oerplib.config.list(rc_file=self.file_path)
+        result = oerplib.OERP.list(rc_file=self.file_path)
         self.assertIsInstance(result, list)
         other_file_path = tempfile.mkstemp()[1]
-        result = oerplib.config.list(rc_file=other_file_path)
+        result = oerplib.OERP.list(rc_file=other_file_path)
         self.assertIsInstance(result, list)
 
     def test_config_save_and_remove(self):
         self.oerp.save(self.config_name, rc_file=self.file_path)
-        result = oerplib.config.list(rc_file=self.file_path)
+        result = oerplib.OERP.list(rc_file=self.file_path)
         self.assertIn(self.config_name, result)
-        oerplib.config.remove(self.config_name, rc_file=self.file_path)
+        res = oerplib.OERP.remove(self.config_name, rc_file=self.file_path)
+        self.assertEqual(res, True)
 
     def test_config_get(self):
         self.oerp.save(self.config_name, rc_file=self.file_path)
         data = {
+            'type': self.oerp.__class__.__name__,
             'server': self.oerp.server,
             'protocol': self.oerp.protocol,
             'port': int(self.oerp.port),
@@ -49,14 +51,16 @@ class TestConfig(unittest.TestCase):
             'passwd': self.oerp._password,
             'database': self.oerp.database,
         }
-        result = oerplib.config.get(self.config_name, rc_file=self.file_path)
+        result = oerplib.config.get(
+            self.config_name, rc_file=self.file_path)
         self.assertEqual(data, result)
-        oerplib.config.remove(self.config_name, rc_file=self.file_path)
+        oerplib.OERP.remove(self.config_name, rc_file=self.file_path)
 
     def test_config_get_all(self):
         self.oerp.save(self.config_name, rc_file=self.file_path)
         data = {
             self.config_name: {
+                'type': self.oerp.__class__.__name__,
                 'server': self.oerp.server,
                 'protocol': self.oerp.protocol,
                 'port': int(self.oerp.port),
@@ -69,6 +73,6 @@ class TestConfig(unittest.TestCase):
         result = oerplib.config.get_all(rc_file=self.file_path)
         self.assertIn(self.config_name, result)
         self.assertEqual(data, result)
-        oerplib.config.remove(self.config_name, rc_file=self.file_path)
+        oerplib.OERP.remove(self.config_name, rc_file=self.file_path)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

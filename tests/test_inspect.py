@@ -20,7 +20,7 @@ class TestInspect(unittest.TestCase):
 
     def test_relations(self):
         res = self.oerp.inspect.relations(
-            'res.users',
+            ['res.users'],
             maxdepth=1,
             whitelist=['*'], blacklist=[],
             attrs_whitelist=['*'], attrs_blacklist=[])
