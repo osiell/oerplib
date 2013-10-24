@@ -1,53 +1,53 @@
-        |                         |  5.0  |  6.0  |  6.1  |  7.0
-========|=========================|=======|=======|=======|=======
-db      |                         |       |       |       |
-        | create                  |   X   |   X   |   X   |   X
-        | get_progress            |   X   |   X   |   X   |   X
-        | drop                    |   X   |   X   |   X   |   X
-        | dump                    |   X   |   X   |   X   |   X
-        | restore                 |   X   |   X   |   X   |   X
-        | rename                  |   X   |   X   |   X   |   X
-        | db_exist                |   X   |   X   |   X   |   X
-        | list                    |   X   |   X   |   X   |   X
-        | list_lang               |   X   |   X   |   X   |   X
-        | server_version          |   X   |   X   |   X   |   X
-        | change_admin_password   |   X   |   X   |   X   |   X
-        | migrate_database        |   X   |   X   |   X   |   X
-        | create_database         |   -   |   -   |   X   |   X
-        | duplicate_database      |   -   |   -   |   -   |   X
-========|=========================|=======|=======|=======|=======
-common  |                         |       |       |       |
-        | ir_set                  |   X   |   X   |   -   |   -
-        | ir_del                  |   X   |   X   |   -   |   -
-        | ir_get                  |   X   |   X   |   -   |   -
-        | login                   |   X   |   X   |   X   |   X
-        | logout                  |   X   |   X   |   -   |   -
-        | about                   |   X   |   X   |   X   |   X
-        | timezone_get            |   X   |   X   |   X   |   X
-        | get_server_environment  |   X   |   X   |   X   |   X
-        | login_message           |   X   |   X   |   X   |   X
-        | get_stats               |   -   |   X   |   X   |   X
-        | check_connectivity      |   X   |   X   |   X   |   X
-        | list_http_services      |   -   |   X   |   X   |   X
-        | version                 |   -   |   -   |   X   |   X
-        | authenticate            |   -   |   -   |   X   |   X
-        |                         |       |       |       |
-        | get_available_updates   |   X   |   X   |   X   |   X
-        | get_migration_scripts   |   X   |   X   |   X   |   X
-        | set_loglevel            |   -   |   X   |   X   |   X
-        | get_os_time             |   -   |   X   |   X   |   X
-        | get_sqlcount            |   -   |   X   |   X   |   X
-========|=========================|=======|=======|=======|=======
-report  |                         |       |       |       | 
-        | report                  |   X   |   X   |   X   |   X
-        | report_get              |   X   |   X   |   X   |   X
-        | render_report           |   -   |   -   |   X   |   X
-========|=========================|=======|=======|=======|=======
-wizard  |                         |       |       |       | 
-        | execute                 |   X   |   X   |   X   |   -
-        | create                  |   X   |   X   |   X   |   -
-========|=========================|=======|=======|=======|=======
-object  |                         |       |       |       | 
-        | execute                 |   X   |   X   |   X   |   X
-        | execute_kw              |   -   |   -   |   X   |   X
-        | exec_workflow           |   X   |   X   |   X   |   X
+        |                         |  5.0  |  6.0  |  6.1  |  7.0  |  8.0  |
+========|=========================|=======|=======|=======|=======|=======|
+db      |                         |       |       |       |       |       |
+        | create                  |   X   |   X   |   X   |   X   |   X   |
+        | get_progress            |   X   |   X   |   X   |   X   |   X   |
+        | drop                    |   X   |   X   |   X   |   X   |   X   |
+        | dump                    |   X   |   X   |   X   |   X   |   X   |
+        | restore                 |   X   |   X   |   X   |   X   |   X   |
+        | rename                  |   X   |   X   |   X   |   X   |   X   |
+        | db_exist                |   X   |   X   |   X   |   X   |   X   |
+        | list                    |   X   |   X   |   X   |   X   |   X   |
+        | list_lang               |   X   |   X   |   X   |   X   |   X   |
+        | server_version          |   X   |   X   |   X   |   X   |   X   |
+        | change_admin_password   |   X   |   X   |   X   |   X   |   X   |
+        | migrate_databases       |   X   |   X   |   X   |   X   |   X   |
+        | create_database         |   -   |   -   |   X   |   X   |   X   |
+        | duplicate_database      |   -   |   -   |   -   |   X   |   X   |
+========|=========================|=======|=======|=======|=======|=======|
+common  |                         |       |       |       |       |       |
+        | ir_set                  |   X   |   X   |   -   |   -   |   -   |
+        | ir_del                  |   X   |   X   |   -   |   -   |   -   |
+        | ir_get                  |   X   |   X   |   -   |   -   |   -   |
+        | login                   |   X   |   X   |   X   |   X   |   X   |
+        | logout                  |   X   |   X   |   -   |   -   |   -   |
+        | about                   |   X   |   X   |   X   |   X   |   X   |
+        | timezone_get            |   X   |   X   |   X   |   X   |   X   |
+        | get_server_environment  |   X   |   X   |   X   |   X   |   -   |
+        | login_message           |   X   |   X   |   X   |   X   |   -   |
+        | get_stats               |   -   |   X   |   X   |   X   |   -   |
+        | check_connectivity      |   X   |   X   |   X   |   X   |   -   |
+        | list_http_services      |   -   |   X   |   X   |   X   |   -   |
+        | version                 |   -   |   -   |   X   |   X   |   X   |
+        | authenticate            |   -   |   -   |   X   |   X   |   X   |
+        |                         |       |       |       |       |       |
+        | get_available_updates   |   X   |   X   |   X   |   X   |   -   |
+        | get_migration_scripts   |   X   |   X   |   X   |   X   |   -   |
+        | set_loglevel            |   -   |   X   |   X   |   X   |   X   |
+        | get_os_time             |   -   |   X   |   X   |   X   |   -   |
+        | get_sqlcount            |   -   |   X   |   X   |   X   |   -   |
+========|=========================|=======|=======|=======|=======|=======|
+report  |                         |       |       |       |       |       |
+        | report                  |   X   |   X   |   X   |   X   |   X   |
+        | report_get              |   X   |   X   |   X   |   X   |   X   |
+        | render_report           |   -   |   -   |   X   |   X   |   X   |
+========|=========================|=======|=======|=======|=======|=======|
+wizard  |                         |       |       |       |       |       |
+        | execute                 |   X   |   X   |   X   |   -   |   -   |
+        | create                  |   X   |   X   |   X   |   -   |   -   |
+========|=========================|=======|=======|=======|=======|=======|
+object  |                         |       |       |       |       |       |
+        | execute                 |   X   |   X   |   X   |   X   |   X   |
+        | execute_kw              |   -   |   -   |   X   |   X   |   X   |
+        | exec_workflow           |   X   |   X   |   X   |   X   |   X   |
