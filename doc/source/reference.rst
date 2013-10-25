@@ -16,5 +16,6 @@ Reference
     ref_inspect
     ref_rpc
     ref_tools
+    ref_session
     ref_error
 

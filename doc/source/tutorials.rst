@@ -412,8 +412,8 @@ However, `OERPLib` simplifies this by providing the
 Some documentation about methods offered by the `OpenERP` ``/db`` RPC service
 is available :class:`here <oerplib.service.db.DB>`.
 
-Inspect the metadata of OpenERP
--------------------------------
+Inspect the metadata of OpenERP **(New in version 0.8)**
+--------------------------------------------------------
 
 Draw a graph of the relationships between models
 ''''''''''''''''''''''''''''''''''''''''''''''''
@@ -532,12 +532,13 @@ Each detected function can be present on several views::
 The dictionary returned is formatted as follows: ``{model: {on_change: {view_name: field: [args]}}}``
 
 
-Save the session to open it quickly later
------------------------------------------
+Save the session to open it quickly later **(New in version 0.8)**
+------------------------------------------------------------------
 
 Once you are authenticated with your :class:`OERP <oerplib.OERP>` instance, you
-can save these connection information under a code name and use this one to
-quickly instanciate a new :class:`OERP <oerplib.OERP>` class::
+can :func:`save <oerplib.OERP.save>` these connection information under a code
+name and use this one to quickly instanciate a new :class:`OERP <oerplib.OERP>`
+class::
 
     >>> import oerplib
     >>> oerp = oerplib.OERP('localhost')
@@ -564,6 +565,7 @@ them with :func:`oerplib.OERP.remove` ::
     >>> oerplib.OERP.list()
     ['foo']
     >>> oerplib.OERP.remove('foo')
+    >>> 'foo' not in oerplib.OERP.list()
     True
 
 Change the timeout

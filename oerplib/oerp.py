@@ -27,10 +27,8 @@ import zlib
 import tempfile
 import time
 
-from oerplib import config
-from oerplib import rpc
-from oerplib import error
-from oerplib.tools import detect_version
+from oerplib import rpc, error, tools
+from oerplib.tools import session
 from oerplib.service import common, db, wizard, osv, inspect
 
 
@@ -74,7 +72,7 @@ class OERP(object):
         self._db = db.DB(self)
         self._wizard = wizard.Wizard(self)
         self._inspect = inspect.Inspect(self)
-        self._version = version or detect_version(
+        self._version = version or tools.detect_version(
             server, protocol, port, timeout)
         # Instanciate the OpenERP server connector
         try:
@@ -84,7 +82,7 @@ class OERP(object):
         except rpc.error.ConnectorError as exc:
             raise error.InternalError(exc.message)
         # Dictionary of configuration options
-        self._config = config.Config(
+        self._config = tools.Config(
             self,
             {'auto_context': True,
              'timeout': timeout})
@@ -583,7 +581,7 @@ class OERP(object):
             'passwd': self._password,
             'database': self.database,
         }
-        config.save(name, data, rc_file)
+        session.save(name, data, rc_file)
 
     @classmethod
     def load(cls, name, rc_file='~/.oerplibrc'):
@@ -598,10 +596,10 @@ class OERP(object):
         Such informations are stored with the :func:`OERP.save <oerplib.OERP.save>`
         method.
         """
-        data = config.get(name, cls.__name__, rc_file)
-        if data.get('type') != self.__class__.__name__:
+        data = session.get(name, cls.__name__, rc_file)
+        if data.get('type') != cls.__name__:
             raise error.Error(
-                "'{0}' configuration is not of type '{1}'".format(
+                "'{0}' session is not of type '{1}'".format(
                     name, cls.__name__))
         oerp = cls(
             server=data['server'],
@@ -618,38 +616,37 @@ class OERP(object):
     def list(cls, rc_file='~/.oerplibrc'):
         """.. versionadded:: 0.8
 
-        Return a list of all configurations available in the
+        Return a list of all sessions available in the
         `rc_file` file:
 
             >>> import oerplib
             >>> oerplib.OERP.list()
             ['foo', 'bar']
 
-        Then, use the :func:`load` function with the desired configuration:
+        Then, use the :func:`load` function with the desired session:
 
             >>> oerp = oerplib.OERP.load('foo')
         """
-        sessions = config.get_all(rc_file)
+        sessions = session.get_all(rc_file)
         return [name for name, data in sessions.iteritems()
                 if data.get('type') == cls.__name__]
-        #return config.list(rc_file)
+        #return session.list(rc_file)
 
     @classmethod
     def remove(cls, name, rc_file='~/.oerplibrc'):
         """.. versionadded:: 0.8
 
-        Remove the session configuration identified by `name`
-        from the `rc_file` file:
+        Remove the session identified by `name` from the `rc_file` file:
 
             >>> import oerplib
             >>> oerplib.OERP.remove('foo')
             True
         """
-        data = config.get(name, rc_file)
+        data = session.get(name, rc_file)
         if data.get('type') != cls.__name__:
             raise error.Error(
-                "'{0}' configuration is not of type '{1}'".format(
+                "'{0}' session is not of type '{1}'".format(
                     name, cls.__name__))
-        return config.remove(name, rc_file)
+        return session.remove(name, rc_file)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

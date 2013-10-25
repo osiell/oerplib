@@ -18,11 +18,58 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""This module contains some helper functions used in ``OERPLib``."""
-
+"""This module contains the :class:`Config <oerplib.config.Config>` class which
+manage the configuration related to an instance of :class:`OERP <oerplib.OERP>`,
+and some useful helper functions used internally in `OERPLib`.
+"""
+import collections
 import re
 
-match_version = re.compile(r'[^\d.]')
+MATCH_VERSION = re.compile(r'[^\d.]')
+
+
+class Config(collections.MutableMapping):
+    """Class which manage the configuration of an
+    :class:`OERP <oerplib.OERP>` instance.
+
+    .. note::
+        This class have to be used through the :attr:`oerplib.OERP.config`
+        property.
+
+    >>> import oerplib
+    >>> oerp = oerplib.OERP('localhost')
+    >>> type(oerp.config)
+    <class 'oerplib.tools.Config'>
+    """
+    def __init__(self, oerp, options):
+        super(Config, self).__init__()
+        self._oerp = oerp
+        self._options = options or {}
+
+    def __getitem__(self, key):
+        return self._options[key]
+
+    def __setitem__(self, key, value):
+        """Handle ``timeout`` option to set the timeout on the connector."""
+        if key == 'timeout':
+            self._oerp._connector.timeout = value
+        self._options[key] = value
+
+    def __delitem__(self, key):
+        # TODO raise exception
+        pass
+
+    def __iter__(self):
+        return self._options.__iter__()
+
+    def __len__(self):
+        return len(self._options)
+
+    def __str__(self):
+        return self._options.__str__()
+
+    def __repr__(self):
+        return self._options.__repr__()
 
 
 def clean_version(version):
@@ -34,7 +81,7 @@ def clean_version(version):
 
     :return: a cleaner version string
     """
-    version = match_version.sub('', version.split('-')[0])
+    version = MATCH_VERSION.sub('', version.split('-')[0])
     return version
 
 

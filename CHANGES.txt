@@ -2,8 +2,7 @@ v0.8.0, 2013-09-XX:
     - New service 'inspect' ('OERP.inspect') able to draw models relationship
       and modules dependencies graphs (output in any Graphviz supported formats)
       and to detect 'on_change' methods of data models,
-    - Able to save and load connection information in/from a separate
-      file ('~/.oerplibrc' by default),
+    - Able to save and load connection information ('~/.oerplibrc' by default),
     - Experimental JSON-RPC connector added in 'oerplib.rpc' (the 'OERP' class
       does not support it),
     - one2many and many2many fields on browse records improved

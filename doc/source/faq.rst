@@ -1,7 +1,7 @@
 .. _faq:
 
-Frequently Asked Questions (FAQ)
-================================
+Frequently Asked Questions (FAQ) **(New in version 0.8)**
+=========================================================
 
 Connect to an OpenERP Online (SaaS) instance
 --------------------------------------------

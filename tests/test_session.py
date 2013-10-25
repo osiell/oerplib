@@ -12,35 +12,34 @@ from args import ARGS
 import oerplib
 
 
-class TestConfig(unittest.TestCase):
+class TestSession(unittest.TestCase):
 
     def setUp(self):
         self.oerp = oerplib.OERP(
             ARGS.server, protocol=ARGS.protocol, port=ARGS.port,
             version=ARGS.version)
         self.user = self.oerp.login(ARGS.user, ARGS.passwd, ARGS.database)
-        self.config_name = ARGS.database
+        self.session_name = ARGS.database
         self.file_path = tempfile.mkstemp(suffix='.cfg', prefix='oerplib_')[1]
 
     def tearDown(self):
         os.remove(self.file_path)
 
-    def test_config_list(self):
+    def test_session_list(self):
         result = oerplib.OERP.list(rc_file=self.file_path)
         self.assertIsInstance(result, list)
         other_file_path = tempfile.mkstemp()[1]
         result = oerplib.OERP.list(rc_file=other_file_path)
         self.assertIsInstance(result, list)
 
-    def test_config_save_and_remove(self):
-        self.oerp.save(self.config_name, rc_file=self.file_path)
+    def test_session_save_and_remove(self):
+        self.oerp.save(self.session_name, rc_file=self.file_path)
         result = oerplib.OERP.list(rc_file=self.file_path)
-        self.assertIn(self.config_name, result)
-        res = oerplib.OERP.remove(self.config_name, rc_file=self.file_path)
-        self.assertEqual(res, True)
+        self.assertIn(self.session_name, result)
+        oerplib.OERP.remove(self.session_name, rc_file=self.file_path)
 
-    def test_config_get(self):
-        self.oerp.save(self.config_name, rc_file=self.file_path)
+    def test_session_get(self):
+        self.oerp.save(self.session_name, rc_file=self.file_path)
         data = {
             'type': self.oerp.__class__.__name__,
             'server': self.oerp.server,
@@ -51,15 +50,15 @@ class TestConfig(unittest.TestCase):
             'passwd': self.oerp._password,
             'database': self.oerp.database,
         }
-        result = oerplib.config.get(
-            self.config_name, rc_file=self.file_path)
+        result = oerplib.tools.session.get(
+            self.session_name, rc_file=self.file_path)
         self.assertEqual(data, result)
-        oerplib.OERP.remove(self.config_name, rc_file=self.file_path)
+        oerplib.OERP.remove(self.session_name, rc_file=self.file_path)
 
-    def test_config_get_all(self):
-        self.oerp.save(self.config_name, rc_file=self.file_path)
+    def test_session_get_all(self):
+        self.oerp.save(self.session_name, rc_file=self.file_path)
         data = {
-            self.config_name: {
+            self.session_name: {
                 'type': self.oerp.__class__.__name__,
                 'server': self.oerp.server,
                 'protocol': self.oerp.protocol,
@@ -70,9 +69,9 @@ class TestConfig(unittest.TestCase):
                 'database': self.oerp.database,
             }
         }
-        result = oerplib.config.get_all(rc_file=self.file_path)
-        self.assertIn(self.config_name, result)
+        result = oerplib.tools.session.get_all(rc_file=self.file_path)
+        self.assertIn(self.session_name, result)
         self.assertEqual(data, result)
-        oerplib.OERP.remove(self.config_name, rc_file=self.file_path)
+        oerplib.OERP.remove(self.session_name, rc_file=self.file_path)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
