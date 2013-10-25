@@ -1,5 +1,5 @@
-oerplib.service.inspect
-=======================
+oerplib.service.inspect **(New in version 0.8)**
+================================================
 
 .. automodule:: oerplib.service.inspect
     :members:

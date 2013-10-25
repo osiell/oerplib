@@ -57,10 +57,10 @@ class Inspect(object):
     >>> oerp.inspect
     <oerplib.service.inspect.Inspect object at 0xb42fa84f>
 
-    .. automethod:: relations(models, maxdepth=1, whitelist=[], blacklist=[], attrs_whitelist=[], attrs_blacklist=[], config={})
+    .. automethod:: relations(models, maxdepth=1, whitelist=['*'], blacklist=[], attrs_whitelist=[], attrs_blacklist=[], config={})
 
         Return a :class:`Relations <oerplib.service.inspect.relations.Relations>`
-        object showing relations between data models, starting from `models`
+        object containing relations between data models, starting from `models`
         (depth = 0) and iterate recursively until reaching the `maxdepth` limit.
 
         `whitelist` and `blacklist` of models can be defined with patterns
@@ -75,9 +75,9 @@ class Inspect(object):
 
             >>> oerp.inspect.relations(
             ...     ['res.users'],
-            ...     maxdepth=4,
+            ...     maxdepth=1,
             ...     whitelist=['res*'],
-            ...     blacklist=['res.users'],
+            ...     blacklist=['res.country*'],
             ...     attrs_whitelist=['*'],
             ...     attrs_blacklist=['res.partner', 'res.company'],
             ... ).write('res_users.png', format='png')

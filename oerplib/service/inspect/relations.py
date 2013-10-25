@@ -87,7 +87,7 @@ class Relations(object):
         self._maxdepth = maxdepth
         self._whitelist = [pattern2regex(model) for model in (models)]
         self._whitelist.extend(
-            [pattern2regex(model) for model in (whitelist or [])])
+            [pattern2regex(model) for model in (whitelist or ['*'])])
         self._blacklist = [pattern2regex(model) for model in (blacklist or [])]
         self._attrs_whitelist = [pattern2regex(model)
                                  for model in (attrs_whitelist or [])]
