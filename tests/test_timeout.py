@@ -20,10 +20,10 @@ class TestTimeout(unittest.TestCase):
         self.user = self.oerp.login(ARGS.user, ARGS.passwd, ARGS.database)
 
     def test_reduced_timeout(self):
+        ids = self.oerp.search('ir.module.module', [])
         # Set the timeout
         self.oerp.config['timeout'] = 0.1
         # Execute a time consuming query: handle exception
-        ids = self.oerp.search('ir.module.module', [])
         self.assertRaises(
             socket.timeout,
             self.oerp.write, 'ir.module.module', ids, {})
