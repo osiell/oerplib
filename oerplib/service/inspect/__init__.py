@@ -97,7 +97,7 @@ class Inspect(object):
             `many2one` will draw a separate arrow.
 
 
-    .. automethod:: dependencies(models, models_blacklist=[], restrict=False, config={})
+    .. automethod:: dependencies(modules=[], models=[], models_blacklist=[], restrict=False, config={})
 
         Return a :class:`Dependencies <oerplib.service.inspect.dependencies.Dependencies>`
         object describing dependencies between modules related to the list of
@@ -199,10 +199,10 @@ class Inspect(object):
         from oerplib.service.inspect.on_change import scan_on_change
         return scan_on_change(self._oerp, models)
 
-    def dependencies(self, models=None, models_blacklist=None,
+    def dependencies(self, modules=None, models=None, models_blacklist=None,
                      restrict=False, config=None):
         from oerplib.service.inspect.dependencies import Dependencies
         return Dependencies(
-            self._oerp, models, models_blacklist, restrict, config)
+            self._oerp, modules, models, models_blacklist, restrict, config)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

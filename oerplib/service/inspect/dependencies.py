@@ -23,6 +23,7 @@ between modules of an OpenERP server.
 """
 import copy
 
+from oerplib import error
 from oerplib.tools import v
 
 TPL_MODULE = """<
@@ -61,7 +62,7 @@ class Dependencies(object):
     """Draw dependencies between modules. Models can be displayed in their
     respecting modules as well.
     """
-    def __init__(self, oerp, models=None, models_blacklist=None,
+    def __init__(self, oerp, modules=None, models=None, models_blacklist=None,
                  restrict=False, config=None):
         self._oerp = oerp
         self._restrict = restrict
@@ -85,9 +86,9 @@ class Dependencies(object):
         # List of modules computed according to the `restrict` parameter
         # (display all modules or only modules related to data models)
         self._modules, self._modules_full = self._get_modules(
-            self._restrict, self._models)
+            self._restrict, self._models, keep=not bool(modules))
         # Fetch dependencies between modules
-        self._scan_module_dependencies()
+        self._scan_module_dependencies(modules)
 
     @property
     def models(self):
@@ -134,7 +135,7 @@ class Dependencies(object):
                 }
         return res
 
-    def _get_modules(self, restrict=False, models=None):
+    def _get_modules(self, restrict=False, models=None, keep=False):
         """Returns a dictionary `{MODULE: DATA, ...}` with all modules installed
         (`restrict=False`) or only with modules related to data models
         (`restrict=True`).
@@ -148,7 +149,11 @@ class Dependencies(object):
         module_ids = module_obj.search([('state', '=', 'installed')])
         for data in module_obj.read(module_ids, ['name']):
             if data['name'] not in modules:
-                modules_full[data['name']] = {'models': [], 'depends': []}
+                modules_full[data['name']] = {
+                    'models': [],
+                    'depends': [],
+                    'keep': keep,
+                }
         # Dispatch data models in their related modules
         for model, data in models.iteritems():
             for module in data['modules']:
@@ -160,7 +165,11 @@ class Dependencies(object):
             for model, data in models.iteritems():
                 for module in data['modules']:
                     if module not in modules:
-                        modules[module] = {'models': [], 'depends': []}
+                        modules[module] = {
+                            'models': [],
+                            'depends': [],
+                            'keep': keep,
+                        }
                     if model not in modules[module]['models']:
                         modules[module]['models'].append(model)
         # Otherwise, just take the full list of modules
@@ -168,9 +177,14 @@ class Dependencies(object):
             modules = copy.deepcopy(modules_full)
         return modules, modules_full
 
-    def _scan_module_dependencies(self):
-        """Scan dependencies for each module."""
+    def _scan_module_dependencies(self, modules=None):
+        """Scan dependencies of modules, starting from the `modules` list.
+        If `modules` is set to `None`, dependencies of all installed modules
+        will be computed.
+        """
+        starting_from = modules or []
         module_obj = self._oerp.get('ir.module.module')
+        # Compute dependencies of all installed modules
         for name in self._modules_full:
             module_ids = module_obj.search([('name', '=', name)])
             module = module_obj.browse(module_ids[0])
@@ -186,6 +200,28 @@ class Dependencies(object):
                 # Detect fake "root" module
                 if not data['depends'] and self._modules_full[name]['depends']:
                     self._fix_fake_root_module(name)
+        # Mark modules to keep in the graph if they belong to a path
+        # leading to one of the starting modules
+        for module in starting_from:
+            if module not in self._modules_full:
+                raise error.InternalError(
+                    "'{0}' module does not exist".format(module))
+        for module in self._modules:
+            queue = []
+            queue.append(module)
+            # Recursive function to scan the graph and keep modules
+            def process_keep(queue, module):
+                for depend in self._modules[module]['depends']:
+                    queue.append(depend)
+                    # Found? Keep modules concerned by this path
+                    if depend in starting_from:
+                        for mod in queue:
+                            self._modules[mod]['keep'] = True
+                        break
+                    else:
+                        process_keep(queue, depend)
+                queue.pop()
+            process_keep(queue, module)
 
     def _fix_fake_root_module(self, module):
         """Fix the fake root `module` by finding its indirect dependencies."""
@@ -249,7 +285,8 @@ class Dependencies(object):
 
         def get_template(module, data):
             """Generate the layout of the module."""
-            root = not data['depends']
+            root = all(not self._modules[depend]['keep']
+                       for depend in data['depends'])
             # Model lines
             tpl_models = []
             for model in data['models']:
@@ -283,11 +320,15 @@ class Dependencies(object):
             return tpl
 
         for module, data in self._modules.iteritems():
+            if not data['keep']:
+                continue
             # Add the module as node
             tpl = get_template(module, data)
             node = self._draw_graph_node(module, tpl)
             output.add_node(node)
             for dependency in data['depends']:
+                if not self._modules[dependency]['keep']:
+                    continue
                 # Add edge between the module and it's dependency
                 edge = self._draw_graph_edge(dependency, module)
                 output.add_edge(edge)
