@@ -257,7 +257,7 @@ class Relations(object):
                     color=self._config['color_model_subtitle'],
                     title="Attributes")
                 attrs.append(subtitle)
-                for k, v in data['fields'].iteritems():
+                for k, v in sorted(data['fields'].iteritems()):
                     color_name = self._config['color_normal']
                     if v.get('function'):
                         color_name = self._config['color_function']
