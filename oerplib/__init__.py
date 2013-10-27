@@ -37,6 +37,5 @@ __version__ = '0.8.0'
 
 from oerplib.oerp import OERP
 from oerplib import error
-from oerplib import config
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
