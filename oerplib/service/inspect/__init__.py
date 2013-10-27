@@ -29,19 +29,6 @@ from functools import wraps
 from oerplib import error
 
 
-def check_pydot(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            import pydot
-        except:
-            raise error.InternalError(
-                "'pydot' module not found")
-        else:
-            return func(*args, **kwargs)
-    return wrapper
-
-
 class Inspect(object):
     """.. versionadded:: 0.8
 
@@ -166,7 +153,6 @@ class Inspect(object):
     def __init__(self, oerp):
         self._oerp = oerp
 
-    @check_pydot
     def relations(self, models, maxdepth=1, whitelist=None, blacklist=None,
                   attrs_whitelist=None, attrs_blacklist=None, config=None):
         from oerplib.service.inspect.relations import Relations

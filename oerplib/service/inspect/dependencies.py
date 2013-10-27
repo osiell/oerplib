@@ -241,7 +241,10 @@ class Dependencies(object):
 
     def _draw_graph(self):
         """Returns a Graphviz output object."""
-        import pydot
+        try:
+            import pydot
+        except ImportError:
+            raise error.InternalError("'pydot' module not found")
         output = pydot.Dot()
 
         def get_template(module, data):

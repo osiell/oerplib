@@ -110,17 +110,12 @@ class Relations(object):
             'space_between_models': 0.25,
         }
         self._config.update(config or {})
-        # Dot graph
-        self._graph = pydot.Dot(
-            graph_type='digraph', overlap='scalexy', splines='true',
-            nodesep=str(self._config['space_between_models']))
         # Store relations between data models:
         self._relations = {}
         self._stack = {'o2m': {}}
         # Build and draw relations for each model
         for model in models:
             self._build_relations(self._oerp.get(model), 0)
-        self._draw_relations()
 
     def _build_relations(self, obj, depth):
         """Build all relations of `obj` recursively:
@@ -239,7 +234,14 @@ class Relations(object):
                 self._build_relations(rel_obj, depth)
 
     def _draw_relations(self):
-        """Generate the graphic."""
+        """Returns a Graphviz output object."""
+        try:
+            import pydot
+        except ImportError:
+            raise error.InternalError("'pydot' module not found")
+        output = pydot.Dot(
+            graph_type='digraph', overlap='scalexy', splines='true',
+            nodesep=str(self._config['space_between_models']))
         for model, data in self._relations.iteritems():
             # Generate attributes of the model
             attrs_ok = False
@@ -293,13 +295,14 @@ class Relations(object):
                 relations_r=''.join(relations_r))
             # Add the model to the graph
             node = self._create_node(data['obj']._name, 'relation', tpl)
-            self._graph.add_node(node)
+            output.add_node(node)
             # Draw relations of the model
             for data2 in data['relations'].itervalues():
                 if data2['relation'] in self._relations:
                     rel_obj = self._relations[data2['relation']]['obj']
                     edge = self._create_edge(data['obj'], rel_obj, data2)
-                    self._graph.add_edge(edge)
+                    output.add_edge(edge)
+        return output
 
     def _create_node(self, name, type_, tpl=None):
         """Generate a `pydot.Node` object.
@@ -394,10 +397,11 @@ class Relations(object):
 
             >>> graph = oerp.inspect.relations(['res.partner'])
             >>> graph.write('relations_res_partner.png', format='png')
-        
+
         About supported formats, consult the
         `Graphviz documentation <http://www.graphviz.org/doc/info/output.html>`_.
         """
-        return self._graph.write(*args, **kwargs)
+        output = self._draw_relations()
+        return output.write(*args, **kwargs)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
