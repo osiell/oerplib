@@ -100,29 +100,43 @@ class Inspect(object):
     .. automethod:: dependencies(modules=[], models=[], models_blacklist=[], restrict=False, config={})
 
         Return a :class:`Dependencies <oerplib.service.inspect.dependencies.Dependencies>`
-        object describing dependencies between modules related to the list of
-        `models`.
+        object describing dependencies between modules. The `modules` defines
+        a list of root nodes to reach among all dependencies (modules not
+        related to them are not displayed). The default behaviour is to compute
+        all dependencies between installed modules. The `models` list can be
+        used to display all matching models among computed dependencies.
 
         `models` and `models_blacklist` parameters can be defined with patterns
         (a joker ``*`` can be used to match several models like ``account*``).
         The whitelist (`models`) has a lower priority than the blacklist
-        (`models_blacklist`).
+        (`models_blacklist`)::
 
             >>> oerp.inspect.dependencies(
-            ...     ['res.partner*'],
-            ...     ['res.partner.title', 'res.partner.bank'],
+            ...     models=['res.partner*'],
+            ...     models_blacklist=['res.partner.title', 'res.partner.bank'],
             ... ).write('dependencies_res_partner.png', format='png')
 
-        By default all modules are shown on the resulting graph, and `models`
-        are highlighted among them.
-        To hide "noisy" modules and restrict the resulting graph only to
+        By default all installed modules are shown on the graph. To limit the
+        result to modules related to the `base` one (its childs)::
+
+            >>> oerp.inspect.dependencies(
+            ...     ['base'],
+            ...     ['res.partner*'],
+            ...     ['res.partner.title', 'res.partner.bank'],
+            ... ).write('dependencies_res_partner_base.png', format='png')
+
+        All modules related to `base` are shown on the resulting graph, and
+        matching models are highlighted among them, but some modules remain
+        empty.
+        To hide these "noisy" modules and restrict the resulting graph only to
         data models that interest you, add the ``restrict=True`` parameter::
 
             >>> oerp.inspect.dependencies(
+            ...     ['base'],
             ...     ['res.partner*'],
             ...     ['res.partner.title', 'res.partner.bank'],
             ...     restrict=True,
-            ... ).write('dependencies_res_partner.png', format='png')
+            ... ).write('dependencies_res_partner_base_restricted.png', format='png')
 
         `config` is a dictionary of options to override some attributes of
         the graph. Here the list of options and their default values:
@@ -136,13 +150,15 @@ class Inspect(object):
             - ``bgcolor_module: white``,
             - ``color_model: black``,
             - ``color_comment: grey``,
+            - ``show_normal_models: True``,
             - ``show_transient_models: False``,
 
         >>> oerp.inspect.dependencies(
+        ...     ['base'],
         ...     ['res.partner*'],
         ...     ['res.partner.title', 'res.partner.bank'],
         ...     config={'show_transient_models': True},  # Show TransientModel/osv_memory models
-        ... ).write('dependencies_res_partner.png', format='png')
+        ... ).write('dependencies_res_partner_transient.png', format='png')
 
         .. note::
             With `OpenERP` `5.0`, data models can not be bound to their related

@@ -77,6 +77,7 @@ class Dependencies(object):
             'bgcolor_module': 'white',
             'color_model': 'black',
             'color_comment': 'grey',
+            'show_normal_models': True,
             'show_transient_models': False,
         }
         self._config.update(config or {})
@@ -88,7 +89,7 @@ class Dependencies(object):
         self._modules, self._modules_full = self._get_modules(
             self._restrict, self._models, keep=not bool(modules))
         # Fetch dependencies between modules
-        self._scan_module_dependencies(modules)
+        self._scan_module_dependencies(modules or [])
 
     @property
     def models(self):
@@ -127,6 +128,9 @@ class Dependencies(object):
             for data in model_obj.read(ids, ['model', 'modules', 'osv_memory']):
                 if not self._config['show_transient_models'] \
                         and data['osv_memory']:
+                    continue
+                if not self._config['show_normal_models'] \
+                        and not data['osv_memory']:
                     continue
                 res[data['model']] = {
                     'model': data['model'],
@@ -177,12 +181,11 @@ class Dependencies(object):
             modules = copy.deepcopy(modules_full)
         return modules, modules_full
 
-    def _scan_module_dependencies(self, modules=None):
-        """Scan dependencies of modules, starting from the `modules` list.
-        If `modules` is set to `None`, dependencies of all installed modules
-        will be computed.
+    def _scan_module_dependencies(self, root_modules):
+        """Scan dependencies of modules, until reaching each node in
+        `root_modules`.  If `root_modules` is empty, dependencies of all
+        installed modules will be computed.
         """
-        starting_from = modules or []
         module_obj = self._oerp.get('ir.module.module')
         # Compute dependencies of all installed modules
         for name in self._modules_full:
@@ -202,7 +205,7 @@ class Dependencies(object):
                     self._fix_fake_root_module(name)
         # Mark modules to keep in the graph if they belong to a path
         # leading to one of the starting modules
-        for module in starting_from:
+        for module in root_modules:
             if module not in self._modules_full:
                 raise error.InternalError(
                     "'{0}' module does not exist".format(module))
@@ -214,7 +217,7 @@ class Dependencies(object):
                 for depend in self._modules[module]['depends']:
                     queue.append(depend)
                     # Found? Keep modules concerned by this path
-                    if depend in starting_from:
+                    if depend in root_modules:
                         for mod in queue:
                             self._modules[mod]['keep'] = True
                         break
