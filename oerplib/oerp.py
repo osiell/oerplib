@@ -177,22 +177,6 @@ class OERP(object):
                        See the :class:`oerplib.service.inspect.Inspect`
                        class."""))
 
-    # RPC Connector timeout
-    @property
-    def timeout(self):
-        """.. versionadded:: 0.6
-
-        .. deprecated:: 0.7 will be deleted in the next version. Use the
-            :attr:`OERP.config <oerplib.OERP.config>` property instead
-
-        Set the maximum timeout for a RPC request.
-        """
-        return self.config['timeout']
-
-    @timeout.setter
-    def timeout(self, timeout):
-        self.config['timeout'] = timeout
-
     #NOTE: in the past this function was implemented as a decorator for other
     # methods needed to be checked, but Sphinx documentation generator is not
     # able to auto-document decorated methods.
