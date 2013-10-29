@@ -91,15 +91,15 @@ class Dependencies(object):
         # Fetch dependencies between modules
         self._scan_module_dependencies(modules or [])
 
-    @property
-    def models(self):
-        """Returns a dictionary of all models used to draw the graph."""
-        return self._models
+    #@property
+    #def models(self):
+    #    """Returns a dictionary of all models used to draw the graph."""
+    #    return self._models
 
-    @property
-    def modules(self):
-        """Returns a dictionary of all modules used to draw the graph."""
-        return self._modules
+    #@property
+    #def modules(self):
+    #    """Returns a dictionary of all modules used to draw the graph."""
+    #    return self._modules
 
     def _get_models_data(self, models, models_blacklist):
         """Returns a dictionary `{MODEL: DATA, ...}` of models corresponding to
@@ -278,8 +278,17 @@ class Dependencies(object):
         import pydot
         return pydot.Edge( parent, child, dir='back')
 
-    def _draw_graph(self):
-        """Returns a Graphviz output object."""
+    def make_dot(self):
+        """Returns a `pydot.Dot` object representing dependencies
+        between modules.
+
+            >>> graph = oerp.inspect.dependencies(['base'], ['res.partner'])
+            >>> graph.make_dot()
+            <pydot.Dot object at 0x2f01990>
+
+        See the `pydot <http://code.google.com/p/pydot/>`_ documentation
+        for details.
+        """
         try:
             import pydot
         except ImportError:
@@ -341,8 +350,8 @@ class Dependencies(object):
     def write(self, *args, **kwargs):
         """Write the resulting graph in a file.
         It is just a wrapper around the :func:`pydot.Dot.write` method
-        (see the `pydot` documentation for details).
-        Below a common way to use it::
+        (see the `pydot <http://code.google.com/p/pydot/>`_ documentation for
+        details).  Below a common way to use it::
 
             >>> graph = oerp.inspect.dependencies(['res.partner'])
             >>> graph.write('dependencies_res_partner.png', format='png')
@@ -350,7 +359,7 @@ class Dependencies(object):
         About supported formats, consult the
         `Graphviz documentation <http://www.graphviz.org/doc/info/output.html>`_.
         """
-        output = self._draw_graph()
+        output = self.make_dot()
         return output.write(*args, **kwargs)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
