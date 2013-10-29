@@ -353,7 +353,7 @@ class Dependencies(object):
         (see the `pydot <http://code.google.com/p/pydot/>`_ documentation for
         details).  Below a common way to use it::
 
-            >>> graph = oerp.inspect.dependencies(['res.partner'])
+            >>> graph = oerp.inspect.dependencies(['base'], ['res.partner'])
             >>> graph.write('dependencies_res_partner.png', format='png')
         
         About supported formats, consult the

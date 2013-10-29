@@ -23,12 +23,8 @@ and install manually (replace `X.Y.Z` accordingly)::
     $ cd OERPLib-X.Y.Z
     $ python setup.py install
 
-Or for `Python 3` (experimental support, it is not production ready)::
-
-    $ python3 setup.py install
-
 No dependency is required except `pydot <http://code.google.com/p/pydot/>`_ for
-the :func:`relations <oerplib.service.inspect.Inspect.relations>` method
+some methods of the :class:`inspect <oerplib.service.inspect.Inspect>` service
 (optional).
 
 Source code
