@@ -580,7 +580,7 @@ class OERP(object):
         Such informations are stored with the :func:`OERP.save <oerplib.OERP.save>`
         method.
         """
-        data = session.get(name, cls.__name__, rc_file)
+        data = session.get(name, rc_file)
         if data.get('type') != cls.__name__:
             raise error.Error(
                 "'{0}' session is not of type '{1}'".format(

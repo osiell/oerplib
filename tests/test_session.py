@@ -25,20 +25,31 @@ class TestSession(unittest.TestCase):
     def tearDown(self):
         os.remove(self.file_path)
 
-    def test_session_list(self):
+    def test_session_oerp_list(self):
         result = oerplib.OERP.list(rc_file=self.file_path)
         self.assertIsInstance(result, list)
         other_file_path = tempfile.mkstemp()[1]
         result = oerplib.OERP.list(rc_file=other_file_path)
         self.assertIsInstance(result, list)
 
-    def test_session_save_and_remove(self):
+    def test_session_oerp_save_and_remove(self):
         self.oerp.save(self.session_name, rc_file=self.file_path)
         result = oerplib.OERP.list(rc_file=self.file_path)
         self.assertIn(self.session_name, result)
         oerplib.OERP.remove(self.session_name, rc_file=self.file_path)
 
-    def test_session_get(self):
+    def test_session_oerp_load(self):
+        self.oerp.save(self.session_name, rc_file=self.file_path)
+        oerp = oerplib.OERP.load(self.session_name, rc_file=self.file_path)
+        self.assertIsInstance(oerp, oerplib.OERP)
+        self.assertEqual(self.oerp.server, oerp.server)
+        self.assertEqual(self.oerp.port, oerp.port)
+        self.assertEqual(self.oerp.database, oerp.database)
+        self.assertEqual(self.oerp.protocol, oerp.protocol)
+        self.assertEqual(self.oerp.user, oerp.user)
+        oerplib.OERP.remove(self.session_name, rc_file=self.file_path)
+
+    def test_session_tools_get(self):
         self.oerp.save(self.session_name, rc_file=self.file_path)
         data = {
             'type': self.oerp.__class__.__name__,
@@ -55,7 +66,7 @@ class TestSession(unittest.TestCase):
         self.assertEqual(data, result)
         oerplib.OERP.remove(self.session_name, rc_file=self.file_path)
 
-    def test_session_get_all(self):
+    def test_session_tools_get_all(self):
         self.oerp.save(self.session_name, rc_file=self.file_path)
         data = {
             self.session_name: {
