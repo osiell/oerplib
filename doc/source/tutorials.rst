@@ -418,7 +418,7 @@ Inspect the metadata of OpenERP **(New in version 0.8)**
 Draw a graph of the relationships between models
 ''''''''''''''''''''''''''''''''''''''''''''''''
 
-.. warning::
+.. note::
     This functionality requires the installation of `pydot <http://code.google.com/p/pydot/>`_.
 
 
@@ -433,21 +433,33 @@ to generate a graphic of such relationships::
 
     Legend:
 
-    +--------------------------------------------+-----------------------------+
-    | Color                                      | Meaning                     |
-    +============================================+=============================+
-    | .. raw:: html                              | many2one                    |
-    |                                            |                             |
-    |    <font color="#0E2548">partner_id</font> |                             |
-    +--------------------------------------------+-----------------------------+
-    | .. raw:: html                              | one2many                    |
-    |                                            |                             |
-    |    <font color="#008200">bank_ids</font>   |                             |
-    +--------------------------------------------+-----------------------------+
-    | .. raw:: html                              | many2many                   |
-    |                                            |                             |
-    |    <font color="#6E0004">company_ids</font>|                             |
-    +--------------------------------------------+-----------------------------+
+    +--------------------------------------------+-----------------------------------------+
+    | Element                                    | Meaning                                 |
+    +============================================+=========================================+
+    | .. raw:: html                              | many2one                                |
+    |                                            |                                         |
+    |    <font color="#0E2548">partner_id</font> |                                         |
+    +--------------------------------------------+-----------------------------------------+
+    | .. raw:: html                              | one2many                                |
+    |                                            |                                         |
+    |    <font color="#008200">bank_ids</font>   |                                         |
+    +--------------------------------------------+-----------------------------------------+
+    | .. raw:: html                              | many2many                               |
+    |                                            |                                         |
+    |    <font color="#6E0004">company_ids</font>|                                         |
+    +--------------------------------------------+-----------------------------------------+
+    | .. raw:: html                              | Field required                          |
+    |                                            |                                         |
+    |    [<font color="blue">R</font>]           |                                         |
+    +--------------------------------------------+-----------------------------------------+
+    | .. raw:: html                              | Field function (readonly)               |
+    |                                            |                                         |
+    |    [<font color="#7D7D7D">F</font>]        |                                         |
+    +--------------------------------------------+-----------------------------------------+
+    | .. raw:: html                              | Field function (writable)               |
+    |                                            |                                         |
+    |    [<font color="#7D7D7D">Fw</font>]       |                                         |
+    +--------------------------------------------+-----------------------------------------+
 
 By default, only the direct relationships of the model ``res.partner`` are shown
 (this behaviour can be changed with the ``maxdepth`` parameter), and model
@@ -462,35 +474,35 @@ begins with `res.partner`:
 
 ::
 
-    >>> graph = oerp.inspect.relations(['res.partner'], whitelist=['res.partner*'], blacklist=['res.partner.address'])  # Notice the use of wildcard here
+    >>> graph = oerp.inspect.relations(['res.partner'], whitelist=['res.partner*'], blacklist=['res.partner.bank'])  # Notice the use of wildcard here
     >>> graph.write('rel_res_partner_v2.png', format='png')
 
-.. image:: _static/inspect_relations_2.png
-    :width: 500px
+.. image:: _static/rel_res_partner_v2.png
+    :width: 350px
 
-To display attributes, use the ``attrs_whitelist`` parameter. A wildcard is used here to show
-attributes of all models (but you can specify which models you want)::
+To display attributes, use the ``attrs_whitelist`` parameter. A wildcard is
+used here to show attributes of all models (but you can specify which models
+you want)::
 
-    >>> graph = oerp.inspect.relations(['res.partner'], whitelist=['res.partner*'], blacklist=['res.partner.address'], attrs_whitelist=['*'])
+    >>> graph = oerp.inspect.relations(['res.partner'], whitelist=['res.partner*'], blacklist=['res.partner.bank'], attrs_whitelist=['*'])
     >>> graph.write('rel_res_partner_v3.png', format='png')
 
-.. figure:: _static/inspect_relations_3.png
-    :width: 450px
+.. image:: _static/rel_res_partner_v3.png
+    :width: 350px
 
-    Legend:
+To hide attributes of some models, you can use the ``attrs_blacklist``
+parameter::
 
-    +--------------------------------------------+-----------------------------+
-    | Color                                      | Meaning                     |
-    +============================================+=============================+
-    | .. raw:: html                              | required                    |
-    |                                            |                             |
-    |    <font color="blue">name</font>          |                             |
-    +--------------------------------------------+-----------------------------+
+    >>> graph = oerp.inspect.relations(['res.partner'], whitelist=['res.partner*'], blacklist=['res.partner.bank'], attrs_whitelist=['*'], attrs_blacklist=['res.partner'])
+    >>> graph.write('rel_res_partner_v4.png', format='png')
+
+.. image:: _static/rel_res_partner_v4.png
+    :width: 350px
 
 Draw a graph of the dependencies between modules
 ''''''''''''''''''''''''''''''''''''''''''''''''
 
-.. warning::
+.. note::
     This functionality requires the installation of `pydot <http://code.google.com/p/pydot/>`_.
 
 
