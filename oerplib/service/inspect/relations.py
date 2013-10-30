@@ -21,8 +21,6 @@
 
 import re
 
-import pydot
-
 
 TPL_MODEL = """<
 <table cellborder="0" cellpadding="0" cellspacing="0"
