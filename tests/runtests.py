@@ -98,12 +98,12 @@ if __name__ == '__main__':
     if ARGS.test_xmlrpc:
         print("-- RUN (XMLRPC) --")
         ARGS.protocol = 'xmlrpc'
-        ARGS.port = ARGS.xmlrpc_port
+        ARGS.port = int(ARGS.xmlrpc_port)
         unittest.TextTestRunner(verbosity=ARGS.verbosity).run(suite)
     if ARGS.test_netrpc:
         print("-- RUN (NETRPC) --")
         ARGS.protocol = 'netrpc'
-        ARGS.port = ARGS.netrpc_port
+        ARGS.port = int(ARGS.netrpc_port)
         unittest.TextTestRunner(verbosity=ARGS.verbosity).run(suite)
     if not ARGS.test_xmlrpc and not ARGS.test_netrpc:
         print("-- NO TEST --")
