@@ -507,24 +507,46 @@ Draw a graph of the dependencies between modules
 
 
 The :func:`dependencies <oerplib.service.inspect.Inspect.dependencies>` method
-will help you to generate a graphic of such dependencies::
+will help you to generate a graphic representing dependencies between all
+installed modules::
 
-    >>> graph = oerp.inspect.dependencies(['res.partner'])
-    >>> graph.write('dep_res_partner_v1.png', format='png')
+    >>> graph = oerp.inspect.dependencies()
+    >>> graph.write('dependencies_v1.png', format='png')
 
-.. figure:: _static/dep_res_partner_v1.png
-    :width: 100%
+.. figure:: _static/dependencies_v1.png
+    :width: 900px
 
-By default all modules are shown on the resulting graph, and `models`
-are highlighted among them.
+By default all modules are shown on the resulting graph, the red ones can be
+seen as `root` modules (they depend on no module in the current graph). Assume
+we have installed the `Accounting and Finance` application, and want to only
+display dependencies related to the `account` module::
+
+    >>> graph = oerp.inspect.dependencies(['account'])
+    >>> graph.write('dependencies_v2.png', format='png')
+
+.. figure:: _static/dependencies_v2.png
+    :height: 250px
+
+This time the `root` module is ``account``. Modules may also contain data
+models. To highlight some of them among the modules, set the `models` and/or
+`models_blacklist` parameters with one or several patterns (a joker ``*`` can
+be used)::
+
+    >>> graph = oerp.inspect.dependencies(['account'], models=['res.*'])
+    >>> graph.write('dependencies_v3.png', format='png')
+
+.. figure:: _static/dependencies_v3.png
+    :height: 250px
+
+Modules related to the matching models are shown in green.
 To hide "noisy" modules and restrict the resulting graph only to
 data models that interest you, add the ``restrict=True`` parameter::
 
-    >>> graph = oerp.inspect.dependencies(['res.partner'], restrict=True)
-    >>> graph.write('dep_res_partner_v2.png', format='png')
+    >>> graph = oerp.inspect.dependencies(['account'], ['res.*'], restrict=True)
+    >>> graph.write('dependencies_v4.png', format='png')
 
-.. image:: _static/dep_res_partner_v2.png
-    :width: 500px
+.. image:: _static/dependencies_v4.png
+    :height: 250px
 
 
 Scan the views of data models to list `on_change` methods
