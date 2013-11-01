@@ -525,26 +525,41 @@ display dependencies related to the `account` module::
     :height: 250px
 
 This time the `root` module is ``account``. Modules may also contain data
-models. To highlight some of them among the modules, set the `models` and/or
+models. To highlight some of them among the modules, set the `models` and
 `models_blacklist` parameters with one or several patterns (a joker ``*`` can
 be used)::
 
-    >>> graph = oerp.inspect.dependencies(['account'], models=['res.*'])
+    >>> graph = oerp.inspect.dependencies(['account'], models=['account.invoice.*'])
     >>> graph.write('dependencies_v3.png', format='png')
 
 .. figure:: _static/dependencies_v3.png
     :height: 250px
 
-Modules related to the matching models are shown in green.
+Modules related to the matching models are shown in green (in addition to the
+red one).  It is possible to display transient models too through the
+``show_transient_model`` configuration option (displayed in gray in the
+following graph)::
+
+    >>> config = {'show_transient_model': True}
+    >>> graph = oerp.inspect.dependencies(['account'], models=['account.invoice.*'], config=config)
+    >>> graph.write('dependencies_v4.png', format='png')
+
+.. figure:: _static/dependencies_v4.png
+    :height: 250px
+
 To hide "noisy" modules and restrict the resulting graph only to
 data models that interest you, add the ``restrict=True`` parameter::
 
-    >>> graph = oerp.inspect.dependencies(['account'], ['res.*'], restrict=True)
-    >>> graph.write('dependencies_v4.png', format='png')
+    >>> config = {'show_transient_model': True}
+    >>> graph = oerp.inspect.dependencies(['account'], ['account.invoice.*'], restrict=True, config=config)
+    >>> graph.write('dependencies_v5.png', format='png')
 
-.. image:: _static/dependencies_v4.png
-    :height: 250px
+.. image:: _static/dependencies_v5.png
+    :height: 190px
 
+For more details, take a look at the
+:func:`dependencies <oerplib.service.inspect.Inspect.dependencies>` method
+documentation.
 
 Scan the views of data models to list `on_change` methods
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -562,7 +577,6 @@ The dictionary returned is formatted as
 follows: ``{model: {on_change: {view_name: field: [args]}}}``, e.g. the
 ``onchange_state`` method is set on the ``state_id`` field of the view
 ``base.view_users_simple_form``, and take the same field as parameter.
-
 
 Save the session to open it quickly later **(New in version 0.8)**
 ------------------------------------------------------------------

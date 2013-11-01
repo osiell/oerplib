@@ -141,23 +141,28 @@ class Inspect(object):
         `config` is a dictionary of options to override some attributes of
         the graph. Here the list of options and their default values:
 
-            - ``bgcolor_module_title: #DEDFDE``,
-            - ``color_module_title: black``,
-            - ``bgcolor_module_title_root: #A50018``,
-            - ``color_module_title_root: white``,
-            - ``bgcolor_module_title_highlight: #1F931F``,
-            - ``color_module_title_highlight: white``,
-            - ``bgcolor_module: white``,
-            - ``color_model: black``,
-            - ``color_comment: grey``,
-            - ``show_normal_models: True``,
-            - ``show_transient_models: False``,
+            - ``module_uninst_bgcolor_title: #DEDFDE``,
+            - ``module_uninst_color_title: black``,
+            - ``module_inst_bgcolor_title: #64629C``,
+            - ``module_inst_color_title: white``,
+            - ``module_root_bgcolor_title: #A50018``,
+            - ``module_root_color_title: white``,
+            - ``module_highlight_bgcolor_title: #1F931F``,
+            - ``module_highlight_color_title: white``,
+            - ``module_bgcolor: white``,
+            - ``module_color_comment: grey``,
+            - ``model_color_normal: black``,
+            - ``model_color_transient: #7D7D7D``,
+            - ``show_module_inst: True``,
+            - ``show_module_uninst: False``,
+            - ``show_model_normal: True``,
+            - ``show_model_transient: False``,
 
         >>> oerp.inspect.dependencies(
         ...     ['base'],
         ...     ['res.partner*'],
         ...     ['res.partner.title', 'res.partner.bank'],
-        ...     config={'show_transient_models': True},  # Show TransientModel/osv_memory models
+        ...     config={'show_model_transient': True},  # Show TransientModel/osv_memory models
         ... ).write('dependencies_res_partner_transient.png', format='png')
 
         .. note::

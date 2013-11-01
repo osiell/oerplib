@@ -28,10 +28,10 @@ from oerplib.tools import v
 
 TPL_MODULE = """<
 <table cellborder="0" cellpadding="0" cellspacing="0"
-       border="1" bgcolor="{bgcolor_module}" height="100%%">
+       border="1" bgcolor="{module_bgcolor}" height="100%%">
     <tr>
-        <td border="0" bgcolor="{bgcolor_module_title}" align="center">
-            <font color="{color_module_title}">{name}</font>
+        <td border="0" bgcolor="{module_bgcolor_title}" align="center">
+            <font color="{module_color_title}">{name}</font>
         </td>
     </tr>
     {models}
@@ -46,7 +46,7 @@ TPL_MODULE_MODEL = """
 
 TPL_MODULE_COMMENT = """
 <tr>
-    <td align="center" border="0"><font color="{color_comment}">{comment}</font></td>
+    <td align="center" border="0"><font color="{module_color_comment}">{comment}</font></td>
 </tr>
 """
 
@@ -68,17 +68,22 @@ class Dependencies(object):
         self._restrict = restrict
         # Configuration options
         self._config = {
-            'bgcolor_module_title': '#DEDFDE',
-            'color_module_title': 'black',
-            'bgcolor_module_title_root': '#A50018',
-            'color_module_title_root': 'white',
-            'bgcolor_module_title_highlight': '#1F931F',
-            'color_module_title_highlight': 'white',
-            'bgcolor_module': 'white',
-            'color_model': 'black',
-            'color_comment': 'grey',
-            'show_normal_models': True,
-            'show_transient_models': False,
+            'module_uninst_bgcolor_title': '#DEDFDE',
+            'module_uninst_color_title': 'black',
+            'module_inst_bgcolor_title': '#64629C',
+            'module_inst_color_title': 'white',
+            'module_root_bgcolor_title': '#A50018',
+            'module_root_color_title': 'white',
+            'module_highlight_bgcolor_title': '#1F931F',
+            'module_highlight_color_title': 'white',
+            'module_bgcolor': 'white',
+            'module_color_comment': 'grey',
+            'model_color_normal': 'black',
+            'model_color_transient': '#7D7D7D',
+            'show_module_inst': True,
+            'show_module_uninst': False,
+            'show_model_normal': True,
+            'show_model_transient': False,
         }
         self._config.update(config or {})
         # List of data models
@@ -126,16 +131,17 @@ class Dependencies(object):
                 args.append(('model', '=ilike', model))
             ids = model_obj.search(args)
             for data in model_obj.read(ids, ['model', 'modules', 'osv_memory']):
-                if not self._config['show_transient_models'] \
+                if not self._config['show_model_transient'] \
                         and data['osv_memory']:
                     continue
-                if not self._config['show_normal_models'] \
+                if not self._config['show_model_normal'] \
                         and not data['osv_memory']:
                     continue
                 res[data['model']] = {
                     'model': data['model'],
                     'modules': data['modules']
                     and data['modules'].split(', ') or [],
+                    'transient': data['osv_memory'],
                 }
         return res
 
@@ -150,13 +156,27 @@ class Dependencies(object):
         modules_full = {}
         # Fetch all the modules installed on the OpenERP server
         module_obj = self._oerp.get('ir.module.module')
-        module_ids = module_obj.search([('state', '=', 'installed')])
-        for data in module_obj.read(module_ids, ['name']):
+        states_inst = ['installed', 'to upgrade', 'to remove']
+        states_uninst = ['uninstalled', 'uninstallable', 'to install']
+        states = []
+        if self._config['show_module_inst'] \
+                and not self._config['show_module_uninst']:
+                    states = states_inst[:]
+        elif not self._config['show_module_inst'] \
+                and self._config['show_module_uninst']:
+                    states = states_uninst[:]
+        elif self._config['show_module_inst'] \
+                and self._config['show_module_uninst']:
+            states = []
+        args = states and [('state', 'in', states)] or []
+        module_ids = module_obj.search(args)
+        for data in module_obj.read(module_ids, ['name', 'state']):
             if data['name'] not in modules:
                 modules_full[data['name']] = {
                     'models': [],
                     'depends': [],
                     'keep': keep,
+                    'installed': data['state'] in states_inst
                 }
         # Dispatch data models in their related modules
         for model, data in models.iteritems():
@@ -173,6 +193,7 @@ class Dependencies(object):
                             'models': [],
                             'depends': [],
                             'keep': keep,
+                            'installed': modules_full[module]['installed'],
                         }
                     if model not in modules[module]['models']:
                         modules[module]['models'].append(model)
@@ -301,31 +322,39 @@ class Dependencies(object):
                        for depend in data['depends'])
             # Model lines
             tpl_models = []
-            for model in data['models']:
-                tpl_models.append(TPL_MODULE_MODEL.format(
-                    color_model=self._config['color_model'], model=model))
+            for model in sorted(data['models']):
+                color_model = self._config['model_color_normal']
+                if self._models[model]['transient']:
+                    color_model = self._config['model_color_transient']
+                tpl_models.append(
+                    TPL_MODULE_MODEL.format(
+                        color_model=color_model, model=model))
             # Module comment
             tpl_comment = None
             if data.get('comment'):
                 tpl_comment = "<tr><td> </td></tr>"
                 tpl_comment += TPL_MODULE_COMMENT.format(
-                    color_comment=self._config['color_comment'],
+                    module_color_comment=self._config['module_color_comment'],
                     comment=data['comment'])
             # Module
-            color_module_title = self._config['color_module_title']
-            bgcolor_module_title = self._config['bgcolor_module_title']
+            module_color_title = self._config['module_inst_color_title']
+            module_bgcolor_title = self._config['module_inst_bgcolor_title']
             if root:
-                color_module_title = self._config['color_module_title_root']
-                bgcolor_module_title = self._config['bgcolor_module_title_root']
+                module_color_title = self._config['module_root_color_title']
+                module_bgcolor_title = self._config['module_root_bgcolor_title']
             if not root and tpl_models:
-                color_module_title = \
-                    self._config['color_module_title_highlight']
-                bgcolor_module_title = \
-                    self._config['bgcolor_module_title_highlight']
+                module_color_title = \
+                    self._config['module_highlight_color_title']
+                module_bgcolor_title = \
+                    self._config['module_highlight_bgcolor_title']
+            if not data.get('installed'):
+                module_color_title = self._config['module_uninst_color_title']
+                module_bgcolor_title = \
+                    self._config['module_uninst_bgcolor_title']
             tpl = TPL_MODULE.format(
-                color_module_title=color_module_title,
-                bgcolor_module_title=bgcolor_module_title,
-                bgcolor_module=self._config['bgcolor_module'],
+                module_color_title=module_color_title,
+                module_bgcolor_title=module_bgcolor_title,
+                module_bgcolor=self._config['module_bgcolor'],
                 name=module.upper(),
                 models=''.join(tpl_models),
                 comment=tpl_comment or '')
