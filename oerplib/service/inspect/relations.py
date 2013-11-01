@@ -21,6 +21,7 @@
 
 import re
 
+from oerplib import error
 
 TPL_MODEL = """<
 <table cellborder="0" cellpadding="0" cellspacing="0"
@@ -315,6 +316,7 @@ class Relations(object):
         `type_` can take one of these values: ``relation``, ``m2m_table``.
         If a HTML `tpl` is supplied, it will be used as layout for the node.
         """
+        import pydot
         types = {
             'relation': {
                 'margin': '0',
@@ -335,15 +337,15 @@ class Relations(object):
         """Generate a `pydot.Edge` object, representing a relation between
         `obj1` and `obj2`.
         """
+        import pydot
         label = self._generate_relation_label(data, space=6, on_arrow=True)
-        kwargs = {
-            'label': label,
-            'labeldistance': '10.0',
-            'color': self._config['color_{0}'.format(data['type'])],
-            'fontcolor': self._config['color_{0}'.format(data['type'])],
-            #'arrowhead': data['type'] == 'many2many' and 'none' or 'normal',
-        }
-        return pydot.Edge(obj1._name, obj2._name, **kwargs)
+        return pydot.Edge(
+            obj1._name, obj2._name,
+            label=label,
+            labeldistance='10.0',
+            color=self._config['color_{0}'.format(data['type'])],
+            fontcolor=self._config['color_{0}'.format(data['type'])])
+            #arrowhead=(data['type'] == 'many2many' and 'none' or 'normal'),
 
     def _generate_flags_label(self, data):
         """Generate a HTML label for status flags of a field
