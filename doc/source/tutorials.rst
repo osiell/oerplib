@@ -127,8 +127,8 @@ From such objects, it is possible to easily explore relationships. The related
 records are generated on the fly::
 
     partner = oerp.browse('res.partner', 3)
-    for addr in partner.address:
-        print(addr.name)
+    for child in partner.child_ids:
+        print(child.name)
 
 You can browse objects through a :class:`model <oerplib.service.osv.Model>`
 too. In fact, both methods are strictly identical,
@@ -158,17 +158,14 @@ Update data through browsable records
 
 Update data of a browsable record is workable with the
 :func:`write_record <oerplib.OERP.write_record>` method of an
-:class:`OERP <oerplib.OERP>` instance. Let's update the first contact's
-name of a partner::
+:class:`OERP <oerplib.OERP>` instance. Let's update the name of a partner::
 
-    >>> addr = list(partner.address)[0] # Get the first address
-    >>> addr.name = "Caporal Jones"
-    >>> oerp.write_record(addr)
+    >>> partner.name = "Caporal Jones"
+    >>> oerp.write_record(partner)
 
 This is equivalent to::
 
-    >>> addr_id = list(partner.address)[0].id
-    >>> oerp.write('res.partner.address', [addr_id], {'name': "Caporal Jones"})
+    >>> oerp.write('res.partner', [partner.id], {'name': "Caporal Jones"})
 
 Char, Float, Integer, Boolean, Text and Binary
 ''''''''''''''''''''''''''''''''''''''''''''''
@@ -182,11 +179,11 @@ Selection
 '''''''''
 
 Same as above, except there is a check about the value assigned. For instance,
-the field ``type`` of the ``res.partner.address`` model accept values contains
+the field ``type`` of the ``res.partner`` model accept values contains
 in ``['default', 'invoice', 'delivery', 'contact', 'other']``::
 
-    >>> my_partner_address.type = 'default' # Ok
-    >>> my_partner_address.type = 'foobar'  # Error!
+    >>> partner.type = 'default' # Ok
+    >>> partner.type = 'foobar'  # Error!
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
       File "oerplib/fields.py", line 58, in setter
@@ -201,25 +198,25 @@ Many2One
 You can also update a ``many2one`` field, with either an ID or a browsable
 record::
 
-    >>> addr.partner_id = 42 # with an ID
-    >>> oerp.write_record(addr)
-    >>> partner = oerp.browse('res.partner', 42) # with a browsable record
-    >>> addr.partner_id = partner
-    >>> oerp.write_record(addr)
+    >>> partner.parent_id = 1 # with an ID
+    >>> oerp.write_record(partner)
+    >>> parent = oerp.browse('res.partner', 1) # with a browsable record
+    >>> partner.parent_id = parent
+    >>> oerp.write_record(partner)
 
 You can't put any ID or browsable record, a check is made on the relationship
 to ensure data integrity::
 
     >>> user = oerp.browse('res.users', 1)
-    >>> addr = oerp.browse('res.partner.address', 1)
-    >>> addr.partner_id = user
+    >>> partner = oerp.browse('res.partner', 2)
+    >>> partner.parent_id = user
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
       File "oerplib/fields.py", line 128, in setter
         o_rel = self.check_value(o_rel)
       File "oerplib/fields.py", line 144, in check_value
         field_name=self.name))
-    ValueError: Instance of 'res.users' supplied doesn't match with the relation 'res.partner' of the 'partner_id' field.
+    ValueError: Instance of 'res.users' supplied doesn't match with the relation 'res.partner' of the 'parent_id' field.
 
 One2Many and Many2Many
 ''''''''''''''''''''''
@@ -556,14 +553,15 @@ Scan the views of data models to list `on_change` methods
 :func:`scan_on_change <oerplib.service.inspect.Inspect.scan_on_change>` method.
 Each detected function can be present on several views::
 
-    >>> oerp.inspect.scan_on_change(['res.partner'])
-    {'res.partner': {'onchange_address': {'base.view_partner_form': {'parent_id': ['use_parent_address', 'parent_id'],
-                                                                     'use_parent_address': ['use_parent_address', 'parent_id']}},
-                     'onchange_state': {'base.view_partner_form': {'state_id': ['state_id']}},
-                     'onchange_type': {'base.view_partner_form': {'is_company': ['is_company']},
-                                       'base.view_partner_simple_form': {'is_company': ['is_company']}}}}
+    >>> oerp.inspect.scan_on_change(['res.users'])
+    {'res.users': {'on_change_company_id': {'base.view_users_form_simple_modif': {'company_id': ['company_id']},
+                                            'mail.view_users_form_simple_modif_mail': {'company_id': ['company_id']}},
+                   'onchange_state': {'base.view_users_simple_form': {'state_id': ['state_id']}}}}
 
-The dictionary returned is formatted as follows: ``{model: {on_change: {view_name: field: [args]}}}``
+The dictionary returned is formatted as
+follows: ``{model: {on_change: {view_name: field: [args]}}}``, e.g. the
+``onchange_state`` method is set on the ``state_id`` field of the view
+``base.view_users_simple_form``, and take the same field as parameter.
 
 
 Save the session to open it quickly later **(New in version 0.8)**
@@ -584,7 +582,7 @@ however use another file::
 
     >>> oerp.save('foo', '~/my_own_oerplibrc')
 
-Then, use the :func:`oerplib.OERP.load` method::
+Then, use the :func:`oerplib.OERP.load` class method::
 
     >>> import oerplib
     >>> oerp = oerplib.OERP.load('foo')
@@ -594,7 +592,7 @@ Or, if you have saved your configuration in another file::
     >>> oerp = oerplib.OERP.load('foo', '~/my_own_oerplibrc')
 
 You can check available sessions with :func:`oerplib.OERP.list`, and remove
-them with :func:`oerplib.OERP.remove` ::
+them with :func:`oerplib.OERP.remove`::
 
     >>> oerplib.OERP.list()
     ['foo']
