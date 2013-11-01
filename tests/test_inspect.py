@@ -26,6 +26,14 @@ class TestInspect(unittest.TestCase):
             attrs_whitelist=['*'], attrs_blacklist=[])
         self.assertIsInstance(graph, oerplib.service.inspect.relations.Relations)
 
+    def test_relations_maxdepth_null(self):
+        graph = self.oerp.inspect.relations(['res.users'], maxdepth=0)
+        self.assertIsInstance(graph, oerplib.service.inspect.relations.Relations)
+
+    def test_relations_maxdepth_negative(self):
+        graph = self.oerp.inspect.relations(['res.users'], maxdepth=-1)
+        self.assertIsInstance(graph, oerplib.service.inspect.relations.Relations)
+
     def test_dependencies(self):
         graph = self.oerp.inspect.dependencies()
         self.assertIsInstance(
