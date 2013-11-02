@@ -141,7 +141,7 @@ class Model(object):
                 else:
                     vals[field_name] = field_value
         try:
-            if v(self._oerp._version) < v('6.1'):
+            if v(self._oerp.version) < v('6.1'):
                 res = self.write([obj.id], vals, context)
             else:
                 res = self.write([obj.id], vals, context=context)
@@ -171,7 +171,7 @@ class Model(object):
                 obj_data['raw_data'][field_name] = None
         # Fill fields with values of the record
         if obj.id:
-            if v(self._oerp._version) < v('6.1'):
+            if v(self._oerp.version) < v('6.1'):
                 data = self.read([obj.id], basic_fields, context)
                 if data:
                     obj_data['raw_data'].update(data[0])
@@ -189,7 +189,7 @@ class Model(object):
                         model=obj.__class__.__osv__['name'], obj_id=obj.id))
         # No ID: fields filled with default values
         else:
-            if v(self._oerp._version) < v('6.1'):
+            if v(self._oerp.version) < v('6.1'):
                 default_get = self.default_get(
                     obj.__osv__['columns'].keys(), context)
             else:
@@ -218,7 +218,7 @@ class Model(object):
 
     def _unlink_record(self, obj, context=None):
         """Delete the object from the OpenERP server."""
-        if v(self._oerp._version) < v('6.1'):
+        if v(self._oerp.version) < v('6.1'):
             return self.unlink([obj.id], context)
         else:
             return self.unlink([obj.id], context=context)
@@ -227,7 +227,7 @@ class Model(object):
         """Provide a dynamic access to a RPC method."""
         def rpc_method(*args, **kwargs):
             """Return the result of the RPC request."""
-            if v(self._oerp._version) < v('6.1'):
+            if v(self._oerp.version) < v('6.1'):
                 if kwargs:
                     raise error.RPCError(
                         "Named parameters are not supported by this version "

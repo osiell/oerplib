@@ -72,13 +72,11 @@ class OERP(object):
         self._db = db.DB(self)
         self._wizard = wizard.Wizard(self)
         self._inspect = inspect.Inspect(self)
-        self._version = version or tools.detect_version(
-            server, protocol, port, timeout)
         # Instanciate the OpenERP server connector
         try:
             self._connector = rpc.get_connector(
                 self._server, self._port, self._protocol,
-                timeout, self._version)
+                timeout, version)
         except rpc.error.ConnectorError as exc:
             raise error.InternalError(exc.message)
         # Dictionary of configuration options
@@ -144,6 +142,15 @@ class OERP(object):
 
         """
         return self._context
+
+    @property
+    def version(self):
+        """The version of the OpenERP server.
+
+        >>> oerp.version
+        '7.0-20131014-231047'
+        """
+        return self._connector.version
 
     server = property(lambda self: self._server,
                       doc="The server name.")

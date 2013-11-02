@@ -8,6 +8,7 @@ v0.8.0, 2013-09-XX:
     - one2many and many2many fields on browse records improved
       (able to set easily IDs or records with '='/'+='/'-=' operators),
     - Support for the OpenERP 'fields.integer_big' added,
+    - Add XML-RPC support for OpenERP 8.0 (new available '/xmlrpc/2' URL),
     - Documentation updated.
     Bug fixes:
     - Fix the 'xmlrpc+ssl' (XML-RPCS) protocol (Bug #1221146)

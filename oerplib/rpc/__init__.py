@@ -85,6 +85,12 @@ And here the `JSON-RPC` way:
 from oerplib.rpc import error, service, jsonrpclib
 from oerplib.tools import v
 
+# XML-RPC available paths for OpenERP
+# '/xmlrpc'             => 5.0, 6.0, 8.0
+# '/openerp/xmlrpc/1'   => 6.1, 7.0
+# '/xmlrpc/2'           => 8.0
+XML_RPC_PATHS = ['/xmlrpc', '/openerp/xmlrpc/1', '/xmlrpc/2']
+
 
 class Connector(object):
     """Connector base class defining the interface used
@@ -99,9 +105,18 @@ class Connector(object):
             txt = txt.format(port)
             raise error.ConnectorError(txt)
         else:
-            self.port = port
-        self.timeout = timeout
+            self.port = int(port)
+        self._timeout = timeout
         self.version = version
+        self._url = None
+
+    @property
+    def timeout(self):
+        return self._timeout
+
+    @timeout.setter
+    def timeout(self, timeout):
+        self._timeout = timeout
 
 
 class ConnectorXMLRPC(Connector):
@@ -109,14 +124,38 @@ class ConnectorXMLRPC(Connector):
     def __init__(self, server, port=8069, timeout=120, version=None):
         super(ConnectorXMLRPC, self).__init__(
             server, port, timeout, version)
-        # OpenERP < 6.1
-        if self.version and v(self.version) < v('6.1'):
-            self._url = 'http://{server}:{port}/xmlrpc'.format(
-                server=self.server, port=self.port)
-        # OpenERP >= 6.1
-        else:
-            self._url = 'http://{server}:{port}/openerp/xmlrpc/1'.format(
-                server=self.server, port=self.port)
+        if self.version:
+            # OpenERP < 6.1
+            if v(self.version) < v('6.1'):
+                self._url = 'http://{server}:{port}/xmlrpc'.format(
+                    server=self.server, port=self.port)
+            # OpenERP >= 6.1 and < 8.0
+            elif v(self.version) < v('8.0'):
+                self._url = 'http://{server}:{port}/openerp/xmlrpc/1'.format(
+                    server=self.server, port=self.port)
+            # OpenERP >= 8.0
+            elif v(self.version) >= v('8.0'):
+                self._url = 'http://{server}:{port}/xmlrpc/2'.format(
+                    server=self.server, port=self.port)
+        # Detect the XML-RPC path to use
+        if self._url is None:
+            # We begin with the last known XML-RPC path to give the priority to
+            # the last version of OpenERP supported
+            paths = XML_RPC_PATHS[:]
+            paths.reverse()
+            for path in paths:
+                url = 'http://{server}:{port}{path}'.format(
+                    server=self.server, port=self.port, path=path)
+                try:
+                    db = service.ServiceXMLRPC(
+                        self, 'db', '{url}/{srv}'.format(url=url, srv='db'))
+                    version = db.server_version()
+                except error.ConnectorError:
+                    continue
+                else:
+                    self._url = url
+                    self.version = version
+                    break
 
     def __getattr__(self, service_name):
         url = self._url + '/' + service_name
@@ -201,7 +240,7 @@ def get_connector(server, port=8069, protocol='xmlrpc',
     (e.g.: ``'6.0', '6.1', '7.0', ...``):
 
         >>> from oerplib import rpc
-        >>> cnt = rpc.get_connector('localhost', 8069, 'xmlrpc', version='6.1')
+        >>> cnt = rpc.get_connector('localhost', 8069, 'xmlrpc', version='7.0')
     """
     if protocol not in PROTOCOLS:
         txt = ("The protocol '{0}' is not supported. "

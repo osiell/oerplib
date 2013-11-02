@@ -87,6 +87,8 @@ class Dependencies(object):
             'show_model_transient': False,
         }
         self._config.update(config or {})
+        # Check if root modules exist
+        self._check_root_modules()
         # List of data models
         self._models = self._get_models_data(
             models or [], models_blacklist or [])
@@ -107,6 +109,14 @@ class Dependencies(object):
     #    """Returns a dictionary of all modules used to draw the graph."""
     #    return self._modules
 
+    def _check_root_modules(self):
+        """Check if `root` modules exist, raise an error if not."""
+        module_obj = self._oerp.get('ir.module.module')
+        for module in self._root_modules:
+            if not module_obj.search([('name', 'ilike', module)]):
+                raise error.InternalError(
+                    "'{0}' module does not exist".format(module))
+
     def _get_models_data(self, models, models_blacklist):
         """Returns a dictionary `{MODEL: DATA, ...}` of models corresponding to
         `models - models_blacklist` patterns (whitelist substracted
@@ -115,7 +125,7 @@ class Dependencies(object):
         res = {}
         # OpenERP v5 does not have the 'modules' field on 'ir.model' used to
         # bound a data model and its related modules.
-        if v(self._oerp._version) <= v('6.0'):
+        if v(self._oerp.version) <= v('6.0'):
             return res
         models_patterns = \
             [pattern2oerp(model) for model in (models)]
@@ -200,9 +210,6 @@ class Dependencies(object):
             # Root modules are included by default, even if they don't contain
             # any of the matching models
             for module in self._root_modules:
-                if module not in modules_full:
-                    raise error.InternalError(
-                        "'{0}' module does not exist".format(module))
                 if module not in modules:
                     modules[module] = {
                         'models': [],
