@@ -557,6 +557,18 @@ data models that interest you, add the ``restrict=True`` parameter::
 .. image:: _static/dependencies_v5.png
     :height: 190px
 
+Even in restricted mode, `root` modules which are not concerned by matching
+`models` are always displayed. Also, if no dependency can be satisfied between
+modules, the method will try to add one. For instance, the `base` module have
+no ``account.invoice.tax`` model, but a dependency between `base` and `account`
+should be added to display a suitable graph::
+
+    >>> graph = oerp.inspect.dependencies(['base'], ['account.invoice.tax'], restrict=True)
+    >>> graph.write('dependencies_v6.png', format='png')
+
+.. image:: _static/dependencies_v6.png
+    :height: 250px
+
 For more details, take a look at the
 :func:`dependencies <oerplib.service.inspect.Inspect.dependencies>` method
 documentation.

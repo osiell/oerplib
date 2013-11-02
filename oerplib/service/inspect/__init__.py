@@ -128,7 +128,7 @@ class Inspect(object):
         All modules related to `base` are shown on the resulting graph, and
         matching models are highlighted among them, but some modules remain
         empty.
-        To hide these "noisy" modules and restrict the resulting graph only to
+        To hide these "noisy" modules and restrict the resulting graph to
         data models that interest you, add the ``restrict=True`` parameter::
 
             >>> oerp.inspect.dependencies(
@@ -137,6 +137,10 @@ class Inspect(object):
             ...     ['res.partner.title', 'res.partner.bank'],
             ...     restrict=True,
             ... ).write('dependencies_res_partner_base_restricted.png', format='png')
+
+        In any case, root `modules` are always displayed on the graph in
+        restricted mode (even if they have no matching model), and other
+        modules may be added to satisfy dependencies.
 
         `config` is a dictionary of options to override some attributes of
         the graph. Here the list of options and their default values:

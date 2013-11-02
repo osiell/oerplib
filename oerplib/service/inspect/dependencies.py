@@ -66,6 +66,7 @@ class Dependencies(object):
                  restrict=False, config=None):
         self._oerp = oerp
         self._restrict = restrict
+        self._root_modules = modules or []
         # Configuration options
         self._config = {
             'module_uninst_bgcolor_title': '#DEDFDE',
@@ -92,9 +93,9 @@ class Dependencies(object):
         # List of modules computed according to the `restrict` parameter
         # (display all modules or only modules related to data models)
         self._modules, self._modules_full = self._get_modules(
-            self._restrict, self._models, keep=not bool(modules))
+            self._models, keep=not bool(self._root_modules))
         # Fetch dependencies between modules
-        self._scan_module_dependencies(modules or [])
+        self._scan_module_dependencies()
 
     #@property
     #def models(self):
@@ -145,7 +146,7 @@ class Dependencies(object):
                 }
         return res
 
-    def _get_modules(self, restrict=False, models=None, keep=False):
+    def _get_modules(self, models=None, keep=False):
         """Returns a dictionary `{MODULE: DATA, ...}` with all modules installed
         (`restrict=False`) or only with modules related to data models
         (`restrict=True`).
@@ -171,13 +172,12 @@ class Dependencies(object):
         args = states and [('state', 'in', states)] or []
         module_ids = module_obj.search(args)
         for data in module_obj.read(module_ids, ['name', 'state']):
-            if data['name'] not in modules:
-                modules_full[data['name']] = {
-                    'models': [],
-                    'depends': [],
-                    'keep': keep,
-                    'installed': data['state'] in states_inst
-                }
+            modules_full[data['name']] = {
+                'models': [],
+                'depends': [],
+                'keep': keep,
+                'installed': data['state'] in states_inst
+            }
         # Dispatch data models in their related modules
         for model, data in models.iteritems():
             for module in data['modules']:
@@ -185,7 +185,7 @@ class Dependencies(object):
                         and model not in modules_full[module]['models']:
                     modules_full[module]['models'].append(model)
         # Compute the list of modules related to data models
-        if restrict:
+        if self._restrict:
             for model, data in models.iteritems():
                 for module in data['modules']:
                     if module not in modules:
@@ -197,12 +197,25 @@ class Dependencies(object):
                         }
                     if model not in modules[module]['models']:
                         modules[module]['models'].append(model)
+            # Root modules are included by default, even if they don't contain
+            # any of the matching models
+            for module in self._root_modules:
+                if module not in modules_full:
+                    raise error.InternalError(
+                        "'{0}' module does not exist".format(module))
+                if module not in modules:
+                    modules[module] = {
+                        'models': [],
+                        'depends': [],
+                        'keep': keep,
+                        'installed': modules_full[module]['installed'],
+                    }
         # Otherwise, just take the full list of modules
         else:
             modules = copy.deepcopy(modules_full)
         return modules, modules_full
 
-    def _scan_module_dependencies(self, root_modules):
+    def _scan_module_dependencies(self):
         """Scan dependencies of modules, until reaching each node in
         `root_modules`.  If `root_modules` is empty, dependencies of all
         installed modules will be computed.
@@ -225,20 +238,20 @@ class Dependencies(object):
                 if not data['depends'] and self._modules_full[name]['depends']:
                     self._fix_fake_root_module(name)
         # Mark modules to keep in the graph if they belong to a path
-        # leading to one of the starting modules
-        for module in root_modules:
-            if module not in self._modules_full:
-                raise error.InternalError(
-                    "'{0}' module does not exist".format(module))
+        # leading to one of the root modules
         for module in self._modules:
             queue = []
             queue.append(module)
+            # If the module is a root module, we keep it regardless of its
+            # dependencies
+            if module in self._root_modules:
+                self._modules[module]['keep'] = True
             # Recursive function to scan the graph and keep modules
             def process_keep(queue, module):
                 for depend in self._modules[module]['depends']:
                     queue.append(depend)
                     # Found? Keep modules concerned by this path
-                    if depend in root_modules:
+                    if depend in self._root_modules:
                         for mod in queue:
                             self._modules[mod]['keep'] = True
                         break
@@ -249,7 +262,7 @@ class Dependencies(object):
 
     def _fix_fake_root_module(self, module):
         """Fix the fake root `module` by finding its indirect dependencies."""
-        def find_path(path, mod):
+        def find_path(path, mod, common_model):
             """Try to found a path from the module `mod` among all installed
             modules to reach any 'restricted' module.
             """
@@ -257,19 +270,26 @@ class Dependencies(object):
             for depend in self._modules_full[mod]['depends']:
                 path.append(depend)
                 if depend in self._modules:
-                    # The 'head' module must have a common data model with the
-                    # 'tail' one.
-                    mod_tail = self._modules[module]['models']
-                    mod_head = self._modules[depend]['models']
-                    if list(set(mod_tail) & set(mod_head)):
+                    if common_model:
+                        # Has the 'head' module a common data model with
+                        # the 'tail' one?
+                        mod_tail = self._modules[module]['models']
+                        mod_head = self._modules[depend]['models']
+                        if list(set(mod_tail) & set(mod_head)):
+                            return True
+                    else:
                         return True
                 path.pop()
-                return find_path(path, depend)
+                return find_path(path, depend, common_model)
             path.pop()
             return False
 
         path = []
-        found_ok = find_path(path, module)
+        # Modules in the path should preferably have a common data model
+        found_ok = find_path(path, module, common_model=True)
+        # If not, we try again without the rule of the common model
+        if not found_ok:
+            found_ok = find_path(path, module, common_model=False)
         # Update the graph by adding required modules to satisfy the
         # indirect dependency
         if found_ok:
