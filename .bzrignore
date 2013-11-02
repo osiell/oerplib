@@ -6,4 +6,5 @@ doc/build
 doc/html
 doc/doctrees
 dist/
+build/
 MANIFEST
