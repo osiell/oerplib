@@ -13,31 +13,6 @@ import oerplib
 class TestInit(unittest.TestCase):
 
     def test_init1(self):
-        # Server
-        oerp = oerplib.OERP(ARGS.server)
-        self.assertIsInstance(oerp, oerplib.OERP)
-        self.assertIsNotNone(oerp)
-        self.assertEqual(oerp.server, ARGS.server)
-        self.assertIsNone(oerp.database)
-
-    def test_init2(self):
-        # Server + Database
-        oerp = oerplib.OERP(ARGS.server, ARGS.database)
-        self.assertIsInstance(oerp, oerplib.OERP)
-        self.assertIsNotNone(oerp)
-        self.assertEqual(oerp.server, ARGS.server)
-        self.assertEqual(oerp.database, ARGS.database)
-
-    def test_init3(self):
-        # Server + Database + Protocol
-        oerp = oerplib.OERP(ARGS.server, ARGS.database, ARGS.protocol)
-        self.assertIsInstance(oerp, oerplib.OERP)
-        self.assertIsNotNone(oerp)
-        self.assertEqual(oerp.server, ARGS.server)
-        self.assertEqual(oerp.database, ARGS.database)
-        self.assertEqual(oerp.protocol, ARGS.protocol)
-
-    def test_init4(self):
         # Server + Database + Protocol + Port
         oerp = oerplib.OERP(ARGS.server, ARGS.database,
                             ARGS.protocol, ARGS.port)
@@ -48,7 +23,7 @@ class TestInit(unittest.TestCase):
         self.assertEqual(oerp.protocol, ARGS.protocol)
         self.assertEqual(oerp.port, ARGS.port)
 
-    def test_init5(self):
+    def test_init2(self):
         # Server + Database + Protocol + Port + Timeout
         oerp = oerplib.OERP(ARGS.server, ARGS.database,
                             ARGS.protocol, ARGS.port, 42)

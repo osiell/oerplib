@@ -86,7 +86,7 @@ from oerplib.rpc import error, service, jsonrpclib
 from oerplib.tools import v
 
 # XML-RPC available paths for OpenERP
-# '/xmlrpc'             => 5.0, 6.0, 8.0
+# '/xmlrpc'             => 5.0, 6.0, 6.1, 7.0, 8.0 (legacy path)
 # '/openerp/xmlrpc/1'   => 6.1, 7.0
 # '/xmlrpc/2'           => 8.0
 XML_RPC_PATHS = ['/xmlrpc', '/openerp/xmlrpc/1', '/xmlrpc/2']

@@ -10,6 +10,7 @@ import time
 from args import ARGS
 
 import oerplib
+from oerplib.tools import v
 
 
 class TestExecuteKw(unittest.TestCase):
@@ -18,6 +19,10 @@ class TestExecuteKw(unittest.TestCase):
         self.oerp = oerplib.OERP(
             ARGS.server, protocol=ARGS.protocol, port=ARGS.port,
             version=ARGS.version)
+        if v(self.oerp.version) < v('6.1'):
+            raise unittest.SkipTest(
+                "The targetted OpenERP server does not support the "
+                "'execute_kw()' method.")
         self.user = self.oerp.login(ARGS.user, ARGS.passwd, ARGS.database)
 
     # ------

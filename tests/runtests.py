@@ -59,9 +59,8 @@ if __name__ == '__main__':
     # Test OERP.execute and OERP.execute_kw
     loader = unittest.TestLoader().loadTestsFromTestCase(TestExecute)
     suite.addTest(loader)
-    if ARGS.version and v(ARGS.version) >= v('6.1'):
-        loader = unittest.TestLoader().loadTestsFromTestCase(TestExecuteKw)
-        suite.addTest(loader)
+    loader = unittest.TestLoader().loadTestsFromTestCase(TestExecuteKw)
+    suite.addTest(loader)
 
     # Test OERP.browse
     loader = unittest.TestLoader().loadTestsFromTestCase(TestBrowse)

@@ -224,11 +224,11 @@ class TestBrowse(unittest.TestCase):
         # False
         self.user.action_id = False
         self.oerp.write_record(self.user)
-        if v(self.oerp._version) == v('5.0'):
+        if v(self.oerp.version)[:2] == v('5.0'):
             self.assertEqual(self.user.action_id.id, 1)
-        elif v(self.oerp._version) == v('6.0'):
+        elif v(self.oerp.version)[:2] == v('6.0'):
             self.assertEqual(self.user.action_id, False)
-        elif v(self.oerp._version) == v('6.1'):
+        elif v(self.oerp.version)[:2] == v('6.1'):
             self.assertEqual(self.user.action_id, False)
         else:
             self.assertEqual(self.user.action_id, False)

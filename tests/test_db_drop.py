@@ -25,7 +25,7 @@ class TestDBDrop(unittest.TestCase):
         self.assertNotIn(ARGS.database, db_list)
 
     def test_db_drop_no_existing_database(self):
-        if v(ARGS.version) >= v('6.1'):
+        if v(self.oerp.version) >= v('6.1'):
             res = self.oerp.db.drop(ARGS.super_admin_passwd, 'fake_db_name')
             self.assertFalse(res)
         else:
