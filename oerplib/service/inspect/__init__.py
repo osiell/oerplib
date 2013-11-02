@@ -139,8 +139,8 @@ class Inspect(object):
             ... ).write('dependencies_res_partner_base_restricted.png', format='png')
 
         In any case, root `modules` are always displayed on the graph in
-        restricted mode (even if they have no matching model), and other
-        modules may be added to satisfy dependencies.
+        restricted mode (even if they have no matching model), and some
+        unrelated modules may be added to satisfy dependencies.
 
         `config` is a dictionary of options to override some attributes of
         the graph. Here the list of options and their default values:
