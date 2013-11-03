@@ -58,7 +58,7 @@ class Inspect(object):
         In the same way, displaying attributes can be defined for each model
         with ``attrs_whitelist`` and ``attrs_blacklist``. By default, model
         attributes are not displayed, unless the ``'*'`` pattern is supplied in
-        ``attrs_whitelist``, or if only the ``attrs_blacklist`` if defined.
+        ``attrs_whitelist``, or if only the ``attrs_blacklist`` is defined.
 
             >>> oerp.inspect.relations(
             ...     ['res.users'],
