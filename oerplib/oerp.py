@@ -75,9 +75,8 @@ class OERP(object):
         self._inspect = inspect.Inspect(self)
         # Instanciate the OpenERP server connector
         try:
-            self._connector = rpc.get_connector(
-                self._server, self._port, self._protocol,
-                timeout, version)
+            self._connector = rpc.PROTOCOLS[protocol](
+                self._server, self._port, timeout, version)
         except rpc.error.ConnectorError as exc:
             raise error.InternalError(exc.message)
         # Dictionary of configuration options

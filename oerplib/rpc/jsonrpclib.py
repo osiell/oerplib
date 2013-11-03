@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""Provides the :class:`Proxy` and :class:`AuthProxy` classes."""
+"""Provides the :class:`Proxy` and :class:`ProxyLegacy` classes."""
 import urllib2
 import cookielib
 import json
@@ -61,30 +61,32 @@ class Proxy(object):
         return json.load(response)
 
 
-class AuthProxy(Proxy):
-    """In addition to :class:`Proxy`, the :class:`AuthProxy` class
-    simplifies request handling by adding automatically the ``session_id``
-    parameter once the user is authenticated.
+class ProxyLegacy(Proxy):
+    """The :class:`ProxyLegacy` class fixes the request handling for
+    OpenERP 6.1 and 7.0 by adding automatically the ``session_id`` parameter
+    once the user is authenticated.
     """
     def __init__(self, host, port, timeout=120, ssl=False, deserialize=True):
-        super(AuthProxy, self).__init__(host, port, timeout, ssl, deserialize)
+        super(ProxyLegacy, self).__init__(host, port, timeout, ssl, deserialize)
         self._session_id = None
 
     def __call__(self, url, params):
-        # Add the 'session_id' parameter if necessary
+        """Overloads the :func:`Proxy.__call__` method to add the 'session_id'
+        parameter if necessary.
+        """
         if url == 'web/session/authenticate':
-            response = super(AuthProxy, self).__call__(url, params)
+            response = super(ProxyLegacy, self).__call__(url, params)
             result = self._deserialize and response or json.load(response)
             self._session_id = result and result['result']['session_id']
             return response
         elif self._session_id and 'session_id' not in params:
             params['session_id'] = self._session_id
-        return super(AuthProxy, self).__call__(url, params)
+        return super(ProxyLegacy, self).__call__(url, params)
 
 
 class URLBuilder(object):
     """Auto-builds an URL while getting its attributes.
-    Used by :class:`Proxy` and :class:`AuthProxy` classes.
+    Used by :class:`Proxy` and :class:`ProxyLegacy` classes.
     """
     def __init__(self, rpc, url=None):
         self._rpc = rpc

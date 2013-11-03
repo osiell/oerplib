@@ -86,7 +86,10 @@ def clean_version(version):
 
 
 def detect_version(server, protocol, port, timeout=120):
-    """Try to detect the `OpenERP` server version.
+    """
+    .. deprecated:: 0.8
+
+    Try to detect the `OpenERP` server version.
 
         >>> from oerplib.tools import detect_version
         >>> detect_version('localhost', 'xmlrpc', 8069)
@@ -97,13 +100,13 @@ def detect_version(server, protocol, port, timeout=120):
     from oerplib import rpc
     # Try to request OpenERP with the last API supported
     try:
-        con = rpc.get_connector(
+        con = rpc.PROTOCOLS[protocol](
             server, port, protocol, timeout, version=None)
         version = con.db.server_version()
     except:
         # Try with the API of OpenERP < 6.1
         try:
-            con = rpc.get_connector(
+            con = rpc.PROTOCOLS[protocol](
                 server, port, protocol, timeout, version='6.0')
             version = con.db.server_version()
         except:
