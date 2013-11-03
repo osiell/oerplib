@@ -68,6 +68,7 @@ class OERP(object):
         self._database = self._database_default = database
         self._uid = None
         self._password = None
+        self._user = None
         self._common = common.Common(self)
         self._db = db.DB(self)
         self._wizard = wizard.Wizard(self)
