@@ -45,7 +45,7 @@ Run tests
 .. versionadded:: 0.4.0
 
 Unit tests depends on `unittest2` (Python 2.3+) or `unittest`
-(Python 2.7 and 3.x).
+(Python 2.7 and 3.x), and `argparse`.
 
 To run unit tests from the project directory, run the following command::
 
@@ -54,7 +54,7 @@ To run unit tests from the project directory, run the following command::
 Then, set your parameters in order to indicate the `OpenERP` server on which
 you want to perform the tests, for instance::
 
-    $ PYTHONPATH=.:$PYTHONPATH ./tests/runtests.py --create_db --server 192.168.1.4 --version 7.0 --test_xmlrpc --xmlrpc_port 8069
+    $ PYTHONPATH=.:$PYTHONPATH ./tests/runtests.py --create_db --server 192.168.1.4 --test_xmlrpc --xmlrpc_port 8069
 
 The name of the database created is ``oerplib-test`` by default.
 
