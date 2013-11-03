@@ -327,6 +327,7 @@ Date and Datetime
 
 With ``datetime.date`` and ``datetime.datetime`` objects::
 
+    >>> import datetime
     >>> order = oerp.browse('purchase.order', 42)
     >>> order.date_order = datetime.date(2011, 9, 20)
     >>> order.minimum_planned_date = datetime.datetime(2011, 9, 20, 12, 31, 24)
@@ -412,8 +413,8 @@ is available :class:`here <oerplib.service.db.DB>`.
 Inspect the metadata of OpenERP **(New in version 0.8)**
 --------------------------------------------------------
 
-Draw a graph of the relationships between models
-''''''''''''''''''''''''''''''''''''''''''''''''
+Draw a graph of relationships between models
+''''''''''''''''''''''''''''''''''''''''''''
 
 .. note::
     This functionality requires the installation of `pydot <http://code.google.com/p/pydot/>`_.
@@ -496,16 +497,16 @@ parameter::
 .. image:: _static/rel_res_partner_v4.png
     :width: 350px
 
-Draw a graph of the dependencies between modules
-''''''''''''''''''''''''''''''''''''''''''''''''
+Draw a graph of module dependencies
+'''''''''''''''''''''''''''''''''''
 
 .. note::
     This functionality requires the installation of `pydot <http://code.google.com/p/pydot/>`_.
 
 
-The :func:`dependencies <oerplib.service.inspect.Inspect.dependencies>` method
-will help you to generate a graphic representing dependencies between all
-installed modules::
+You will be able to generate a graphic representing dependencies between all
+modules with the
+:func:`dependencies <oerplib.service.inspect.Inspect.dependencies>` method::
 
     >>> graph = oerp.inspect.dependencies()
     >>> graph.write('dependencies_v1.png', format='png')
@@ -513,10 +514,10 @@ installed modules::
 .. figure:: _static/dependencies_v1.png
     :width: 900px
 
-By default all modules are shown on the resulting graph, the red ones can be
-seen as `root` modules (they depend on no module in the current graph). Assume
-we have installed the `Accounting and Finance` application, and want to only
-display dependencies related to the `account` module::
+By default all installed modules are shown on the resulting graph, the red ones
+can be seen as `root` modules (they depend on no module in the current graph).
+Assume we have installed the `Accounting and Finance` application, and want to
+only display dependencies related to the `account` module::
 
     >>> graph = oerp.inspect.dependencies(['account'])
     >>> graph.write('dependencies_v2.png', format='png')
@@ -536,7 +537,7 @@ be used)::
     :height: 250px
 
 Modules related to the matching models are shown in green (in addition to the
-red one).  It is possible to display transient models too through the
+red one). It is possible to display transient models too through the
 ``show_transient_model`` configuration option (displayed in gray in the
 following graph)::
 
@@ -560,8 +561,9 @@ data models that interest you, add the ``restrict=True`` parameter::
 Even in restricted mode, `root` modules which are not concerned by matching
 `models` are always displayed. Also, if no dependency can be satisfied between
 modules, the method will try to add one. For instance, the `base` module have
-no ``account.invoice.tax`` model, but a dependency between `base` and `account`
-should be added to display a suitable graph::
+no ``account.invoice.tax`` model, and `account` does not directly depends on
+`base`, so a dependency between `base` and `account` should be added to display
+a suitable graph::
 
     >>> graph = oerp.inspect.dependencies(['base'], ['account.invoice.tax'], restrict=True)
     >>> graph.write('dependencies_v6.png', format='png')
