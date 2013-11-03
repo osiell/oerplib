@@ -1,57 +1,13 @@
-TODO:
-    - implement some others convenient methods such as 'search_count',
-      'search_read', 'name_search'...?
-    - move 'OERP.report' method to a 'report' service/attribute as 'db',
-      with a custom method 'download' which will be a wrapper around the
-      'report' and 'report_get' methods.
-    - 'wizard' service
-    - Dictionary interface for the BrowseRecord class (like OpenERP server)
+- move 'OERP.report' method to a 'report' service/attribute as 'db',
+    with a custom method 'download' which will be a wrapper around the
+    'report' and 'report_get' methods?
 
-
-RPC methods for 'url/object' :
-
-    - execute_kw ('test', 1, 'admin', 'ir.module.module', 'button_install',
-                ([204],
-                 {'lang': 'fr_FR', 'tz': False, 'uid': 1,
-                  'active_model': 'base.module.update',
-                  'section_id': False, 'active_ids': [1],
-                  'active_id': 1}),
-                {})
-
-    - execute_kw ('test', 1, 'admin', 'ir.module.module',
-                  'button_immediate_install',
-                ([48], {'lang': 'fr_FR', 'tz': False, 'uid': 1}), {})
-
-
-    Install a module:
-        oerp.get('ir.module.module').button_install([192]) # Module 'purchase'
-        oerp.get('base.upgrade.module').upgrade_module([]) # Argument 'ids' not used in the function
-
-    Or, since v6.1:
-        oerp.get('ir.module.module').button_immediate_install([192])
-
-
-RPC methods for 'url/wizard' :
-
-    - create ('stock.partial_picking',)
-
-    - execute (1, {'model': 'stock.picking', 'form': {}, 'id': 2,
-                   'report_type': 'pdf', 'ids': [2]},
-               'init',
-               {'lang': 'fr_FR', 'contact_display': 'partner', 'tz': False,
-                    'active_ids': [260], 'active_id': 260})
-
-    - execute (1, {'model': 'stock.picking',
-                   'form': {'move20': False, 'moves': [19, 20], 'move19': 3.0},
-                   'id': 2, 'report_type': 'pdf', 'ids': [2]},
-               'split',
-               {'lang': 'fr_FR', 'contact_display': 'partner', 'tz': False,
-                'active_ids': [260], 'active_id': 260})
-
-    - execute (1, {'model': 'stock.picking',
-                   'form': {'move20': False, 'moves': [19, 20], 'move19': 3.0,
-                            'back_order': 'PACK26', 'new_picking': 40},
-                   'id': 2, 'report_type': 'pdf', 'ids': [2]},
-               'end2',
-               {'lang': 'fr_FR', 'contact_display': 'partner', 'tz': False,
-                'active_ids': [260], 'active_id': 260})
+- service 'OERP.modules':
+    - install(module):
+            oerp.get('ir.module.module').button_install([192]) # Module 'purchase'
+            oerp.get('base.upgrade.module').upgrade_module([])
+        Or, since v6.1:
+            oerp.get('ir.module.module').button_immediate_install([192])
+    - remove(module)
+    - upgrade(module)
+    - update()
