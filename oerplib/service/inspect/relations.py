@@ -25,10 +25,10 @@ from oerplib import error
 
 TPL_MODEL = """<
 <table cellborder="0" cellpadding="0" cellspacing="0"
-       border="1" bgcolor="{bgcolor_model}" height="100%%">
+       border="1" bgcolor="{model_bgcolor}" height="100%%">
     <tr>
-        <td border="0" bgcolor="{bgcolor_model_title}" align="center" colspan="3">
-            <font color="{color_model_title}">{name}</font>
+        <td border="0" bgcolor="{model_bgcolor_title}" align="center" colspan="3">
+            <font color="{model_color_title}">{name}</font>
         </td>
     </tr>
     {attrs}
@@ -99,10 +99,10 @@ class Relations(object):
             'color_many2one': '#0E2548',
             'color_one2many': '#008200',
             'color_many2many': '#6E0004',
-            'bgcolor_model_title': '#64629C',
-            'color_model_title': 'white',
-            'color_model_subtitle': '#3E3D60',
-            'bgcolor_model': 'white',
+            'model_bgcolor_title': '#64629C',
+            'model_color_title': 'white',
+            'model_color_subtitle': '#3E3D60',
+            'model_bgcolor': 'white',
             'color_normal': 'black',
             'color_required': 'blue',
             'color_function': '#7D7D7D',
@@ -261,7 +261,7 @@ class Relations(object):
                 attrs_ok = False
             if attrs_ok:
                 subtitle = TPL_MODEL_SUBTITLE.format(
-                    color=self._config['color_model_subtitle'],
+                    color=self._config['model_color_subtitle'],
                     title="Attributes")
                 attrs.append(subtitle)
                 for k, v in sorted(data['fields'].iteritems()):
@@ -281,7 +281,7 @@ class Relations(object):
             relations_r = []
             if data['relations_r']:
                 subtitle = TPL_MODEL_SUBTITLE.format(
-                    color=self._config['color_model_subtitle'],
+                    color=self._config['model_color_subtitle'],
                     title="Recursive relations")
                 relations_r.append(subtitle)
             for data2 in data['relations_r'].itervalues():
@@ -294,9 +294,9 @@ class Relations(object):
                 relations_r.append(rel_r)
             # Generate the layout of the model
             tpl = TPL_MODEL.format(
-                color_model_title=self._config['color_model_title'],
-                bgcolor_model_title=self._config['bgcolor_model_title'],
-                bgcolor_model=self._config['bgcolor_model'],
+                model_color_title=self._config['model_color_title'],
+                model_bgcolor_title=self._config['model_bgcolor_title'],
+                model_bgcolor=self._config['model_bgcolor'],
                 name=model,
                 attrs=''.join(attrs),
                 relations_r=''.join(relations_r))
