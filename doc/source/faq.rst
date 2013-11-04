@@ -56,3 +56,20 @@ by yourself by setting the ``auto_context`` option to ``False``::
     >>> oerp.config['auto_context'] = False  # 'get()' method of 'ir.sequence' does not support context the parameter
     >>> next_seq = oerp.get('ir.sequence').get('stock.lot.serial')
     >>> oerp.config['auto_context'] = True  # Restore the configuration
+
+Change the behaviour of a script according to the version of OpenERP
+--------------------------------------------------------------------
+
+You can compare versions of `OpenERP` servers with the
+:func:`v <oerplib.tools.v>` function applied on the
+:attr:`OERP.version <oerplib.OERP.version>` property, for instance::
+
+    import oerplib
+    from oerplib.tools import v
+
+    for session in oerplib.OERP.list():
+        oerp = oerplib.OERP.load(session)
+        if v(oerp.version) <= v('6.1'):
+            pass  # do some stuff
+        else:
+            pass  # do something else

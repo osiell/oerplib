@@ -118,7 +118,7 @@ def detect_version(server, protocol, port, timeout=120):
 
 
 def v(version):
-    """Convert a version string in tuple. The tuple can be use to compare
+    """Convert a version string to a tuple. The tuple can be use to compare
     versions between them.
 
         >>> from oerplib.tools import v

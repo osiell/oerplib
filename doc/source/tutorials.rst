@@ -464,16 +464,13 @@ By default, only the direct relationships of the model ``res.partner`` are shown
 attributes are hidden.
 You can control the displayed models through the ``whitelist`` and ``blacklist``
 parameters. For instance, assume that you only want data models whose name
-begins with `res.partner`:
-
-.. note::
-    The blacklist has a higher priority than the whitelist
-
-
-::
+begins with `res.partner` excluding the `res.partner.bank` model::
 
     >>> graph = oerp.inspect.relations(['res.partner'], whitelist=['res.partner*'], blacklist=['res.partner.bank'])  # Notice the use of wildcard here
     >>> graph.write('rel_res_partner_v2.png', format='png')
+
+.. note::
+    The blacklist has a higher priority than the whitelist
 
 .. image:: _static/rel_res_partner_v2.png
     :width: 350px
@@ -496,6 +493,10 @@ parameter::
 
 .. image:: _static/rel_res_partner_v4.png
     :width: 350px
+
+For more details, take a look at the
+:func:`relations <oerplib.service.inspect.Inspect.relations>` method
+documentation.
 
 Draw a graph of module dependencies
 '''''''''''''''''''''''''''''''''''
