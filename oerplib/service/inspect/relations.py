@@ -218,13 +218,15 @@ class Relations(object):
                             flags)
                 # many2many
                 elif data['type'] == 'many2many':
-                    rel_columns = data.get('related_columns')
-                    rel_columns = rel_columns and tuple(rel_columns) or None
+                    #rel_columns = data.get('related_columns') \
+                    #    or data.get('m2m_join_columns')
+                    #rel_columns = rel_columns and tuple(rel_columns) or None
                     self._relations[obj._name][store_type][name] = {
                         'type': 'many2many',
                         'relation': rel,
                         'name': name,
-                        'third_table': data.get('third_table'),
+                        'third_table':
+                        data.get('third_table') or data.get('m2m_join_table'),
                         'related_columns': None,
                     }
                     self._relations[obj._name][store_type][name].update(flags)
