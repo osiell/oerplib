@@ -273,13 +273,15 @@ class OERP(object):
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
 
-    def report(self, report_name, model, obj_id, report_type='pdf',
+    def report(self, report_name, model, obj_ids, report_type='pdf',
                context=None):
         """Download a report from the `OpenERP` server and return
         the path of the file.
 
         >>> oerp.report('sale.order', 'sale.order', 1)
         '/tmp/oerplib_uJ8Iho.pdf'
+        >>> oerp.report('sale.order', 'sale.order', [1, 2])
+        '/tmp/oerplib_giZS0v.pdf'
 
         :return: the path to the generated temporary file
         :raise: :class:`oerplib.error.RPCError`
@@ -292,21 +294,27 @@ class OERP(object):
             context = self.context
         # Execute the report query
         try:
-            pdf_data = self._get_report_data(report_name, model, obj_id,
+            pdf_data = self._get_report_data(report_name, model, obj_ids,
                                              report_type, context)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
         return self._print_file_data(pdf_data)
 
-    def _get_report_data(self, report_name, model, obj_id,
+    def _get_report_data(self, report_name, model, obj_ids,
                          report_type='pdf', context=None):
         """Download binary data of a report from the `OpenERP` server."""
         context = context or {}
-        data = {'model': model, 'id': obj_id, 'report_type': report_type}
+        obj_ids = [obj_ids] if isinstance(obj_ids, (int, long)) else obj_ids
+        data = {
+            'model': model,
+            'id': obj_ids[0],
+            'ids': obj_ids,
+            'report_type': report_type,
+        }
         try:
             report_id = self._connector.report.report(
                 self._database, self.user.id, self.user.password,
-                report_name, [obj_id], data, context)
+                report_name, obj_ids, data, context)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
         state = False
