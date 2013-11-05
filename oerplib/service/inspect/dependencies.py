@@ -64,7 +64,7 @@ class Dependencies(object):
     """
     def __init__(self, oerp, modules=None, models=None, models_blacklist=None,
                  restrict=False, config=None):
-        self._oerp = oerp
+        self.oerp = oerp
         self._restrict = restrict
         self._root_modules = modules or []
         # Configuration options
@@ -111,7 +111,7 @@ class Dependencies(object):
 
     def _check_root_modules(self):
         """Check if `root` modules exist, raise an error if not."""
-        module_obj = self._oerp.get('ir.module.module')
+        module_obj = self.oerp.get('ir.module.module')
         for module in self._root_modules:
             if not module_obj.search([('name', 'ilike', module)]):
                 raise error.InternalError(
@@ -125,14 +125,14 @@ class Dependencies(object):
         res = {}
         # OpenERP v5 does not have the 'modules' field on 'ir.model' used to
         # bound a data model and its related modules.
-        if v(self._oerp.version) <= v('6.0'):
+        if v(self.oerp.version) <= v('6.0'):
             return res
         models_patterns = \
             [pattern2oerp(model) for model in (models)]
         models_blacklist_patterns = \
             [pattern2oerp(model) for model in (models_blacklist)]
         if models:
-            model_obj = self._oerp.get('ir.model')
+            model_obj = self.oerp.get('ir.model')
             args = [('model', '=ilike', model)
                     for model in models_patterns]
             for _ in range(len(args) - 1):
@@ -166,16 +166,16 @@ class Dependencies(object):
         modules = {}
         modules_full = {}
         # Fetch all the modules installed on the OpenERP server
-        module_obj = self._oerp.get('ir.module.module')
+        module_obj = self.oerp.get('ir.module.module')
         states_inst = ['installed', 'to upgrade', 'to remove']
         states_uninst = ['uninstalled', 'uninstallable', 'to install']
         states = []
         if self._config['show_module_inst'] \
                 and not self._config['show_module_uninst']:
-                    states = states_inst[:]
+            states = states_inst[:]
         elif not self._config['show_module_inst'] \
                 and self._config['show_module_uninst']:
-                    states = states_uninst[:]
+            states = states_uninst[:]
         elif self._config['show_module_inst'] \
                 and self._config['show_module_uninst']:
             states = []
@@ -227,7 +227,7 @@ class Dependencies(object):
         `root_modules`.  If `root_modules` is empty, dependencies of all
         installed modules will be computed.
         """
-        module_obj = self._oerp.get('ir.module.module')
+        module_obj = self.oerp.get('ir.module.module')
         # Compute dependencies of all installed modules
         for name in self._modules_full:
             module_ids = module_obj.search([('name', '=', name)])

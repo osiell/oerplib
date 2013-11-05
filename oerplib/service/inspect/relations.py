@@ -81,7 +81,7 @@ class Relations(object):
     """Draw relations between models with `Graphviz`."""
     def __init__(self, oerp, models, maxdepth=1, whitelist=None, blacklist=None,
                  attrs_whitelist=None, attrs_blacklist=None, config=None):
-        self._oerp = oerp
+        self.oerp = oerp
         self._models = models
         self._maxdepth = maxdepth
         self._whitelist = [pattern2regex(model) for model in (models)]
@@ -114,7 +114,7 @@ class Relations(object):
         self._stack = {'o2m': {}}
         # Build and draw relations for each model
         for model in models:
-            self._build_relations(self._oerp.get(model), 0)
+            self._build_relations(self.oerp.get(model), 0)
 
     def _build_relations(self, obj, depth):
         """Build all relations of `obj` recursively:
@@ -144,7 +144,6 @@ class Relations(object):
             self._relations[obj._name] = {
                 'relations': {},
                 'relations_r': {},  # Recursive relations
-                'obj': obj,
                 'fields': dict((k, v) for k, v in fields.iteritems()
                                if not v.get('relation')),
             }
@@ -231,7 +230,7 @@ class Relations(object):
                     }
                     self._relations[obj._name][store_type][name].update(flags)
                 # Scan relations recursively
-                rel_obj = self._oerp.get(rel)
+                rel_obj = self.oerp.get(rel)
                 self._build_relations(rel_obj, depth)
 
     def make_dot(self):
@@ -303,13 +302,12 @@ class Relations(object):
                 attrs=''.join(attrs),
                 relations_r=''.join(relations_r))
             # Add the model to the graph
-            node = self._create_node(data['obj']._name, 'relation', tpl)
+            node = self._create_node(model, 'relation', tpl)
             output.add_node(node)
             # Draw relations of the model
             for data2 in data['relations'].itervalues():
                 if data2['relation'] in self._relations:
-                    rel_obj = self._relations[data2['relation']]['obj']
-                    edge = self._create_edge(data['obj'], rel_obj, data2)
+                    edge = self._create_edge(model, data2['relation'], data2)
                     output.add_edge(edge)
         return output
 
@@ -335,14 +333,14 @@ class Relations(object):
         }
         return pydot.Node(name, **types[type_])
 
-    def _create_edge(self, obj1, obj2, data):
+    def _create_edge(self, model1, model2, data):
         """Generate a `pydot.Edge` object, representing a relation between
-        `obj1` and `obj2`.
+        `model1` and `model2`.
         """
         import pydot
         label = self._generate_relation_label(data, space=6, on_arrow=True)
         return pydot.Edge(
-            obj1._name, obj2._name,
+            model1, model2,
             label=label,
             labeldistance='10.0',
             color=self._config['color_{0}'.format(data['type'])],
