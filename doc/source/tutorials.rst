@@ -494,6 +494,16 @@ parameter::
 .. image:: _static/rel_res_partner_v4.png
     :width: 350px
 
+Also, some configuration options can be set through the `config` parameter.
+Here is how to display `many2many` table names::
+
+    >>> config = {'show_many2many_table': True}
+    >>> graph = oerp.inspect.relations(['res.partner'], whitelist=['res.partner*'], blacklist=['res.partner.bank'], config=config)
+    >>> graph.write('rel_res_partner_v5.png', format='png')
+
+.. image:: _static/rel_res_partner_v5.png
+    :height: 350px
+
 For more details, take a look at the
 :func:`relations <oerplib.service.inspect.Inspect.relations>` method
 documentation.
