@@ -269,13 +269,19 @@ class Dependencies(object):
 
     def _fix_fake_root_module(self, module):
         """Fix the fake root `module` by finding its indirect dependencies."""
+        known_paths = []
+
         def find_path(path, mod, common_model):
             """Try to found a path from the module `mod` among all installed
             modules to reach any 'restricted' module.
             """
+            if set(path) not in known_paths:
+                known_paths.append(set(path))
             path.append(mod)
             for depend in self._modules_full[mod]['depends']:
                 path.append(depend)
+                if set(path) in known_paths:
+                    continue
                 if depend in self._modules:
                     if common_model:
                         # Has the 'head' module a common data model with
