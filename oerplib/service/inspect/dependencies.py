@@ -287,7 +287,9 @@ class Dependencies(object):
                     else:
                         return True
                 path.pop()
-                return find_path(path, depend, common_model)
+                res = find_path(path, depend, common_model)
+                if res:
+                    return res
             path.pop()
             return False
 
