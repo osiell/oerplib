@@ -304,6 +304,8 @@ class Dependencies(object):
         found_ok = find_path(path, module, common_model=True)
         # If not, we try again without the rule of the common model
         if not found_ok:
+            known_paths = []
+            path = []
             found_ok = find_path(path, module, common_model=False)
         # Update the graph by adding required modules to satisfy the
         # indirect dependency
