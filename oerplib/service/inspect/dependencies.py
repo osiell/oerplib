@@ -392,7 +392,7 @@ class Dependencies(object):
                 module_color_title=module_color_title,
                 module_bgcolor_title=module_bgcolor_title,
                 module_bgcolor=self._config['module_bgcolor'],
-                name=module.upper(),
+                name=module.lower(),
                 models=''.join(tpl_models),
                 comment=tpl_comment or '')
             return tpl
