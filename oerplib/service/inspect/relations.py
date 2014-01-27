@@ -158,6 +158,7 @@ class Relations(object):
                     'required': data.get('required'),
                     'function': data.get('function'),
                     'fnct_inv': data.get('fnct_inv'),
+                    'fnct_search': data.get('fnct_search'),
                 }
                 # many2one
                 if data['type'] == 'many2one':
@@ -357,6 +358,8 @@ class Relations(object):
                 color=self._config['color_required']))
         if data.get('function'):
             name = data.get('fnct_inv') and "Fw" or "F"
+            if data.get('fnct_search'):
+                name += "s"
             flags.append("<font color='{color}'>{name}</font>".format(
                 name=name, color=self._config['color_function']))
         if flags:
