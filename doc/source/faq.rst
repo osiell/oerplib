@@ -53,7 +53,7 @@ have no ``context`` parameter, and `OERPLib` has no way to guess it, which
 results in an nasty exception. So you have to disable temporarily this behaviour
 by yourself by setting the ``auto_context`` option to ``False``::
 
-    >>> oerp.config['auto_context'] = False  # 'get()' method of 'ir.sequence' does not support context the parameter
+    >>> oerp.config['auto_context'] = False  # 'get()' method of 'ir.sequence' does not support the context parameter
     >>> next_seq = oerp.get('ir.sequence').get('stock.lot.serial')
     >>> oerp.config['auto_context'] = True  # Restore the configuration
 
