@@ -99,6 +99,7 @@ class Relations(object):
             'color_many2one': '#0E2548',
             'color_one2many': '#008200',
             'color_many2many': '#6E0004',
+            'model_root_bgcolor_title': '#A50018',
             'model_bgcolor_title': '#64629C',
             'model_color_title': 'white',
             'model_color_subtitle': '#3E3D60',
@@ -295,9 +296,12 @@ class Relations(object):
                     type_=data2['type'])
                 relations_r.append(rel_r)
             # Generate the layout of the model
+            model_bgcolor_title = self._config['model_bgcolor_title']
+            if model in self._models:
+                model_bgcolor_title = self._config['model_root_bgcolor_title']
             tpl = TPL_MODEL.format(
                 model_color_title=self._config['model_color_title'],
-                model_bgcolor_title=self._config['model_bgcolor_title'],
+                model_bgcolor_title=model_bgcolor_title,
                 model_bgcolor=self._config['model_bgcolor'],
                 name=model,
                 attrs=''.join(attrs),
