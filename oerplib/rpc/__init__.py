@@ -145,6 +145,14 @@ class ConnectorNetRPC(Connector):
     def __init__(self, server, port=8070, timeout=120, version=None):
         super(ConnectorNetRPC, self).__init__(
             server, port, timeout, version)
+        if self.version is None:
+            try:
+                db = service.ServiceNetRPC(self, 'db', self.server, self.port)
+                version = db.server_version()
+            except error.ConnectorError:
+                pass
+            else:
+                self.version = version
 
     def __getattr__(self, service_name):
         srv = service.ServiceNetRPC(
