@@ -1,4 +1,17 @@
-v0.8.0, 2013-09-XX:
+v0.8.1, 2014-02-02:
+    Minor improvements:
+    - 'OERP.inspect.relations()' method: display root models in red by default,
+    - 'OERP.inspect.relations()' method: add a 's' flag on fields.function
+      which are searchable (#1272660),
+    - 'OERP.inspect.dependencies()' method: display module names in
+      lowercase.
+    Bug fixes:
+    - 'OERP.inspect.dependencies()' method: unable to find an indirect
+      dependency (Bug #1265860),
+    - Error when using the NetRPC protocol without specifing the 'version'
+      parameter (Bug #1267188).
+
+v0.8.0, 2013-11-05:
     - New service 'inspect' ('OERP.inspect') able to draw models relationship
       and modules dependencies graphs (output in any Graphviz supported formats)
       and to detect 'on_change' methods of data models,
