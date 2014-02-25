@@ -187,6 +187,11 @@ class TestBrowse(unittest.TestCase):
         self.oerp.write_record(self.user)
         self.assertIn(4, group_ids)
         self.assertIn(5, group_ids)
+        self.user.groups_id = False                     # Starting with no value
+        self.user.groups_id += 4
+        self.user.groups_id += [5]
+        self.assertIn(4, [grp.id for grp in self.user.groups_id])
+        self.assertIn(5, [grp.id for grp in self.user.groups_id])
         # Operator -=
         self.user.groups_id -= 1                        # ID
         self.assertNotIn(1, [grp.id for grp in self.user.groups_id])
@@ -206,6 +211,10 @@ class TestBrowse(unittest.TestCase):
         self.oerp.write_record(self.user)
         self.assertNotIn(1, group_ids)
         self.assertNotIn(2, group_ids)
+        self.user.groups_id = False                     # Starting with no value
+        self.user.groups_id -= 1
+        self.user.groups_id -= [5]
+        self.assertEqual([], [grp.id for grp in self.user.groups_id])
         # Restore the original value
         self.user.groups_id = backup_groups
         self.assertEqual(list(self.user.groups_id), backup_groups)
@@ -273,6 +282,11 @@ class TestBrowse(unittest.TestCase):
         self.oerp.write_record(partner)
         self.assertIn(p1_id, partner_ids)
         self.assertIn(p2_id, partner_ids)
+        partner.child_ids = False                       # Starting with no value
+        partner.child_ids += p1_id
+        partner.child_ids += [p2_id]
+        self.assertIn(p1_id, [pt.id for pt in partner.child_ids])
+        self.assertIn(p2_id, [pt.id for pt in partner.child_ids])
         # Operator -=
         partner.child_ids -= p1_id                      # ID
         self.assertNotIn(p1_id, [pt.id for pt in partner.child_ids])
@@ -292,6 +306,10 @@ class TestBrowse(unittest.TestCase):
         self.oerp.write_record(partner)
         self.assertNotIn(p1_id, partner_ids)
         self.assertNotIn(p2_id, partner_ids)
+        partner.child_ids = False                       # Starting with no value
+        partner.child_ids -= p1_id
+        partner.child_ids -= [p2_id]
+        self.assertEqual([], [pt.id for pt in partner.child_ids])
         # Restore the original value
         partner.child_ids = backup_childs
         self.assertEqual(list(partner.child_ids), backup_childs)

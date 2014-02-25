@@ -196,16 +196,14 @@ class Many2ManyField(BaseField):
                     ids.append(value[1])
                 elif value[0] == 3 and value[1] and value[1] in ids:
                     ids.remove(value[1])
-        if ids:
-            context = instance.__data__['context'].copy()
-            context.update(self.context)
-            return browse.BrowseRecordIterator(
-                model=instance.__oerp__.get(self.relation),
-                ids=ids,
-                context=context,
-                parent=instance,
-                parent_field=self)
-        return iter(())
+        context = instance.__data__['context'].copy()
+        context.update(self.context)
+        return browse.BrowseRecordIterator(
+            model=instance.__oerp__.get(self.relation),
+            ids=ids,
+            context=context,
+            parent=instance,
+            parent_field=self)
 
     def __set__(self, instance, value):
         value = self.check_value(value)
@@ -309,16 +307,14 @@ class One2ManyField(BaseField):
                     ids.append(value[1])
                 elif value[0] == 3 and value[1] and value[1] in ids:
                     ids.remove(value[1])
-        if ids:
-            context = instance.__data__['context'].copy()
-            context.update(self.context)
-            return browse.BrowseRecordIterator(
-                model=instance.__oerp__.get(self.relation),
-                ids=ids,
-                context=context,
-                parent=instance,
-                parent_field=self)
-        return iter(())
+        context = instance.__data__['context'].copy()
+        context.update(self.context)
+        return browse.BrowseRecordIterator(
+            model=instance.__oerp__.get(self.relation),
+            ids=ids,
+            context=context,
+            parent=instance,
+            parent_field=self)
 
     def __set__(self, instance, value):
         value = self.check_value(value)
