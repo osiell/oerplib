@@ -1,4 +1,4 @@
-v0.8.1, 2014-02-02:
+v0.8.1, 2014-02-26:
     Minor improvements:
     - 'OERP.inspect.relations()' method: display root models in red by default,
     - 'OERP.inspect.relations()' method: add a 's' flag on fields.function
@@ -7,9 +7,11 @@ v0.8.1, 2014-02-02:
       lowercase.
     Bug fixes:
     - 'OERP.inspect.dependencies()' method: unable to find an indirect
-      dependency (Bug #1265860),
+      dependency (bug #1265860),
     - Error when using the NetRPC protocol without specifing the 'version'
-      parameter (Bug #1267188).
+      parameter (bug #1267188),
+    - On 'browse_record' objects, error when using += and -= operators on
+      empty one2many and many2many fields (bug #1284768 ).
 
 v0.8.0, 2013-11-05:
     - New service 'inspect' ('OERP.inspect') able to draw models relationship
