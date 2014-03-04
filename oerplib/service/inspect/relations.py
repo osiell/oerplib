@@ -126,6 +126,8 @@ class Relations(object):
         """
         # Stop scanning when the maxdepth is reached, or when the data model
         # has already been scanned
+        if obj._name in self._models:
+            depth = 0
         if depth > self._maxdepth or obj._name in self._relations:
             return
         # Check the whitelist, then the blacklist
