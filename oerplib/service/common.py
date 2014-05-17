@@ -18,9 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""Provide the :class:`Common` class in order to manage common operations on
-the `OpenERP` server.
-"""
+"""Provide the :class:`Common` class to manage the /common RPC service."""
 
 from oerplib import rpc, error
 
@@ -28,8 +26,8 @@ from oerplib import rpc, error
 class Common(object):
     """.. versionadded:: 0.6
 
-    The `Common` class represents the ``/common`` RPC service.
-    Lets you log in on `OpenERP`, and provides various utility functions.
+    The `Common` class represents the ``/common`` RPC service which lets you
+    log in on the server, and provides various utility functions.
 
     .. note::
         This service have to be used through the :attr:`oerplib.OERP.common`
@@ -45,8 +43,8 @@ class Common(object):
         All methods documented below are not strictly implemented in `OERPLib`
 
         Method calls are purely dynamic, and the following documentation can be
-        wrong if the API of `OpenERP` is changed between versions. Anyway, if
-        you know the API used by the `OpenERP` server for the ``/common`` RPC
+        wrong if the API of the server is changed between versions. Anyway,
+        if you know the API proposed by the server for the ``/common`` RPC
         service, it will work.
 
     .. method:: Common.login(db, login, password)
@@ -70,13 +68,13 @@ class Common(object):
 
     .. method:: Common.about(extended=False)
 
-        Return information about the `OpenERP` Server.
+        Return information about the server.
 
         >>> oerp.common.about()
-        '\\n\\nOpenERP is an ERP+CRM program for small and medium businesses.\\n\\nThe whole source code is distributed under the terms of the\\nGNU Public Licence.\\n\\n(c) 2003-TODAY, Fabien Pinckaers - Tiny sprl'
+        'See http://openerp.com'
 
         >>> oerp.common.about(True)
-        ['\\n\\nOpenERP is an ERP+CRM program for small and medium businesses.\\n\\nThe whole source code is distributed under the terms of the\\nGNU Public Licence.\\n\\n(c) 2003-TODAY, Fabien Pinckaers - Tiny sprl', '5.0.16']
+        ['See http://openerp.com', '8.0alpha1']
 
         :param: extended: if `True` then return version info
         :return: string if extended is `False` else tuple

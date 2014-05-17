@@ -5,8 +5,10 @@ from distutils.core import setup
 
 name = 'OERPLib'
 version = '0.8.1'
-description = 'OpenERP client library which allows to easily interact with an OpenERP server.'
-keywords = "openerp client xml-rpc xml_rpc xmlrpc net-rpc net_rpc netrpc oerplib communication lib library python service web webservice"
+description = ("OERPLib is a Python module providing an easy way to "
+               "pilot your OpenERP and Odoo servers through RPC.")
+keywords = ("openerp odoo server client xml-rpc xmlrpc net-rpc netrpc "
+            "oerplib communication lib library python service web webservice")
 author = "ABF Osiell - Sebastien Alix"
 author_email = 'sebastien.alix@osiell.com'
 url = 'http://pythonhosted.org/OERPLib/'

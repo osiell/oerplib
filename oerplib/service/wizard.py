@@ -46,7 +46,7 @@ class Wizard(object):
 
         Method calls are purely dynamic, and the following documentation can be
         wrong if the API of `OpenERP` is changed between versions. Anyway, if
-        you know the API used by the `OpenERP` server for the ``/wizard`` RPC
+        you know the API proposed by the server for the ``/wizard`` RPC
         service, it will work.
 
     .. method:: Wizard.create(wiz_name, datas=None)

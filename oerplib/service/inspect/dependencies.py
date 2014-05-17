@@ -19,7 +19,7 @@
 #
 ##############################################################################
 """Implements the :class:`Dependencies` class used to compute dependencies
-between modules of an OpenERP server.
+between server modules.
 """
 import copy
 
@@ -165,7 +165,7 @@ class Dependencies(object):
             models = {}
         modules = {}
         modules_full = {}
-        # Fetch all the modules installed on the OpenERP server
+        # Fetch all the modules installed on the server
         module_obj = self.oerp.get('ir.module.module')
         states_inst = ['installed', 'to upgrade', 'to remove']
         states_uninst = ['uninstalled', 'uninstallable', 'to install']

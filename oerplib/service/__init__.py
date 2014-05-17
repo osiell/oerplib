@@ -19,7 +19,7 @@
 #
 ##############################################################################
 """The `service` package provides classes to request services offers by
-the `OpenERP` server, such as:
+the `OpenERP/Odoo` server, such as:
     - '/common' (service.common),
     - '/db' (service.db)
     - '/wizard' (service.wizard)

@@ -43,9 +43,8 @@ class ServiceXMLRPC(object):
             #   - execute('sale.order', 'fake_method')
             except xmlrpclib.Fault as exc:
                 # faultCode: error message
-                # faultString: OpenERP server traceback (following the OpenERP
-                # server version used, a bad request can produce a
-                # server traceback, or not).
+                # faultString: Server traceback (following the server version
+                # used, a bad request can produce a server traceback, or not).
                 raise error.ConnectorError(exc.faultCode, exc.faultString)
             #TODO NEED TEST (when is raised this exception?)
             except xmlrpclib.Error as exc:
@@ -74,9 +73,8 @@ class ServiceNetRPC(object):
             #   - execute('sale.order', 'fake_method')
             except netrpclib.NetRPCError as exc:
                 # faultCode: error message
-                # faultString: OpenERP server traceback (following the OpenERP
-                # server version used, a bad request can produce a
-                # server traceback, or not).
+                # faultString: Server traceback (following the server version
+                # used, a bad request can produce a server traceback, or not).
                 raise error.ConnectorError(exc.faultCode, exc.faultString)
         return rpc_method
 

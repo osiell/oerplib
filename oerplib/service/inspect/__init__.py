@@ -18,8 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""Provide the :class:`Inspect` class which can output useful data
-from `OpenERP`.
+"""Provide the :class:`Inspect` class which can output useful server data.
 
 oerplib.service.inspect.Inspect
 '''''''''''''''''''''''''''''''
@@ -32,7 +31,7 @@ from oerplib import error
 class Inspect(object):
     """.. versionadded:: 0.8
 
-    The `Inspect` class provides methods to output useful data from `OpenERP`.
+    The `Inspect` class provides methods to output useful server data.
 
     .. note::
         This service have to be used through the :attr:`oerplib.OERP.inspect`

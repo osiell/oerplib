@@ -19,7 +19,7 @@
 #
 ##############################################################################
 """Provide the :class:`Model` class which allow to access dynamically to all
-methods proposed by an model of the `OpenERP` server."""
+methods proposed by a data model."""
 
 import sys  # to check Python version at runtime
 import collections
@@ -32,7 +32,7 @@ from oerplib.service.osv import fields, browse
 class Model(object):
     """.. versionadded:: 0.5
 
-    Represent a data model from the `OpenERP` server.
+    Represent a data model.
 
     .. note::
         This class have to be used through the :func:`oerplib.OERP.get`
@@ -127,7 +127,7 @@ class Model(object):
         return cls
 
     def _write_record(self, obj, context=None):
-        """Send values of fields updated to the OpenERP server."""
+        """Send values of fields updated to the server."""
         obj_data = obj.__data__
         vals = {}
         for field_name in obj_data['updated_values']:
@@ -154,7 +154,7 @@ class Model(object):
             return res
 
     def _refresh(self, obj, context=None):
-        """Retrieve field values from OpenERP server.
+        """Retrieve field values from the server.
         May be used to restore the original values
         in the purpose to cancel all changes made.
 
@@ -217,7 +217,7 @@ class Model(object):
                 setattr(obj.__class__, field.name, field)
 
     def _unlink_record(self, obj, context=None):
-        """Delete the object from the OpenERP server."""
+        """Delete the object from the server."""
         if v(self._oerp.version) < v('6.1'):
             return self.unlink([obj.id], context)
         else:
@@ -230,8 +230,8 @@ class Model(object):
             if v(self._oerp.version) < v('6.1'):
                 if kwargs:
                     raise error.RPCError(
-                        "Named parameters are not supported by this version "
-                        "of OpenERP")
+                        "Named parameters are not supported by the version "
+                        "of this server.")
                 result = self._oerp.execute(
                     self._browse_class.__osv__['name'], method, *args)
             else:

@@ -18,8 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""This module contains the ``OERP`` class which manage the interaction with
-the `OpenERP` server.
+"""This module contains the ``OERP`` class which is the entry point to manage 
+an `OpenERP/Odoo` server.
 """
 import os
 import base64
@@ -46,8 +46,8 @@ class OERP(object):
         >>> oerp = oerplib.OERP('localhost', protocol='xmlrpc', port=8069)
 
     Since the version `0.7`, `OERPLib` will try by default to detect the
-    `OpenERP` server version in order to adapt its requests. However, it is
-    possible to force the version of `OpenERP` with the `version` parameter:
+    server version in order to adapt its requests. However, it is
+    possible to force the version to use with the `version` parameter:
 
         >>> oerp = oerplib.OERP('localhost', version='6.0')
 
@@ -73,7 +73,7 @@ class OERP(object):
         self._db = db.DB(self)
         self._wizard = wizard.Wizard(self)
         self._inspect = inspect.Inspect(self)
-        # Instanciate the OpenERP server connector
+        # Instanciate the server connector
         try:
             self._connector = rpc.PROTOCOLS[protocol](
                 self._server, self._port, timeout, version)
@@ -100,7 +100,7 @@ class OERP(object):
 
             .. note::
 
-                This option only works on `OpenERP` version `6.1` and above.
+                This option only works on servers in version `6.1` and above.
 
             >>> product_osv = oerp.get('product.product')
             >>> product_osv.name_get([3]) # Context sent by default ('lang': 'fr_FR' here)
@@ -145,7 +145,7 @@ class OERP(object):
 
     @property
     def version(self):
-        """The version of the OpenERP server.
+        """The version of the server.
 
         >>> oerp.version
         '7.0-20131014-231047'
@@ -260,7 +260,7 @@ class OERP(object):
 
         .. warning::
 
-            This method only works on `OpenERP` version `6.1` and above.
+            This method only works on servers in version `6.1` and above.
 
         :return: the result returned by the `method` called
         :raise: :class:`oerplib.error.RPCError`
@@ -294,8 +294,8 @@ class OERP(object):
 
     def report(self, report_name, model, obj_ids, report_type='pdf',
                context=None):
-        """Download a report from the `OpenERP` server and return
-        the path of the file.
+        """Download a report from the server and return the local
+        path of the file.
 
         >>> oerp.report('sale.order', 'sale.order', 1)
         '/tmp/oerplib_uJ8Iho.pdf'
@@ -321,7 +321,7 @@ class OERP(object):
 
     def _get_report_data(self, report_name, model, obj_ids,
                          report_type='pdf', context=None):
-        """Download binary data of a report from the `OpenERP` server."""
+        """Download binary data of a report from the server."""
         context = context or {}
         obj_ids = [obj_ids] if isinstance(obj_ids, (int, long)) else obj_ids
         data = {
@@ -478,7 +478,7 @@ class OERP(object):
         """.. versionadded:: 0.4
 
         Update the record corresponding to `browse_record` by sending its values
-        to the `OpenERP` database (only field values which have been changed).
+        to the server (only field values which have been changed).
 
         >>> partner = oerp.browse('res.partner', 1)
         >>> partner.name = "Test"
@@ -495,8 +495,7 @@ class OERP(object):
     def unlink_record(self, browse_record, context=None):
         """.. versionadded:: 0.4
 
-        Delete the record corresponding to `browse_record` from the `OpenERP`
-        database.
+        Delete the record corresponding to `browse_record` from the server.
 
         >>> partner = oerp.browse('res.partner', 1)
         >>> oerp.unlink_record(partner)  # unlink('res.partner', [1])
@@ -511,7 +510,7 @@ class OERP(object):
 
     def refresh(self, browse_record, context=None):
         """Restore original values on `browse_record` with data
-        fetched on the `OpenERP` database.
+        fetched on the server.
         As a result, all changes made locally on the record are canceled.
 
         :raise: :class:`oerplib.error.RPCError`
@@ -547,7 +546,7 @@ class OERP(object):
     def get(self, model):
         """.. versionadded:: 0.5
 
-        Return a proxy of the `model` built from the `OpenERP`
+        Return a proxy of the `model` built from the
         server (see :class:`oerplib.service.osv.Model`).
 
         :return: an instance of :class:`oerplib.service.osv.Model`

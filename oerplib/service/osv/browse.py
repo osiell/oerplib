@@ -27,7 +27,7 @@ class BrowseRecord(object):
     No attributes should be defined in this class (except ``_id``/``id``,
     ``__oerp__``, ``__osv__``, ``__data__`` and Python magic methods) in order
     to not be conflicted with the fields defined in the model class on
-    the `OpenERP` server.
+    the server.
 
     A reference to the :class:`OERP <oerplib.OERP>` object used to instanciate
     a ``browse_record`` is available through the ``__oerp__`` attribute::

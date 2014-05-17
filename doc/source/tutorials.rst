@@ -7,9 +7,9 @@ First step: prepare the connection and login
 --------------------------------------------
 
 You need an instance of the :class:`OERP <oerplib.OERP>` class to dialog with an
-`OpenERP` server. Let's pretend that you want to connect as `admin` on the
-`db_name` database of the local `OpenERP` server (with the `XML-RPC` service
-which listens on port `8071`). First, prepare the connection::
+`OpenERP/Odoo` server. Let's pretend that you want to connect as `admin` on
+the `db_name` database of your local server (with the `XML-RPC` service which
+listens on port `8071`). First, prepare the connection::
 
     >>> import oerplib
     >>> oerp = oerplib.OERP(server='localhost', protocol='xmlrpc', port=8071)
@@ -40,8 +40,8 @@ informations are accessible (see :ref:`browse-records` section)::
     >>> print(user.name)            # print the full name of the user
     >>> print(user.company_id.name) # print the name of its company
 
-Now you are connected, you can easily execute any kind of `RPC` queries on the
-the `OpenERP` server (execute model methods, trigger workflow, download reports,
+Now you are connected, you can easily execute any kind of `RPC` queries on your
+server (execute model methods, trigger workflow, download reports,
 and handle wizards).
 
 .. _tutorials-execute-queries:
@@ -73,8 +73,8 @@ and ``search`` there are convenient shortcuts available (see
     True
 
 There is another way to perform all methods of a model, with the
-:func:`get <oerplib.OERP.get>` method, which provide an API
-almost syntactically identical to the `OpenERP` server side API
+:func:`get <oerplib.OERP.get>` method, which provides an API
+almost syntactically identical to the `OpenERP/Odoo` server side API
 (see :class:`oerplib.service.osv.Model`)::
 
     >>> user_obj = oerp.get('res.users')
@@ -87,7 +87,7 @@ almost syntactically identical to the `OpenERP` server side API
     >>> product_obj.name_get([3, 4])
     [[3, '[PC1] PC Basic'], [4, u'[PC2] Basic+ PC (assembl\xe9 sur commande)']]
 
-If you run an `OpenERP` version `6.1` or above, the user context is
+If you run a server in version `6.1` or above, the user context is
 automatically sent.
 You can disable this behaviour with the :attr:`oerplib.OERP.config` property::
 
@@ -101,7 +101,7 @@ You can disable this behaviour with the :attr:`oerplib.OERP.config` property::
 
 Here is another example of how to install a module (you have to be logged
 as an administrator to perform this task). The ``button_immediate_install``
-method used here is available since `OpenERP v6.1`::
+method used here is available since the `6.1` server version::
 
     >>> module_obj = oerp.get('ir.module.module')
     >>> module_id = module_obj.search([('name', '=', 'purchase')])
@@ -113,7 +113,7 @@ Browse records
 --------------
 
 A great functionality of `OERPLib` is its ability to generate objects that are
-similar to browsable records found on the `OpenERP` server. All this
+similar to browsable records used on the server side. All of this
 is possible using the :func:`browse <oerplib.OERP.browse>` method::
 
     # fetch one record
@@ -172,7 +172,7 @@ Char, Float, Integer, Boolean, Text and Binary
 
 As see above, it's as simple as that::
 
-    >>> partner.name = "OpenERP"
+    >>> partner.name = "New Name"
     >>> oerp.write_record(partner)
 
 Selection
@@ -222,10 +222,10 @@ One2Many and Many2Many
 ''''''''''''''''''''''
 
 ``one2many`` and ``many2many`` fields can be updated by providing
-a list of tuple as specified in the `OpenERP` documentation, a list of records,
-a list of record IDs or an empty list or ``False``:
+a list of tuple as specified in the `OpenERP/Odoo` documentation, a list of
+records, a list of record IDs or an empty list or ``False``:
 
-With a standard `OpenERP` tuple, no magic here::
+With a tuple (as documented), no magic here::
 
     >>> user = oerp.get('res.users').browse(1)
     >>> user.groups_id = [(6, 0, [8, 5, 6, 4])]
@@ -368,7 +368,7 @@ The method will return the path to the generated temporary report file.
 Manage databases
 ----------------
 
-You can manage `OpenERP` databases with the :attr:`oerplib.OERP.db` property.
+You can manage server databases with the :attr:`oerplib.OERP.db` property.
 It offers you a dynamic access to all methods of the ``/db`` RPC service in
 order to list, create, drop, dump, restore databases and so on.
 
@@ -390,7 +390,7 @@ Let's create a new database::
 
     >>> database_id = oerp.db.create('super_admin_passwd', 'test_db', False, 'fr_FR', 'admin')
 
-The creation process may take some time on the `OpenERP` server, and you have
+The creation process may take some time on the server, and you have
 to wait before using the new database. The state of the creation process is
 returned by the
 :func:`get_progress <oerplib.service.db.DB.get_progress>` method::
@@ -407,11 +407,11 @@ However, `OERPLib` simplifies this by providing the
     [{'login': u'admin', 'password': u'admin', 'name': u'Administrator'},
      {'login': u'demo', 'password': u'demo', 'name': u'Demo User'}]
 
-Some documentation about methods offered by the `OpenERP` ``/db`` RPC service
+Some documentation about methods offered by the ``/db`` RPC service
 is available :class:`here <oerplib.service.db.DB>`.
 
-Inspect the metadata of OpenERP **(New in version 0.8)**
---------------------------------------------------------
+Inspect the metadata of your server **(New in version 0.8)**
+------------------------------------------------------------
 
 Draw a graph of relationships between models
 ''''''''''''''''''''''''''''''''''''''''''''
