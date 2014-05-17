@@ -1,3 +1,10 @@
+v0.8.2, 2014-06-??:
+    - Integrating the new brand 'Odoo' in addition to 'OpenERP' in the
+      documentation.
+    Bug fixes:
+    - On 'browse_record' objects, unknown field types are now interpreted
+      as 'char' (bug #1289781).
+
 v0.8.1, 2014-03-04:
     Minor improvements:
     - 'OERP.inspect.relations()' method: display root models in red by default,
