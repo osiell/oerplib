@@ -42,7 +42,7 @@ def scan_on_change(oerp, models):
             # For each view, find all `on_change` methods
             view_name = "{0}.{1}".format(data['module'], data['name'])
             view_data = oerp.execute(
-                model, 'fields_view_get', data['res_id'])
+                model, 'fields_view_get', data['res_id'], 'form')
             _scan_view(model, view_name, view_data, result)
     return result
 
