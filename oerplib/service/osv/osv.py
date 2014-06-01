@@ -128,6 +128,7 @@ class Model(object):
 
     def _write_record(self, obj, context=None):
         """Send values of fields updated to the server."""
+        context = context or self._oerp.context
         obj_data = obj.__data__
         vals = {}
         for field_name in obj_data['updated_values']:
@@ -218,6 +219,7 @@ class Model(object):
 
     def _unlink_record(self, obj, context=None):
         """Delete the object from the server."""
+        context = context or self._oerp.context
         if v(self._oerp.version) < v('6.1'):
             return self.unlink([obj.id], context)
         else:
