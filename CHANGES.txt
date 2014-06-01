@@ -4,6 +4,8 @@ v0.8.2, 2014-06-??:
     Bug fixes:
     - On 'browse_record' objects, unknown field types are now interpreted
       as 'char' (bug #1289781).
+    - 'OERP.write_record()' and 'OERP.unlink_record()' methods does not use
+      the user context by default (bug #1325421)
 
 v0.8.1, 2014-03-04:
     Minor improvements:
