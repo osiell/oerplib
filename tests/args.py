@@ -25,7 +25,7 @@ _parser.add_argument('--version', default=None,
 _parser.add_argument('--super_admin_passwd', default='admin',
                      help="Super administrator password")
 
-_parser.add_argument('--database', default='oerplib-test',
+_parser.add_argument('--database', default='oerplib_test',
                      help="Name of the database")
 
 _parser.add_argument('--user', default='admin',
