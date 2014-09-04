@@ -10,7 +10,8 @@ python:
   - "pypy"
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -r requirements.txt
+install: python setup.py install 
 
 # command to run tests, e.g. python setup.py test
-script: python setup.py test
+# TODO: copy one .travis file from OCB branch to test it with a server on travis
+script: python tests/runtests.py --test_xmlrpc
