@@ -97,7 +97,7 @@ Bugs or suggestions
 -------------------
 
 Please, feel free to report bugs or suggestions in the `Bug Tracker
-<https://bugs.launchpad.net/oerplib>`_!
+<https://github.com/osiell/oerplib/issues>`_!
 
 Make a donation
 ---------------

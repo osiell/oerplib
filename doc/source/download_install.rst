@@ -30,14 +30,15 @@ some methods of the :class:`inspect <oerplib.service.inspect.Inspect>` service
 Source code
 -----------
 
-The project is hosted on `Launchpad <https://launchpad.net/oerplib>`_.
-To get the current development branch (the ``trunk``), just type::
+The project is hosted on `GitHub <https://github.com/osiell/oerplib>`_.
+To get the last stable version (the ``master`` branch), just type::
 
-    $ bzr branch lp:oerplib
+    $ git clone https://github.com/osiell/oerplib.git
 
-For the last version of a stable branch (replace `X.Y` accordingly)::
+.. note::
 
-    $ bzr branch lp:oerplib/X.Y
+    The project uses the `git-flow` branching model. To contribute, please
+    refer to it.
 
 Run tests
 ---------
