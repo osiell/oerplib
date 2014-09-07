@@ -41,7 +41,7 @@ except Exception:
 setup(name=name,
       version=version,
       description=description,
-      long_description=open('README.txt').read(),
+      long_description=open('README.rst').read(),
       keywords=keywords,
       author=author,
       author_email=author_email,
