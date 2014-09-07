@@ -94,5 +94,5 @@ Please, feel free to report bugs or suggestions in the `Bug Tracker
 Changes in this version
 -----------------------
 
-Consult the ``CHANGES.txt`` file.
+Consult the ``CHANGELOG.rst`` file.
 
