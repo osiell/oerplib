@@ -439,6 +439,7 @@ class OERP(object):
         """
         if args is None:
             args = []
+        context = context or self._context
         return self.execute(model, 'search', args, offset, limit, order,
                             context, count)
 
@@ -451,6 +452,7 @@ class OERP(object):
         :return: the ID of the new record.
         :raise: :class:`oerplib.error.RPCError`
         """
+        context = context or self._context
         return self.execute(model, 'create', vals, context)
 
     def read(self, model, ids, fields=None, context=None):
@@ -465,6 +467,7 @@ class OERP(object):
         """
         if fields is None:
             fields = []
+        context = context or self._context
         return self.execute(model, 'read', ids, fields, context)
 
     def write(self, model, ids, vals=None, context=None):
@@ -481,6 +484,7 @@ class OERP(object):
         #    ids = []
         if vals is None:
             vals = {}
+        context = context or self._context
         return self.execute(model, 'write', ids, vals, context)
 
     def unlink(self, model, ids, context=None):
@@ -493,6 +497,7 @@ class OERP(object):
         """
         #if ids is None:
         #    ids = []
+        context = context or self._context
         return self.execute(model, 'unlink', ids, context)
 
     # ---------------------- #
