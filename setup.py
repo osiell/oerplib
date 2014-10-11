@@ -4,7 +4,7 @@ import os
 from distutils.core import setup
 
 name = 'OERPLib'
-version = '0.8.2'
+version = '0.8.3'
 description = ("OERPLib is a Python module providing an easy way to "
                "pilot your OpenERP and Odoo servers through RPC.")
 keywords = ("openerp odoo server client xml-rpc xmlrpc net-rpc netrpc "

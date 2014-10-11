@@ -1,6 +1,12 @@
 0.8.3
 =====
-- Project migrated from Bitbucket to Launchpad
+- FIX: Use the user context by default if it is not supplied in
+  'OERP.search()', 'OERP.create()', 'OERP.read()', 'OERP.write()' and
+  'OERP.unlink()' (fixes #6)
+- FIX: TypeError: object of type 'BrowseRecordIterator' has no len() (fixes #5)
+- FIX: Error while creating report on OpenERP 7.0 with multiple
+  workers (fixes #3)
+- Project migrated from Launchpad to GitHub
 
 0.8.2
 =====
