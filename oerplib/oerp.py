@@ -28,7 +28,7 @@ import tempfile
 import time
 
 from oerplib import rpc, error, tools
-from oerplib.tools import session
+from oerplib.tools import session, v
 from oerplib.service import common, db, wizard, osv, inspect
 
 
@@ -313,14 +313,39 @@ class OERP(object):
             context = self.context
         # Execute the report query
         try:
-            pdf_data = self._get_report_data(report_name, model, obj_ids,
-                                             report_type, context)
+            if v(self.version) < v('6.1'):
+                pdf_data = self._get_report_data_v5(
+                    report_name, model, obj_ids, report_type, context)
+            else:
+                pdf_data = self._get_report_data_v61(
+                    report_name, model, obj_ids, report_type, context)
         except rpc.error.ConnectorError as exc:
             raise error.RPCError(exc.message, exc.oerp_traceback)
         return self._print_file_data(pdf_data)
 
-    def _get_report_data(self, report_name, model, obj_ids,
-                         report_type='pdf', context=None):
+    def _get_report_data_v61(self, report_name, model, obj_ids,
+                             report_type='pdf', context=None):
+        """Download binary data of a report from the server.
+        It uses the `render_report` RPC method available since OpenERP 6.1.
+        """
+        if context is None:
+            context = {}
+        obj_ids = [obj_ids] if isinstance(obj_ids, (int, long)) else obj_ids
+        data = {
+            'model': model,
+            'id': obj_ids[0],
+            'ids': obj_ids,
+            'report_type': report_type,
+        }
+        try:
+            return self._connector.report.render_report(
+                self._database, self.user.id, self._password,
+                report_name, obj_ids, data, context)
+        except rpc.error.ConnectorError as exc:
+            raise error.RPCError(exc.message, exc.oerp_traceback)
+
+    def _get_report_data_v5(self, report_name, model, obj_ids,
+                            report_type='pdf', context=None):
         """Download binary data of a report from the server."""
         context = context or {}
         obj_ids = [obj_ids] if isinstance(obj_ids, (int, long)) else obj_ids
@@ -414,6 +439,7 @@ class OERP(object):
         """
         if args is None:
             args = []
+        context = context or self._context
         return self.execute(model, 'search', args, offset, limit, order,
                             context, count)
 
@@ -426,6 +452,7 @@ class OERP(object):
         :return: the ID of the new record.
         :raise: :class:`oerplib.error.RPCError`
         """
+        context = context or self._context
         return self.execute(model, 'create', vals, context)
 
     def read(self, model, ids, fields=None, context=None):
@@ -440,6 +467,7 @@ class OERP(object):
         """
         if fields is None:
             fields = []
+        context = context or self._context
         return self.execute(model, 'read', ids, fields, context)
 
     def write(self, model, ids, vals=None, context=None):
@@ -456,6 +484,7 @@ class OERP(object):
         #    ids = []
         if vals is None:
             vals = {}
+        context = context or self._context
         return self.execute(model, 'write', ids, vals, context)
 
     def unlink(self, model, ids, context=None):
@@ -468,6 +497,7 @@ class OERP(object):
         """
         #if ids is None:
         #    ids = []
+        context = context or self._context
         return self.execute(model, 'unlink', ids, context)
 
     # ---------------------- #

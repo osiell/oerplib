@@ -119,6 +119,9 @@ class BrowseRecordIterator(object):
         self.parent = parent
         self.parent_field = parent_field
 
+    def __len__(self):
+        return len(self.ids)
+
     def __iter__(self):
         return self
 

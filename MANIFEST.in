@@ -1,7 +1,7 @@
 include AUTHORS.txt
-include CHANGES.txt
+include CHANGELOG.rst
 include LICENSE.txt
-include README.txt
+include README.rst
 include doc/Makefile doc/make.bat
 recursive-include doc/source *
 recursive-include examples *
