@@ -33,7 +33,9 @@ Features supported:
       dependencies between modules, list ``on_change`` methods from model
       views, ...).
 
-How does it work? See below::
+How does it work? See below:
+
+.. code-block:: python
 
     import oerplib
 
