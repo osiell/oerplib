@@ -3,6 +3,18 @@
 OERPLib
 =======
 
+.. image:: https://pypip.in/download/OERPLib/badge.svg
+    :target: https://pypi.python.org/pypi/OERPLib/
+    :alt: Downloads
+
+.. image:: https://pypip.in/version/OERPLib/badge.svg
+    :target: https://pypi.python.org/pypi/OERPLib/
+    :alt: Latest Version
+
+.. image:: https://pypip.in/license/OERPLib/badge.svg
+    :target: https://pypi.python.org/pypi/OERPLib/
+    :alt: License
+
 **OERPLib** is a Python module providing an easy way to
 pilot your **OpenERP** and **Odoo** servers through `RPC`.
 
