@@ -87,6 +87,7 @@ class ConnectorXMLRPC(Connector):
     """
     def __init__(self, server, port=8069, timeout=120, version=None, scheme='http'):
         super(ConnectorXMLRPC, self).__init__(server, port, timeout, version)
+        self.scheme = scheme
         if self.version:
             # Server < 6.1
             if v(self.version) < v('6.1'):
