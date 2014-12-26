@@ -24,13 +24,8 @@ occurred.
 
 
 class Error(Exception):
-    def __init__(self, message, oerp_traceback=False):
-        super(Error, self).__init__()
-        self.message = message
-        self.oerp_traceback = oerp_traceback
-
-    def __str__(self):
-        return "{message}".format(message=self.message)
+    """Base class for exception."""
+    pass
 
 
 class RPCError(Error):
