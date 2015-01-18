@@ -32,7 +32,7 @@ function.
 __author__ = 'ABF Osiell - Sebastien Alix'
 __email__ = 'sebastien.alix@osiell.com'
 __licence__ = 'LGPL v3'
-__version__ = '0.8.3'
+__version__ = '0.8.4'
 
 #__all__ = ['OERP', 'error']
 
