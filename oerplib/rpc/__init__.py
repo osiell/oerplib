@@ -85,21 +85,22 @@ class ConnectorXMLRPC(Connector):
 
     >>> res = cnt.object.exec_workflow('database', uid, 'passwd', 'sale.order', 'order_confirm', 4)
     """
-    def __init__(self, server, port=8069, timeout=120, version=None):
+    def __init__(self, server, port=8069, timeout=120, version=None, scheme='http'):
         super(ConnectorXMLRPC, self).__init__(server, port, timeout, version)
+        self.scheme = scheme
         if self.version:
             # Server < 6.1
             if v(self.version) < v('6.1'):
-                self._url = 'http://{server}:{port}/xmlrpc'.format(
-                    server=self.server, port=self.port)
+                self._url = '{scheme}://{server}:{port}/xmlrpc'.format(
+                    scheme=self.scheme, server=self.server, port=self.port)
             # Server >= 6.1 and < 8.0
             elif v(self.version) < v('8.0'):
-                self._url = 'http://{server}:{port}/openerp/xmlrpc/1'.format(
-                    server=self.server, port=self.port)
+                self._url = '{scheme}://{server}:{port}/openerp/xmlrpc/1'.format(
+                    scheme=self.scheme, server=self.server, port=self.port)
             # Server >= 8.0
             elif v(self.version) >= v('8.0'):
-                self._url = 'http://{server}:{port}/xmlrpc/2'.format(
-                    server=self.server, port=self.port)
+                self._url = '{scheme}://{server}:{port}/xmlrpc/2'.format(
+                    scheme=self.scheme, server=self.server, port=self.port)
         # Detect the XML-RPC path to use
         if self._url is None:
             # We begin with the last known XML-RPC path to give the priority to
@@ -107,8 +108,8 @@ class ConnectorXMLRPC(Connector):
             paths = XML_RPC_PATHS[:]
             paths.reverse()
             for path in paths:
-                url = 'http://{server}:{port}{path}'.format(
-                    server=self.server, port=self.port, path=path)
+                url = '{scheme}://{server}:{port}{path}'.format(
+                    scheme=self.scheme, server=self.server, port=self.port, path=path)
                 try:
                     db = service.ServiceXMLRPC(
                         self, 'db', '{url}/{srv}'.format(url=url, srv='db'))
@@ -131,9 +132,7 @@ class ConnectorXMLRPCSSL(ConnectorXMLRPC):
     """Connector class using the `XML-RPC` protocol over `SSL`."""
     def __init__(self, server, port=8069, timeout=120, version=None):
         super(ConnectorXMLRPCSSL, self).__init__(
-            server, port, timeout, version)
-        self._url = self._url.replace('http', 'https')
-
+            server, port, timeout, version, scheme='https')
 
 class ConnectorNetRPC(Connector):
     """

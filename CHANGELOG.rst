@@ -1,3 +1,9 @@
+0.8.4
+=====
+- FIX: Auto-discovery the Odoo version via HTTPS (fixes #9)
+- FIX: Simplification of exception handling, error messages more
+  explicit (fixes #12)
+
 0.8.3
 =====
 - FIX: Use the user context by default if it is not supplied in
