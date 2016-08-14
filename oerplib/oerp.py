@@ -391,7 +391,7 @@ class OERP(object):
             content = zlib.decompress(content)
 
         if data['format'] in ['pdf', 'html', 'doc', 'xls',
-                              'sxw', 'odt', 'tiff']:
+                              'sxw', 'odt', 'tiff', 'txt']:
             if data['format'] == 'html' and os.name == 'nt':
                 data['format'] = 'doc'
             (file_no, file_path) = tempfile.mkstemp('.' + data['format'],
